@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@import "@heroui/styles";
+
+@theme {
+  --color-secondary: #011D00;
+  --color-backpage: #B1C59F;
+  --color-primary-light: #EAFFE9;
+  --color-primary: #BAF08A;
+  --font-sans: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--color-backpage);
+}
+
+body {
+  margin: 0;
+}
