@@ -25,3 +25,38 @@ body,
 body {
   margin: 0;
 }
+
+/* Minimalist Custom Scrollbar for Sidebar */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+
+/* Show scrollbar thumb with low opacity when hovering over sidebar */
+.sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(1, 29, 0, 0.15);
+}
+
+/* Darken slightly when hovering directly over the scrollbar thumb */
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(1, 29, 0, 0.3) !important;
+}
+
+/* Firefox compatibility */
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.sidebar-scrollbar:hover {
+  scrollbar-color: rgba(1, 29, 0, 0.15) transparent;
+}

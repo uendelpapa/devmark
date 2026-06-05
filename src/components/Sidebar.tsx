@@ -42,7 +42,7 @@ function MenuItem({ icon: Icon, label, badge, active }: MenuItemProps) {
 
 export function Sidebar() {
   return (
-    <aside className="w-fit bg-white h-screen flex flex-col justify-between py-6 px-8 shrink-0 select-none overflow-y-auto">
+    <aside className="w-fit bg-white h-screen flex flex-col justify-between py-6 px-8 shrink-0 select-none overflow-y-auto gap-10 sidebar-scrollbar">
       {/* Top Section */}
       <div className="flex flex-col gap-10">
         {/* Logo */}

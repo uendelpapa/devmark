@@ -1,5 +1,6 @@
 import { Pause, Play, Stop } from '@gravity-ui/icons'
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import type { ReactNode } from 'react'
 
 interface TimerContextType {
   hours: number

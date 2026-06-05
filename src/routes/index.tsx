@@ -16,7 +16,9 @@ import {
   ArrowUpRightFromSquare,
   CircleChevronDown,
   FolderArrowRight,
-  Comment
+  Comment,
+  CircleChevronUp,
+  CircleInfo
 } from '@gravity-ui/icons'
 
 export const Route = createFileRoute('/')({ component: Home })
@@ -64,12 +66,12 @@ function Home() {
             {/* User Profile & Notifications */}
             <div className="flex items-center gap-4">
               {/* Mail Button */}
-              <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center cursor-pointer hover:bg-neutral-200 transition-colors">
+              <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center cursor-pointer hover:bg-primary transition-colors">
                 <Envelope className="text-secondary size-4" />
               </button>
 
               {/* Notification Bell Button */}
-              <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center relative cursor-pointer hover:bg-neutral-200 transition-colors">
+              <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center relative cursor-pointer hover:bg-primary transition-colors">
                 <Bell className="text-secondary size-4" />
                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full border border-white" />
               </button>
@@ -125,7 +127,7 @@ function Home() {
                 <CardContent className='space-y-4'>
                   <div className='flex justify-between'>
                     <h4 className="font-semibold">Total de Projetos</h4>
-                    <Button className={"size-10 bg-secondary hover:bg-secondary/80"} size='lg'>
+                    <Button className={"size-10 bg-secondary hover:bg-secondary/80 shadow-md shadow-black/40"} size='lg'>
                       <ArrowUpRightFromSquare width={16} height={16} />
                     </Button>
                   </div>
@@ -141,15 +143,15 @@ function Home() {
               <Card className="bg-zinc-100 border-none shadow-none rounded-[24px] p-6 text-secondary relative">
                 <CardContent className='space-y-4'>
                   <div className='flex justify-between'>
-                    <h4 className="font-semibold">Total de Projetos</h4>
-                    <Button className={"size-10 bg-secondary hover:bg-secondary/80"} size='lg'>
+                    <h4 className="font-semibold">Projetos Finalizados</h4>
+                    <Button className={"size-10 bg-secondary hover:bg-secondary/80 shadow-md shadow-black/40"} size='lg'>
                       <ArrowUpRightFromSquare width={16} height={16} />
                     </Button>
                   </div>
-                  <span className="text-5xl font-semibold leading-none tracking-tight">33</span>
+                  <span className="text-5xl font-semibold leading-none tracking-tight">11</span>
                   <div className="flex items-center gap-2">
-                    <CircleChevronDown className="text-secondary" width={16} height={16} />
-                    <span className="text-sm">abaixo do mês passado</span>
+                    <CircleChevronUp className="text-secondary" width={16} height={16} />
+                    <span className="text-sm">acima do mês passado</span>
                   </div>
                 </CardContent>
               </Card>
@@ -158,15 +160,15 @@ function Home() {
               <Card className="bg-zinc-100 border-none shadow-none rounded-[24px] p-6 text-secondary relative">
                 <CardContent className='space-y-4'>
                   <div className='flex justify-between'>
-                    <h4 className="font-semibold">Total de Projetos</h4>
-                    <Button className={"size-10 bg-secondary hover:bg-secondary/80"} size='lg'>
+                    <h4 className="font-semibold">Projetos Iniciados</h4>
+                    <Button className={"size-10 bg-secondary hover:bg-secondary/80 shadow-md shadow-black/40"} size='lg'>
                       <ArrowUpRightFromSquare width={16} height={16} />
                     </Button>
                   </div>
-                  <span className="text-5xl font-semibold leading-none tracking-tight">33</span>
+                  <span className="text-5xl font-semibold leading-none tracking-tight">2</span>
                   <div className="flex items-center gap-2">
-                    <CircleChevronDown className="text-secondary" width={16} height={16} />
-                    <span className="text-sm">abaixo do mês passado</span>
+                    <CircleInfo className="text-secondary" width={16} height={16} />
+                    <span className="text-sm">poucos projetos iniciados</span>
                   </div>
                 </CardContent>
               </Card>
@@ -175,15 +177,15 @@ function Home() {
               <Card className="bg-zinc-100 border-none shadow-none rounded-[24px] p-6 text-secondary relative">
                 <CardContent className='space-y-4'>
                   <div className='flex justify-between'>
-                    <h4 className="font-semibold">Total de Projetos</h4>
-                    <Button className={"size-10 bg-secondary hover:bg-secondary/80"} size='lg'>
+                    <h4 className="font-semibold">Projetos Pendentes</h4>
+                    <Button className={"size-10 bg-secondary hover:bg-secondary/80 shadow-md shadow-black/40"} size='lg'>
                       <ArrowUpRightFromSquare width={16} height={16} />
                     </Button>
                   </div>
-                  <span className="text-5xl font-semibold leading-none tracking-tight">33</span>
+                  <span className="text-5xl font-semibold leading-none tracking-tight">0</span>
                   <div className="flex items-center gap-2">
-                    <CircleChevronDown className="text-secondary" width={16} height={16} />
-                    <span className="text-sm">abaixo do mês passado</span>
+                    <CircleInfo className="text-secondary" width={16} height={16} />
+                    <span className="text-sm">nenhum projeto pendente</span>
                   </div>
                 </CardContent>
               </Card>
@@ -204,27 +206,27 @@ function Home() {
                         <span className="text-3xl font-bold">R$ 1.500</span>
                         <div className="flex items-center gap-1.5 text-sm font-semibold">
                           <CircleChevronDown className="text-secondary" width={16} height={16} />
-                          <span className='font-normal'>abaixo do mês passado</span>
+                          <span className='font-normal'>abaixo do mês anterior</span>
                         </div>
                       </div>
 
                       {/* Item 2: Gastos */}
                       <div className="flex flex-col shrink-0 bg-primary/50 border border-zinc-200/50 space-y-4 px-6 py-4 rounded-[24px]">
-                        <span className="font-semibold">Entrada</span>
-                        <span className="text-3xl font-bold">R$ 1.500</span>
+                        <span className="font-semibold">Gastos c/ ferramentas</span>
+                        <span className="text-3xl font-bold">R$ 380</span>
                         <div className="flex items-center gap-1.5 text-sm font-semibold">
-                          <CircleChevronDown className="text-secondary" width={16} height={16} />
-                          <span className='font-normal'>abaixo do mês passado</span>
+                          <CircleChevronUp className="text-secondary" width={16} height={16} />
+                          <span className='font-normal'>pouco acima do mês anterior</span>
                         </div>
                       </div>
 
                       {/* Item 3: A Receber */}
                       <div className="flex flex-col shrink-0 bg-primary/50 border border-zinc-200/50 space-y-4 px-6 py-4 rounded-[24px]">
-                        <span className="font-semibold">Entrada</span>
-                        <span className="text-3xl font-bold">R$ 1.500</span>
+                        <span className="font-semibold">A Receber</span>
+                        <span className="text-3xl font-bold">R$ 4.829</span>
                         <div className="flex items-center gap-1.5 text-sm font-semibold">
-                          <CircleChevronDown className="text-secondary" width={16} height={16} />
-                          <span className='font-normal'>abaixo do mês passado</span>
+                          <CircleChevronUp className="text-secondary" width={16} height={16} />
+                          <span className='font-normal'>acima do mês anterior</span>
                         </div>
                       </div>
                     </div>
@@ -298,7 +300,7 @@ function Home() {
                   <CardContent className="p-0 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-4 shrink-0">
                       <h3 className="font-semibold">Projetos</h3>
-                      <Button size='lg' className="size-9 rounded-full bg-secondary text-primary-light flex items-center justify-center cursor-pointer hover:opacity-90 border-none">
+                      <Button size='lg' className="size-9 rounded-full bg-secondary text-primary-light flex items-center justify-center cursor-pointer hover:bg-secondary hover:opacity-90 border-none shadow-md shadow-black/40">
                         <Plus width={16} height={16} />
                       </Button>
                     </div>
