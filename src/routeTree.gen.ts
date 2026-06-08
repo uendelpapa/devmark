@@ -9,38 +9,98 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TarefasRouteImport } from './routes/tarefas'
+import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProjetosNovoRouteImport } from './routes/projetos_.novo'
+import { Route as ProjetosIaRouteImport } from './routes/projetos_.ia'
 
+const TarefasRoute = TarefasRouteImport.update({
+  id: '/tarefas',
+  path: '/tarefas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosRoute = ProjetosRouteImport.update({
+  id: '/projetos',
+  path: '/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjetosNovoRoute = ProjetosNovoRouteImport.update({
+  id: '/projetos_/novo',
+  path: '/projetos/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjetosIaRoute = ProjetosIaRouteImport.update({
+  id: '/projetos_/ia',
+  path: '/projetos/ia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/projetos': typeof ProjetosRoute
+  '/tarefas': typeof TarefasRoute
+  '/projetos/ia': typeof ProjetosIaRoute
+  '/projetos/novo': typeof ProjetosNovoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/projetos': typeof ProjetosRoute
+  '/tarefas': typeof TarefasRoute
+  '/projetos/ia': typeof ProjetosIaRoute
+  '/projetos/novo': typeof ProjetosNovoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/projetos': typeof ProjetosRoute
+  '/tarefas': typeof TarefasRoute
+  '/projetos_/ia': typeof ProjetosIaRoute
+  '/projetos_/novo': typeof ProjetosNovoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/projetos' | '/tarefas' | '/projetos/ia' | '/projetos/novo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/projetos' | '/tarefas' | '/projetos/ia' | '/projetos/novo'
+  id:
+    | '__root__'
+    | '/'
+    | '/projetos'
+    | '/tarefas'
+    | '/projetos_/ia'
+    | '/projetos_/novo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProjetosRoute: typeof ProjetosRoute
+  TarefasRoute: typeof TarefasRoute
+  ProjetosIaRoute: typeof ProjetosIaRoute
+  ProjetosNovoRoute: typeof ProjetosNovoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tarefas': {
+      id: '/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof TarefasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos': {
+      id: '/projetos'
+      path: '/projetos'
+      fullPath: '/projetos'
+      preLoaderRoute: typeof ProjetosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +108,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projetos_/novo': {
+      id: '/projetos_/novo'
+      path: '/projetos/novo'
+      fullPath: '/projetos/novo'
+      preLoaderRoute: typeof ProjetosNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projetos_/ia': {
+      id: '/projetos_/ia'
+      path: '/projetos/ia'
+      fullPath: '/projetos/ia'
+      preLoaderRoute: typeof ProjetosIaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProjetosRoute: ProjetosRoute,
+  TarefasRoute: TarefasRoute,
+  ProjetosIaRoute: ProjetosIaRoute,
+  ProjetosNovoRoute: ProjetosNovoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
