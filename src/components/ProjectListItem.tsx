@@ -3,21 +3,23 @@ import { Avatar, Button } from '@heroui/react'
 import { FolderArrowRight } from '@gravity-ui/icons'
 
 interface ProjectListItemProps {
+  id: string
   name: string
   date: string
   avatarUrl?: string
-  onAction?: (name: string) => void
+  onAction?: (id: string) => void
 }
 
 export const ProjectListItem = memo(function ProjectListItem({
+  id,
   name,
   date,
   avatarUrl = 'https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/blue.jpg',
   onAction
 }: ProjectListItemProps) {
   const handleActionClick = useCallback(() => {
-    onAction?.(name)
-  }, [onAction, name])
+    onAction?.(id)
+  }, [onAction, id])
 
   return (
     <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0">

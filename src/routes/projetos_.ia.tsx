@@ -1,7 +1,4 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Sidebar } from '../components/Sidebar'
-import { Header } from '../components/Header'
-import { TimerProvider } from '../components/TimerTracker'
 import { Button } from '@heroui/react'
 import { ChevronLeft, Sparkles, Microphone, ArrowRight, Paperclip } from '@gravity-ui/icons'
 
@@ -13,12 +10,6 @@ function ProjetoIA() {
   const navigate = useNavigate()
 
   return (
-    <TimerProvider>
-      <div className="flex h-screen w-screen bg-backpage font-sans overflow-hidden select-none">
-        <Sidebar />
-        <div className="flex-1 flex flex-col px-4.5 py-2.25 gap-2 h-full min-w-0">
-          <Header />
-          
           <div className="bg-white rounded-[24px] p-8 overflow-y-auto min-w-0 flex-1 scrollbar-none flex flex-col">
             {/* Cabeçalho da página */}
             <div className="flex items-center justify-between mb-8 w-full">
@@ -109,8 +100,5 @@ function ProjetoIA() {
 
             </div>
           </div>
-        </div>
-      </div>
-    </TimerProvider>
   )
 }

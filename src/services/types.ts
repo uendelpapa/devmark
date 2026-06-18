@@ -1,0 +1,196 @@
+// --- ERD Models matching shared structures ---
+
+export interface Client {
+  id: string
+  name: string
+  company_name: string
+  document: string
+  email: string
+  phone: string
+  status: 'LEAD' | 'NEGOTIATING' | 'ACTIVE' | 'INACTIVE' | 'LOST'
+  preferred_communication: 'WHATSAPP' | 'EMAIL' | 'PHONE' | 'MEETING'
+  preferred_payment_method: 'PIX' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'CASH'
+  created_at: string
+  updated_at: string
+}
+
+export interface Project {
+  id: string
+  client_id: string
+  name: string
+  description?: string
+  area: 'MARKETING' | 'DEVELOPER'
+  status: 'PLANNING' | 'IN_PROGRESS' | 'WAITING_CLIENT' | 'REVIEW' | 'COMPLETED' | 'CANCELED'
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+  project_value: number
+  amount_received: number
+  amount_pending: number
+  estimated_hours?: number
+  worked_hours?: number
+  expected_delivery_date?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Payment {
+  id: string
+  project_id: string
+  amount: number
+  due_date: string
+  payment_date?: string
+  payment_method?: 'PIX' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'CASH'
+  status: 'PENDING' | 'OVERDUE' | 'PAID' | 'CANCELED'
+  notes?: string
+  created_at: string
+}
+
+export interface Subtask {
+  id: string
+  task_id: string
+  text: string
+  completed: boolean
+  created_at?: string
+  updated_at?: string
+}
+
+export interface Task {
+  id: string
+  project_id: string
+  title: string
+  description?: string
+  status: 'PENDING' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELED'
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+  estimated_hours?: number
+  worked_hours?: number
+  due_date?: string
+  tags?: string[]
+  subtasks?: Subtask[]
+  created_at: string
+}
+
+export interface TimeEntry {
+  id: string
+  project_id: string
+  task_id: string
+  description?: string
+  start_time: string
+  end_time?: string
+  duration?: number
+  created_at: string
+}
+
+
+export interface ProjectExpense {
+  id: string
+  project_id: string
+  title: string
+  description?: string
+  category: 'AI' | 'SOFTWARE' | 'DOMAIN' | 'HOSTING' | 'DESIGN' | 'ADS' | 'FREELANCER' | 'OTHER'
+  value: number
+  created_at: string
+}
+
+export interface TaskExpense {
+  id: string
+  task_id: string
+  title: string
+  category: 'AI' | 'SOFTWARE' | 'DOMAIN' | 'HOSTING' | 'DESIGN' | 'ADS' | 'FREELANCER' | 'OTHER'
+  value: number
+  created_at: string
+}
+
+// --- API Response Types (clean backend contracts) ---
+
+export interface ProjectSummary {
+  total: number
+  completed: number
+  in_progress: number
+  planning: number
+}
+
+export interface FinanceSummary {
+  total_paid: number
+  total_pending: number
+  total_expenses: number
+}
+
+export interface ProjectListItem {
+  id: string
+  name: string
+  expected_delivery_date: string
+}
+
+export interface PendingPaymentItem {
+  payment_id: string
+  amount: number
+  due_date: string
+  client_name: string
+  client_email: string
+}
+
+export interface DashboardData {
+  project_summary: ProjectSummary
+  finance_summary: FinanceSummary
+  projects: ProjectListItem[]
+  pending_payments: PendingPaymentItem[]
+  weekly_work_level: number[]
+}
+
+export interface ProjectCardData {
+  id: string
+  name: string
+  description: string
+  status: Project['status']
+  priority: Project['priority']
+  expected_delivery_date: string
+  client_name: string
+  client_email: string
+}
+
+export interface ProjectDetails extends Project {
+  client: { id: string; name: string; email: string }
+  tasks: Task[]
+  payments: Payment[]
+  project_expenses: ProjectExpense[]
+}
+
+export interface ClientWithPaymentStatus extends Client {
+  hasPendingPayment: boolean
+}
+
+export interface TaskCardData extends Task {
+  taskId: string
+  dueDate: string
+  description: string
+  client: { name: string; email: string; avatar?: string }
+}
+
+export interface CreateTaskData {
+  project_id: string
+  title: string
+  description?: string
+  status?: Task['status']
+  priority?: Task['priority']
+  estimated_hours?: number
+  due_date?: string
+  tags?: string[]
+  subtasks?: { text: string; completed?: boolean }[]
+}
+
+export interface CreatePaymentData {
+  project_id: string
+  amount: number
+  due_date: string
+  payment_date?: string
+  payment_method?: Payment['payment_method']
+  status?: Payment['status']
+  notes?: string
+}
+
+export interface CreateProjectExpenseData {
+  project_id: string
+  title: string
+  description?: string
+  category: ProjectExpense['category']
+  value: number
+}

@@ -1,6 +1,6 @@
-import { memo } from 'react'
+import { memo, useState, useRef, useEffect } from 'react'
 import { Avatar, Button } from '@heroui/react'
-import { EllipsisVertical, Calendar, CircleExclamationFill, TriangleExclamationFill, CircleFill } from '@gravity-ui/icons'
+import { Calendar, Clock, Ellipsis, PencilToLine, Layers, TrashBin } from '@gravity-ui/icons'
 
 interface ProjectCardProps {
   id: string
@@ -11,6 +11,10 @@ interface ProjectCardProps {
   expected_delivery_date: string
   client_name: string
   client_email: string
+  onPress?: (id: string) => void
+  onEdit?: (id: string) => void
+  onChangeStatus?: (id: string, currentStatus: string) => void
+  onDelete?: (id: string, name: string) => void
 }
 
 const PRIORITY_LABELS: Record<ProjectCardProps['priority'], string> = {
@@ -21,73 +25,125 @@ const PRIORITY_LABELS: Record<ProjectCardProps['priority'], string> = {
 }
 
 export const ProjectCard = memo(function ProjectCard({
+  id,
   name,
   description,
   status,
   priority,
   expected_delivery_date,
   client_name,
-  client_email
+  client_email,
+  onPress,
+  onEdit,
+  onChangeStatus,
+  onDelete
 }: ProjectCardProps) {
   const isCompleted = status === 'COMPLETED'
   const priorityLabel = PRIORITY_LABELS[priority]
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false)
+      }
+    }
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMenuOpen])
 
   return (
     <div
-      className={`rounded-[20px] p-5 flex flex-col gap-3 transition-all hover:shadow-md ${
-        isCompleted ? 'bg-primary/50' : 'bg-zinc-100'
-      }`}
+      onClick={() => onPress?.(id)}
+      className={`rounded-[16px] p-4 flex flex-col gap-4 transition-all hover:shadow-md cursor-pointer ${isCompleted ? 'bg-primary/50' : 'bg-zinc-100'
+        }`}
     >
       {/* Header: Title + Menu */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col gap-1 min-w-0">
-          <h4 className="font-semibold text-secondary text-[15px] leading-tight truncate">
+          <h4 className="font-semibold text-secondary text-lg leading-tight truncate">
             {name}
           </h4>
-          <p className="text-secondary/60 text-[13px] leading-tight truncate">
+          <p className="text-secondary/60 text-sm leading-tight truncate">
             {description}
           </p>
         </div>
-        <Button
-          size="sm"
-          className="size-7 min-w-7 bg-transparent hover:bg-secondary/5 border-none rounded-full p-0 flex items-center justify-center shrink-0"
-          aria-label="Opções do projeto"
+        <div 
+          className="relative"
+          ref={menuRef}
+          onClick={(e) => e.stopPropagation()} // Prevent card click when clicking inside menu area
         >
-          <EllipsisVertical className="text-secondary/60" width={16} height={16} />
-        </Button>
+          <Button
+            size="sm"
+            className="size-7 min-w-7 bg-transparent hover:bg-secondary/5 border-none rounded-full p-0 flex items-center justify-center shrink-0"
+            aria-label="Opções do projeto"
+            onPress={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <Ellipsis className="text-zinc-700" width={16} height={16} />
+          </Button>
+
+          {isMenuOpen && (
+            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-[16px] shadow-lg border border-zinc-100 py-2 z-50 flex flex-col">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onEdit?.(id); }}
+                className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent"
+              >
+                <PencilToLine width={16} /> Editar
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onChangeStatus?.(id, status); }}
+                className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent"
+              >
+                <Layers width={16} /> Mudar Status
+              </button>
+              <div className="h-[1px] bg-zinc-100 my-1 w-full" />
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onDelete?.(id, name); }}
+                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors cursor-pointer font-medium border-none bg-transparent"
+              >
+                <TrashBin width={16} /> Excluir
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Tags de status e prioridade */}
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="flex items-center gap-1 text-[12px] font-medium text-secondary bg-white/60 rounded-full px-2.5 py-1">
-          <CircleFill className="text-secondary/70" width={10} height={10} />
+        <span className="flex items-center gap-1 text-xs font-medium text-secondary bg-primary/50 rounded-full px-1.5 py-0.5">
+          <Clock className='size-3' />
           {priorityLabel}
         </span>
-        
+
         {(() => {
           if (isCompleted || !expected_delivery_date) return null;
-          
+
           const [day, month] = expected_delivery_date.split('/');
           if (!day || !month) return null;
 
           const deliveryDate = new Date(new Date().getFullYear(), parseInt(month, 10) - 1, parseInt(day, 10));
           const today = new Date();
           today.setHours(0, 0, 0, 0);
-          
+
           const diffTime = deliveryDate.getTime() - today.getTime();
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
           if (diffDays <= 3) {
             return (
-              <span className="flex items-center gap-1 text-[12px] font-medium text-red-700 bg-red-100 rounded-full px-2.5 py-1">
-                <CircleExclamationFill className="text-red-600" width={12} height={12} />
+              <span className="flex items-center gap-1 text-xs font-medium text-red-700 bg-red-100 rounded-full px-2.5 py-1">
+                <Clock className='size-4' />
                 urgente
               </span>
             );
           } else if (diffDays <= 20) {
             return (
-              <span className="flex items-center gap-1 text-[12px] font-medium text-orange-700 bg-orange-100 rounded-full px-2.5 py-1">
-                <TriangleExclamationFill className="text-orange-600" width={12} height={12} />
+              <span className="flex items-center gap-1 text-xs font-medium text-orange-700 bg-orange-100 rounded-full px-2.5 py-1">
+                <Clock className='size-4' />
                 atenção
               </span>
             );
@@ -97,9 +153,9 @@ export const ProjectCard = memo(function ProjectCard({
       </div>
 
       {/* Footer: Client + Due Date */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-end justify-between gap-2">
         {/* Client Info */}
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <Avatar className="size-7 shrink-0">
             <Avatar.Image
               alt={client_name}
@@ -108,10 +164,10 @@ export const ProjectCard = memo(function ProjectCard({
             <Avatar.Fallback>{client_name.charAt(0)}</Avatar.Fallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="text-[12px] font-semibold text-secondary leading-tight truncate">
+            <span className="text-xs text-secondary leading-tight truncate">
               {client_name}
             </span>
-            <span className="text-[11px] text-secondary/60 leading-tight truncate">
+            <span className="text-xs text-secondary/50 leading-tight truncate">
               {client_email}
             </span>
           </div>
@@ -119,8 +175,8 @@ export const ProjectCard = memo(function ProjectCard({
 
         {/* Due Date */}
         <div className="flex items-center gap-1 shrink-0">
-          <Calendar className="text-secondary/50" width={12} height={12} />
-          <span className="text-[11px] text-secondary/60 font-medium whitespace-nowrap">
+          <Calendar className="text-secondary size-4" />
+          <span className="text-xs text-secondary font-medium whitespace-nowrap">
             Due Date {expected_delivery_date}
           </span>
         </div>

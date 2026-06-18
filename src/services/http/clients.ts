@@ -1,0 +1,14 @@
+import { api } from '../../lib/axios'
+import type { Client, ClientWithPaymentStatus } from '../types'
+
+export async function fetchClients(): Promise<ClientWithPaymentStatus[]> {
+  const response = await api.get('/clients')
+  return response.data.data
+}
+
+export async function createClient(
+  clientData: Omit<Client, 'id' | 'created_at' | 'updated_at'>
+): Promise<Client> {
+  const response = await api.post('/clients', clientData)
+  return response.data
+}

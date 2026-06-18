@@ -1,13 +1,15 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button, TextField, Label, Input, FieldError, Select, ListBox, Checkbox, Description } from '@heroui/react'
-import { ChevronLeft, ChevronRight, Plus, Sparkles } from '@gravity-ui/icons'
-import { useState } from 'react'
+import { Button, TextField, Label, Input, FieldError, Select, ListBox } from '@heroui/react'
+import { ChevronLeft, ChevronRight, FloppyDisk } from '@gravity-ui/icons'
+import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { fetchProjectDetails, updateProject } from '../services/api'
 
-export const Route = createFileRoute('/projetos_/novo')({
-  component: NovoProjeto
+export const Route = createFileRoute('/projetos_/$projectId/editar')({
+  component: EditarProjeto
 })
 
 // Schema de validação
@@ -23,8 +25,7 @@ const projectSchema = z.object({
   expected_delivery_date: z.string().min(1, 'Obrigatório'),
   estimated_hours: z.number().min(1, 'Inválido'),
   priority: z.string().min(1, 'Obrigatório'),
-  status: z.string().min(1, 'Obrigatório'),
-  create_tasks_ai: z.boolean()
+  status: z.string().min(1, 'Obrigatório')
 })
 
 type ProjectFormValues = z.infer<typeof projectSchema>
@@ -33,15 +34,25 @@ const inputClass = "w-full bg-zinc-100 rounded-[12px] px-3 py-2 text-[14px] text
 const labelClass = "text-[14px] font-semibold text-secondary block"
 const errorClass = "text-[12px] text-red-500 mt-1 block"
 
-function NovoProjeto() {
+function EditarProjeto() {
+  const { projectId } = Route.useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 6
+
+  const { data: project, isLoading } = useQuery({
+    queryKey: ['projectDetails', projectId],
+    queryFn: () => fetchProjectDetails(projectId),
+    enabled: !!projectId
+  })
 
   const {
     control,
     handleSubmit,
-    trigger
+    trigger,
+    reset
   } = useForm({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -56,19 +67,47 @@ function NovoProjeto() {
       expected_delivery_date: '',
       estimated_hours: 0,
       priority: '',
-      status: '',
-      create_tasks_ai: false
+      status: ''
     }
   })
 
-  // Define os campos que devem ser validados em cada etapa
+  useEffect(() => {
+    if (project) {
+      reset({
+        client_id: project.client_id || '',
+        name: project.name || '',
+        area: project.area || 'MARKETING',
+        specialty: 'FRONTEND', // Adapte conforme backend
+        project_value: project.project_value || 0,
+        amount_received: project.amount_received || 0,
+        payment_status: 'PENDING', // Adapte
+        start_date: project.created_at ? project.created_at.split('T')[0] : '',
+        expected_delivery_date: project.expected_delivery_date ? project.expected_delivery_date.split('T')[0] : '',
+        estimated_hours: project.estimated_hours || 0,
+        priority: project.priority || 'MEDIUM',
+        status: project.status || 'PLANNING'
+      })
+    }
+  }, [project, reset])
+
+  const updateMutation = useMutation({
+    mutationFn: (data: any) => updateProject(projectId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      navigate({ to: '/projetos' })
+    }
+  })
+
+
   const stepFields: Record<number, (keyof ProjectFormValues)[]> = {
     1: ['client_id', 'name'],
     2: ['area', 'specialty'],
     3: ['project_value', 'amount_received', 'payment_status'],
     4: ['start_date', 'expected_delivery_date'],
     5: ['estimated_hours', 'priority'],
-    6: ['status', 'create_tasks_ai']
+    6: ['status']
   }
 
   const handleNext = async () => {
@@ -88,11 +127,9 @@ function NovoProjeto() {
   }
 
   const onSubmit = (data: ProjectFormValues) => {
-    console.log('Projeto Criado:', data)
-    navigate({ to: '/projetos' })
+    updateMutation.mutate(data)
   }
 
-  // Define títulos das etapas
   const stepTitles: Record<number, string> = {
     1: 'Informações Gerais',
     2: 'Área de Atuação',
@@ -102,9 +139,12 @@ function NovoProjeto() {
     6: 'Status'
   }
 
+  if (isLoading) {
+    return <div className="p-8 text-secondary">Carregando dados do projeto...</div>
+  }
+
   return (
     <div className="bg-white rounded-[24px] p-8 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none">
-      {/* Header do Wizard */}
       <div className="flex items-center gap-3 mb-8">
         <Button
           size="sm"
@@ -114,16 +154,14 @@ function NovoProjeto() {
           <ChevronLeft width={16} height={16} />
         </Button>
         <h1 className="text-2xl font-semibold tracking-tight text-secondary leading-none">
-          Novo Projeto
+          Editar Projeto
         </h1>
       </div>
 
-      {/* Subtítulo da Etapa */}
       <h2 className="text-[16px] font-semibold text-secondary mb-6">
         {stepTitles[currentStep]}
       </h2>
 
-      {/* Formulário */}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1">
         <div className="flex-1 max-w-3xl">
           {currentStep === 1 && (
@@ -148,14 +186,13 @@ function NovoProjeto() {
                       </Select.Trigger>
                       <Select.Popover>
                         <ListBox>
-                          <ListBox.Item id="c1" textValue="Bob Inc">
-                            Bob Inc
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
-                          <ListBox.Item id="c2" textValue="Fred Tech">
-                            Fred Tech
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
+                          <ListBox.Item id="c1" textValue="Bob Inc">Bob Inc</ListBox.Item>
+                          <ListBox.Item id="c2" textValue="Fred Tech">Fred Tech</ListBox.Item>
+                          {project?.client_id && (
+                            <ListBox.Item id={project.client_id} textValue={project.client?.name || project.client_id}>
+                              {project.client?.name || 'Cliente atual'}
+                            </ListBox.Item>
+                          )}
                         </ListBox>
                       </Select.Popover>
                       <FieldError className={errorClass}>{error?.message}</FieldError>
@@ -456,6 +493,9 @@ function NovoProjeto() {
                           <ListBox.Item id="PLANNING" textValue="Planejamento">Planejamento</ListBox.Item>
                           <ListBox.Item id="IN_PROGRESS" textValue="Em progresso">Em progresso</ListBox.Item>
                           <ListBox.Item id="WAITING_CLIENT" textValue="Aguardando cliente">Aguardando cliente</ListBox.Item>
+                          <ListBox.Item id="REVIEW" textValue="Revisão">Revisão</ListBox.Item>
+                          <ListBox.Item id="COMPLETED" textValue="Concluído">Concluído</ListBox.Item>
+                          <ListBox.Item id="CANCELED" textValue="Cancelado">Cancelado</ListBox.Item>
                         </ListBox>
                       </Select.Popover>
                       <FieldError className={errorClass}>{error?.message}</FieldError>
@@ -463,30 +503,6 @@ function NovoProjeto() {
                   )}
                 />
               </div>
-
-              <Controller
-                name="create_tasks_ai"
-                control={control}
-                render={({ field: { value, onChange }, fieldState: { error } }) => (
-                  <Checkbox
-                    isSelected={value}
-                    onChange={onChange}
-                    isInvalid={!!error}
-                    className="w-[60%]"
-                  >
-                    <Checkbox.Content>
-                      <Checkbox.Control>
-                        <Checkbox.Indicator />
-                      </Checkbox.Control>
-                      Criar tarefas com IA
-                    </Checkbox.Content>
-                    <Description className="text-secondary/60 text-[12px]">
-                      Crie tarefas baseadas na descrição do projeto.
-                    </Description>
-                    <FieldError>{error?.message}</FieldError>
-                  </Checkbox>
-                )}
-              />
             </div>
           )}
         </div>
@@ -528,23 +544,14 @@ function NovoProjeto() {
               type="submit"
               className="bg-secondary hover:bg-primary hover:text-secondary text-white font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all durantion-200"
               size='lg'
+              isDisabled={updateMutation.isPending}
             >
-              <Plus />
-              Criar Projeto
+              <FloppyDisk />
+              Salvar Alterações
             </Button>
           )}
-
-          <Button
-            className="bg-primary/50 hover:bg-primary text-secondary font-semibold rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-colors duration-200"
-            onPress={() => navigate({ to: '/projetos/ia' })}
-            size='lg'
-          >
-            <Sparkles />
-            Criar com IA
-          </Button>
         </div>
       </form>
-
     </div>
   )
 }
