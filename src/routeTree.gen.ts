@@ -13,6 +13,7 @@ import { Route as TarefasRouteImport } from './routes/tarefas'
 import { Route as ProjetosRouteImport } from './routes/projetos'
 import { Route as ClientesRouteImport } from './routes/clientes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TarefasTaskIdRouteImport } from './routes/tarefas_.$taskId'
 import { Route as ProjetosNovoRouteImport } from './routes/projetos_.novo'
 import { Route as ProjetosIaRouteImport } from './routes/projetos_.ia'
 import { Route as ProjetosProjectIdRouteImport } from './routes/projetos_.$projectId'
@@ -37,6 +38,11 @@ const ClientesRoute = ClientesRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TarefasTaskIdRoute = TarefasTaskIdRouteImport.update({
+  id: '/tarefas_/$taskId',
+  path: '/tarefas/$taskId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjetosNovoRoute = ProjetosNovoRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/projetos/$projectId': typeof ProjetosProjectIdRouteWithChildren
   '/projetos/ia': typeof ProjetosIaRoute
   '/projetos/novo': typeof ProjetosNovoRoute
+  '/tarefas/$taskId': typeof TarefasTaskIdRoute
   '/projetos/$projectId/editar': typeof ProjetosProjectIdEditarRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/projetos/$projectId': typeof ProjetosProjectIdRouteWithChildren
   '/projetos/ia': typeof ProjetosIaRoute
   '/projetos/novo': typeof ProjetosNovoRoute
+  '/tarefas/$taskId': typeof TarefasTaskIdRoute
   '/projetos/$projectId/editar': typeof ProjetosProjectIdEditarRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/projetos_/$projectId': typeof ProjetosProjectIdRouteWithChildren
   '/projetos_/ia': typeof ProjetosIaRoute
   '/projetos_/novo': typeof ProjetosNovoRoute
+  '/tarefas_/$taskId': typeof TarefasTaskIdRoute
   '/projetos_/$projectId/editar': typeof ProjetosProjectIdEditarRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/projetos/$projectId'
     | '/projetos/ia'
     | '/projetos/novo'
+    | '/tarefas/$taskId'
     | '/projetos/$projectId/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/projetos/$projectId'
     | '/projetos/ia'
     | '/projetos/novo'
+    | '/tarefas/$taskId'
     | '/projetos/$projectId/editar'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/projetos_/$projectId'
     | '/projetos_/ia'
     | '/projetos_/novo'
+    | '/tarefas_/$taskId'
     | '/projetos_/$projectId/editar'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   ProjetosProjectIdRoute: typeof ProjetosProjectIdRouteWithChildren
   ProjetosIaRoute: typeof ProjetosIaRoute
   ProjetosNovoRoute: typeof ProjetosNovoRoute
+  TarefasTaskIdRoute: typeof TarefasTaskIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tarefas_/$taskId': {
+      id: '/tarefas_/$taskId'
+      path: '/tarefas/$taskId'
+      fullPath: '/tarefas/$taskId'
+      preLoaderRoute: typeof TarefasTaskIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projetos_/novo': {
@@ -234,6 +254,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjetosProjectIdRoute: ProjetosProjectIdRouteWithChildren,
   ProjetosIaRoute: ProjetosIaRoute,
   ProjetosNovoRoute: ProjetosNovoRoute,
+  TarefasTaskIdRoute: TarefasTaskIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

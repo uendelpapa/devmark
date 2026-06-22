@@ -81,10 +81,11 @@ interface KanbanColumnProps {
   headerBg: string
   flagColor: string
   onTaskClick?: (task: Task) => void
+  onAddTask?: (status: Task['status']) => void
   wasDragging: React.MutableRefObject<boolean>
 }
 
-function KanbanColumn({ id, title, tasks, headerBg, flagColor, onTaskClick, wasDragging }: KanbanColumnProps) {
+function KanbanColumn({ id, title, tasks, headerBg, flagColor, onTaskClick, onAddTask, wasDragging }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   return (
@@ -102,7 +103,10 @@ function KanbanColumn({ id, title, tasks, headerBg, flagColor, onTaskClick, wasD
             {tasks.length} Tarefas
           </span>
         </div>
-        <button className="size-8 bg-secondary text-white rounded-full flex items-center justify-center hover:bg-[#334621] transition-colors cursor-pointer">
+        <button 
+          onClick={() => onAddTask?.(id)}
+          className="size-8 bg-secondary text-white rounded-full flex items-center justify-center hover:bg-[#334621] transition-colors cursor-pointer"
+        >
           <Plus className="size-4" />
         </button>
       </div>
@@ -121,9 +125,10 @@ interface KanbanViewProps {
   completedTasks: Task[]
   onTaskStatusChange?: (taskId: string, newStatus: Task['status']) => void
   onTaskClick?: (task: Task) => void
+  onAddTask?: (status: Task['status']) => void
 }
 
-export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, completedTasks, onTaskStatusChange, onTaskClick }: KanbanViewProps) {
+export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, completedTasks, onTaskStatusChange, onTaskClick, onAddTask }: KanbanViewProps) {
   const wasDragging = useRef(false)
 
   const sensors = useSensors(
@@ -151,10 +156,10 @@ export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, complet
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-4 gap-6 flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pb-4">
-        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-800" onTaskClick={onTaskClick} wasDragging={wasDragging} />
-        <KanbanColumn id="IN_PROGRESS" title="Doing" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-600" onTaskClick={onTaskClick} wasDragging={wasDragging} />
-        <KanbanColumn id="REVIEW" title="Review" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-600" onTaskClick={onTaskClick} wasDragging={wasDragging} />
-        <KanbanColumn id="COMPLETED" title="Done" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} wasDragging={wasDragging} />
+        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-800" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="IN_PROGRESS" title="Doing" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="REVIEW" title="Review" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="COMPLETED" title="Done" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
       </div>
     </DndContext>
   )

@@ -4,8 +4,7 @@ import { Xmark, ArrowUpRightFromSquare, Ellipsis, Plus, TrashBin, Flag } from '@
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchTasks } from '../services/api'
 import type { Task } from '../services/api'
-import { Checkbox, Select, ListBox, Calendar } from '@heroui/react'
-import { parseDate } from '@internationalized/date'
+import { Checkbox, Select, ListBox } from '@heroui/react'
 
 interface Subtask {
   id: string
@@ -19,6 +18,7 @@ interface CreateTaskModalProps {
   onSubmit: (data: CreateTaskPayload) => void
   isPending?: boolean
   error?: string | null
+  statusPreset?: Task['status']
 }
 
 export interface CreateTaskPayload {
@@ -56,7 +56,7 @@ const STATUS_CHIP_ACTIVE: Record<Task['status'], string> = {
   CANCELED: 'bg-red-100 text-red-600',
 }
 
-export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, error = null }: CreateTaskModalProps) {
+export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, error = null, statusPreset }: CreateTaskModalProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Task['priority']>('MEDIUM')
@@ -69,15 +69,6 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
   const [subtasks, setSubtasks] = useState<Subtask[]>([])
   const [subtaskInput, setSubtaskInput] = useState('')
   const [isTagSuggestionsOpen, setIsTagSuggestionsOpen] = useState(false)
-
-  const getCalendarValue = (dateStr: string) => {
-    if (!dateStr) return null
-    try {
-      return parseDate(dateStr.substring(0, 10))
-    } catch (e) {
-      return null
-    }
-  }
 
   const { data: tasks = [] } = useQuery<any[]>({
     queryKey: ['tasks'],
@@ -108,8 +99,10 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
       setDueDate('')
       setTags([])
       setSubtasks([])
+    } else if (statusPreset) {
+      setStatus(statusPreset)
     }
-  }, [isOpen])
+  }, [isOpen, statusPreset])
 
   const { data: projects = [] } = useQuery({
     queryKey: ['projects'],
@@ -260,29 +253,14 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
             </div>
 
             {/* Data de Entrega */}
-            <div className="flex flex-col gap-1.5">
-              <span className="text-secondary/50 text-sm font-medium">Data de entrega</span>
-              <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 flex justify-center">
-                <Calendar 
-                  aria-label="Data de entrega"
-                  value={getCalendarValue(dueDate)}
-                  onChange={(date) => setDueDate(date ? date.toString() : '')}
-                >
-                  <Calendar.Header>
-                    <Calendar.Heading />
-                    <Calendar.NavButton slot="previous" />
-                    <Calendar.NavButton slot="next" />
-                  </Calendar.Header>
-                  <Calendar.Grid>
-                    <Calendar.GridHeader>
-                      {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
-                    </Calendar.GridHeader>
-                    <Calendar.GridBody>
-                      {(date) => <Calendar.Cell date={date} />}
-                    </Calendar.GridBody>
-                  </Calendar.Grid>
-                </Calendar>
-              </div>
+            <div className="flex items-center gap-4">
+              <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium">Data de entrega:</span>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="bg-zinc-100 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-secondary text-sm font-medium outline-none flex-1 focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
+              />
             </div>
 
             {/* Status */}

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Xmark, ArrowUpRightFromSquare, Ellipsis, FloppyDisk, TrashBin, Flag } from '@gravity-ui/icons'
+import { useNavigate } from '@tanstack/react-router'
 
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchTasks } from '../services/api'
 import type { Task, TaskCardData } from '../services/api'
-import { Checkbox, Select, ListBox, Calendar } from '@heroui/react'
-import { parseDate } from '@internationalized/date'
+import { Checkbox, Select, ListBox } from '@heroui/react'
 
 interface Subtask {
   id: string
@@ -59,6 +59,7 @@ const STATUS_CHIP_ACTIVE: Record<Task['status'], string> = {
 }
 
 export function EditTaskModal({ isOpen, onClose, onSubmit, onDelete, task, isPending = false, error = null }: EditTaskModalProps) {
+  const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Task['priority']>('MEDIUM')
@@ -74,15 +75,6 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, onDelete, task, isPen
   // Menu de opções
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isTagSuggestionsOpen, setIsTagSuggestionsOpen] = useState(false)
-
-  const getCalendarValue = (dateStr: string) => {
-    if (!dateStr) return null
-    try {
-      return parseDate(dateStr.substring(0, 10))
-    } catch (e) {
-      return null
-    }
-  }
 
   const { data: tasks = [] } = useQuery<any[]>({
     queryKey: ['tasks'],
@@ -194,6 +186,12 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, onDelete, task, isPen
               <Xmark className="size-4 text-secondary/60" />
             </button>
             <button
+              onClick={() => {
+                if (task) {
+                  navigate({ to: '/tarefas/$taskId', params: { taskId: task.id } })
+                  onClose()
+                }
+              }}
               className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
             >
               <ArrowUpRightFromSquare className="size-4 text-secondary/60" />
@@ -289,29 +287,14 @@ export function EditTaskModal({ isOpen, onClose, onSubmit, onDelete, task, isPen
             </div>
 
             {/* Data de Entrega */}
-            <div className="flex flex-col gap-1.5">
-              <span className="text-secondary/50 text-sm font-medium">Data de entrega</span>
-              <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 flex justify-center">
-                <Calendar 
-                  aria-label="Data de entrega"
-                  value={getCalendarValue(dueDate)}
-                  onChange={(date) => setDueDate(date ? date.toString() : '')}
-                >
-                  <Calendar.Header>
-                    <Calendar.Heading />
-                    <Calendar.NavButton slot="previous" />
-                    <Calendar.NavButton slot="next" />
-                  </Calendar.Header>
-                  <Calendar.Grid>
-                    <Calendar.GridHeader>
-                      {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
-                    </Calendar.GridHeader>
-                    <Calendar.GridBody>
-                      {(date) => <Calendar.Cell date={date} />}
-                    </Calendar.GridBody>
-                  </Calendar.Grid>
-                </Calendar>
-              </div>
+            <div className="flex items-center gap-4">
+              <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium">Data de entrega:</span>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="bg-zinc-100 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-secondary text-sm font-medium outline-none flex-1 focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
+              />
             </div>
 
             {/* Status */}

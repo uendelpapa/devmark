@@ -1,5 +1,6 @@
-import { Modal, Button, Select, ListBox } from '@heroui/react'
+import { Modal, Button } from '@heroui/react'
 import { useState, useEffect } from 'react'
+import { Check } from '@gravity-ui/icons'
 
 interface DeleteProjectModalProps {
   isOpen: boolean;
@@ -57,12 +58,12 @@ interface ChangeProjectStatusModalProps {
 }
 
 const PROJECT_STATUSES = [
-  { key: 'PLANNING', label: 'Planejamento' },
-  { key: 'IN_PROGRESS', label: 'Em Andamento' },
-  { key: 'WAITING_CLIENT', label: 'Aguardando Cliente' },
-  { key: 'REVIEW', label: 'Revisão' },
-  { key: 'COMPLETED', label: 'Concluído' },
-  { key: 'CANCELED', label: 'Cancelado' },
+  { key: 'PLANNING', label: 'Planejamento', dotColor: 'bg-blue-500' },
+  { key: 'IN_PROGRESS', label: 'Em Andamento', dotColor: 'bg-amber-500' },
+  { key: 'WAITING_CLIENT', label: 'Aguardando Cliente', dotColor: 'bg-purple-500' },
+  { key: 'REVIEW', label: 'Revisão', dotColor: 'bg-indigo-500' },
+  { key: 'COMPLETED', label: 'Concluído', dotColor: 'bg-emerald-500' },
+  { key: 'CANCELED', label: 'Cancelado', dotColor: 'bg-rose-500' },
 ];
 
 export function ChangeProjectStatusModal({ isOpen, onClose, onConfirm, currentStatus, isPending }: ChangeProjectStatusModalProps) {
@@ -78,50 +79,54 @@ export function ChangeProjectStatusModal({ isOpen, onClose, onConfirm, currentSt
 
   return (
     <Modal isOpen={true} onOpenChange={(open) => !open && onClose()}>
-      <Modal.Backdrop className="fixed inset-0 bg-black/40 z-[100] backdrop-blur-sm" />
-      <Modal.Container className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md bg-white rounded-[24px] z-[101] shadow-2xl">
+      <Modal.Backdrop className="fixed inset-0 bg-black/25 z-[100] backdrop-blur-xs" />
+      <Modal.Container className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-sm bg-white rounded-[24px] z-[101] shadow-xl border border-zinc-100">
         <Modal.Dialog className="outline-none">
-          <Modal.Header className="flex flex-col gap-1 p-6 border-b border-zinc-100">
-            <h2 className="text-xl font-bold text-secondary">Alterar Status</h2>
+          <Modal.Header className="flex flex-col gap-1 p-5 border-b border-zinc-100">
+            <h2 className="text-lg font-bold text-secondary">Alterar Status</h2>
           </Modal.Header>
-          <Modal.Body className="p-6 overflow-visible">
-            <Select
-              selectedKey={status}
-              onSelectionChange={(key) => {
-                setStatus(key as string);
-              }}
-              className="flex flex-col gap-1.5 w-full"
-            >
-              <Select.Trigger className="bg-white border border-zinc-200 rounded-xl px-3 py-2 flex items-center justify-between text-secondary font-medium">
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover>
-                <ListBox>
-                  {PROJECT_STATUSES.map((item) => (
-                    <ListBox.Item id={item.key} textValue={item.label} className="text-secondary">
-                      {item.label}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
-            </Select>
+          <Modal.Body className="p-5 flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              {PROJECT_STATUSES.map((item) => {
+                const isSelected = status === item.key;
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    onClick={() => setStatus(item.key)}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer bg-transparent text-left outline-none border-none ${
+                      isSelected
+                        ? 'bg-zinc-100 text-secondary'
+                        : 'text-secondary/70 hover:bg-zinc-50 hover:text-secondary'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className={`size-2.5 rounded-full ${item.dotColor} shrink-0`} />
+                      <span>{item.label}</span>
+                    </div>
+                    {isSelected && (
+                      <Check className="size-4 text-secondary stroke-[2.5]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </Modal.Body>
-          <Modal.Footer className="p-6 border-t border-zinc-100 flex justify-end gap-3">
+          <Modal.Footer className="p-5 border-t border-zinc-100 flex justify-end gap-2.5">
             <Button
               onPress={onClose}
               variant="ghost"
-              className="bg-zinc-100 text-secondary font-bold hover:bg-zinc-200"
+              className="bg-zinc-100 text-secondary font-bold hover:bg-zinc-200 h-9 px-4 rounded-xl text-xs border-none"
               isDisabled={isPending}
             >
               Cancelar
             </Button>
             <Button
               onPress={() => onConfirm(status)}
-              className="bg-primary/50 text-secondary hover:bg-primary font-bold"
+              className="bg-primary/50 text-secondary hover:bg-primary font-bold h-9 px-4 rounded-xl text-xs border-none"
               isDisabled={isPending}
             >
-              Salvar Status
+              Salvar
             </Button>
           </Modal.Footer>
         </Modal.Dialog>

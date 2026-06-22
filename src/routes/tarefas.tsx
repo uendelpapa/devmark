@@ -26,8 +26,14 @@ const viewButtons: { key: ViewMode; label: string; icon: typeof LayoutHeaderCell
 function Tarefas() {
   const [view, setView] = useState<ViewMode>('table')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createTaskStatusPreset, setCreateTaskStatusPreset] = useState<Task['status'] | undefined>(undefined)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const { activeTaskId, setActiveTaskId, startTimer, pauseTimer } = useTimer()
+
+  const handleAddTaskClick = (status?: Task['status']) => {
+    setCreateTaskStatusPreset(status)
+    setIsCreateModalOpen(true)
+  }
 
   const queryClient = useQueryClient()
   const { data: tasks = [] } = useQuery({
@@ -124,7 +130,7 @@ function Tarefas() {
         <div className="flex items-center gap-4">
           <button
             className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full border-none text-[14px] transition-colors flex items-center gap-2 px-5 h-10 cursor-pointer"
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => handleAddTaskClick()}
           >
             <Plus className="size-4" />
             Adicionar Tarefa
@@ -146,6 +152,7 @@ function Tarefas() {
           completedTasks={completedTasks} 
           onTaskStatusChange={handleTaskStatusChange} 
           onTaskClick={(task) => setEditingTask(task)}
+          onAddTask={(status) => handleAddTaskClick(status)}
         />
       )}
       {view === 'list' && (
@@ -170,6 +177,7 @@ function Tarefas() {
       {/* Create Task Modal */}
       <CreateTaskModal
         isOpen={isCreateModalOpen}
+        statusPreset={createTaskStatusPreset}
         onClose={() => {
           setIsCreateModalOpen(false)
           resetCreate()

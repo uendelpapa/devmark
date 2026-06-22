@@ -22,8 +22,8 @@ export const ProjectListItem = memo(function ProjectListItem({
   }, [onAction, id])
 
   return (
-    <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0 w-full min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <Avatar className="size-9 shrink-0">
           <Avatar.Image
             alt={name}
@@ -31,9 +31,9 @@ export const ProjectListItem = memo(function ProjectListItem({
           />
           <Avatar.Fallback>{name.substring(0, 2).toUpperCase()}</Avatar.Fallback>
         </Avatar>
-        <div className="min-w-0">
-          <p className="font-bold text-[14px] leading-tight text-secondary truncate">{name}</p>
-          <p className="text-[12px] opacity-75 font-semibold mt-0.5 text-secondary leading-none">Entregar {date}</p>
+        <div className="min-w-0 flex-1 -space-y-1">
+          <p className="font-bold text-[14px] text-secondary truncate">{name}</p>
+          <p className="text-[12px] font-semibold text-zinc-600 truncate">Entregar {date}</p>
         </div>
       </div>
       <Button
@@ -49,10 +49,10 @@ export const ProjectListItem = memo(function ProjectListItem({
 
 export function ProjectListItemSkeleton() {
   return (
-    <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0 animate-pulse">
-      <div className="flex items-center gap-3 min-w-0">
+    <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0 animate-pulse w-full min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <div className="size-9 rounded-full bg-secondary/10 shrink-0" />
-        <div className="space-y-1 min-w-0">
+        <div className="space-y-1 min-w-0 flex-1">
           <div className="h-3.5 bg-secondary/10 rounded w-24" />
           <div className="h-2.5 bg-secondary/10 rounded w-16" />
         </div>
@@ -61,3 +61,4 @@ export function ProjectListItemSkeleton() {
     </div>
   )
 }
+

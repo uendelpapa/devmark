@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useEffect } from 'react'
 import { Avatar, Button } from '@heroui/react'
-import { Calendar, Clock, Ellipsis, PencilToLine, Layers, TrashBin } from '@gravity-ui/icons'
+import { Calendar, Ellipsis, PencilToLine, Layers, TrashBin, Check } from '@gravity-ui/icons'
 
 interface ProjectCardProps {
   id: string
@@ -15,13 +15,39 @@ interface ProjectCardProps {
   onEdit?: (id: string) => void
   onChangeStatus?: (id: string, currentStatus: string) => void
   onDelete?: (id: string, name: string) => void
+  onMarkCompleted?: (id: string) => void
 }
 
 const PRIORITY_LABELS: Record<ProjectCardProps['priority'], string> = {
-  LOW: 'baixa',
-  MEDIUM: 'média',
-  HIGH: 'alta',
-  URGENT: 'urgente'
+  LOW: 'Baixa',
+  MEDIUM: 'Média',
+  HIGH: 'Alta',
+  URGENT: 'Urgente'
+}
+
+const STATUS_LABELS: Record<ProjectCardProps['status'], string> = {
+  PLANNING: 'Planejamento',
+  IN_PROGRESS: 'Em Andamento',
+  WAITING_CLIENT: 'Aguardando Cliente',
+  REVIEW: 'Revisão',
+  COMPLETED: 'Concluído',
+  CANCELED: 'Cancelado'
+}
+
+const STATUS_STYLES: Record<ProjectCardProps['status'], string> = {
+  PLANNING: 'bg-blue-200 text-zinc-900',
+  IN_PROGRESS: 'bg-amber-200 text-zinc-900',
+  WAITING_CLIENT: 'bg-purple-200 text-zinc-900',
+  REVIEW: 'bg-indigo-200 text-zinc-900',
+  COMPLETED: 'bg-emerald-200 text-zinc-900',
+  CANCELED: 'bg-rose-200 text-zinc-900'
+}
+
+const PRIORITY_STYLES: Record<ProjectCardProps['priority'], string> = {
+  LOW: 'bg-zinc-200 text-zinc-900',
+  MEDIUM: 'bg-sky-200 text-zinc-900',
+  HIGH: 'bg-orange-200 text-zinc-900',
+  URGENT: 'bg-red-200 text-zinc-900'
 }
 
 export const ProjectCard = memo(function ProjectCard({
@@ -36,7 +62,8 @@ export const ProjectCard = memo(function ProjectCard({
   onPress,
   onEdit,
   onChangeStatus,
-  onDelete
+  onDelete,
+  onMarkCompleted
 }: ProjectCardProps) {
   const isCompleted = status === 'COMPLETED'
   const priorityLabel = PRIORITY_LABELS[priority]
@@ -60,12 +87,12 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <div
       onClick={() => onPress?.(id)}
-      className={`rounded-[16px] p-4 flex flex-col gap-4 transition-all hover:shadow-md cursor-pointer ${isCompleted ? 'bg-primary/50' : 'bg-zinc-100'
+      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all hover:shadow-md cursor-pointer ${isCompleted ? 'bg-primary/50' : 'bg-zinc-100'
         }`}
     >
       {/* Header: Title + Menu */}
       <div className="flex justify-between items-start gap-2">
-        <div className="flex flex-col gap-1 min-w-0">
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
           <h4 className="font-semibold text-secondary text-lg leading-tight truncate">
             {name}
           </h4>
@@ -73,50 +100,67 @@ export const ProjectCard = memo(function ProjectCard({
             {description}
           </p>
         </div>
-        <div 
-          className="relative"
-          ref={menuRef}
-          onClick={(e) => e.stopPropagation()} // Prevent card click when clicking inside menu area
-        >
-          <Button
-            size="sm"
-            className="size-7 min-w-7 bg-transparent hover:bg-secondary/5 border-none rounded-full p-0 flex items-center justify-center shrink-0"
-            aria-label="Opções do projeto"
-            onPress={() => setIsMenuOpen(!isMenuOpen)}
+        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="relative"
+            ref={menuRef}
           >
-            <Ellipsis className="text-zinc-700" width={16} height={16} />
-          </Button>
+            <Button
+              size="sm"
+              className="size-7 min-w-7 bg-transparent hover:bg-secondary/5 border-none rounded-full p-0 flex items-center justify-center shrink-0"
+              aria-label="Opções do projeto"
+              onPress={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <Ellipsis className="text-zinc-700" width={16} height={16} />
+            </Button>
 
-          {isMenuOpen && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-[16px] shadow-lg border border-zinc-100 py-2 z-50 flex flex-col">
-              <button 
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onEdit?.(id); }}
-                className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent"
-              >
-                <PencilToLine width={16} /> Editar
-              </button>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onChangeStatus?.(id, status); }}
-                className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent"
-              >
-                <Layers width={16} /> Mudar Status
-              </button>
-              <div className="h-[1px] bg-zinc-100 my-1 w-full" />
-              <button 
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onDelete?.(id, name); }}
-                className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors cursor-pointer font-medium border-none bg-transparent"
-              >
-                <TrashBin width={16} /> Excluir
-              </button>
-            </div>
-          )}
+            {isMenuOpen && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-[16px] shadow-lg border border-zinc-100 py-2 z-50 flex flex-col">
+                {!isCompleted && onMarkCompleted && (
+                  <>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onMarkCompleted(id); }}
+                      className="w-full text-left px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent font-medium"
+                    >
+                      <Check width={16} height={16} /> Concluir Projeto
+                    </button>
+                    <div className="h-[1px] bg-zinc-100 my-1 w-full" />
+                  </>
+                )}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onEdit?.(id); }}
+                  className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent font-medium"
+                >
+                  <PencilToLine width={16} /> Editar
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onChangeStatus?.(id, status); }}
+                  className="w-full text-left px-4 py-2 text-sm text-secondary hover:bg-zinc-50 flex items-center gap-2 transition-colors cursor-pointer border-none bg-transparent font-medium"
+                >
+                  <Layers width={16} /> Mudar Status
+                </button>
+                <div className="h-[1px] bg-zinc-100 my-1 w-full" />
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onDelete?.(id, name); }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors cursor-pointer font-medium border-none bg-transparent"
+                >
+                  <TrashBin width={16} /> Excluir
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Tags de status e prioridade */}
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="flex items-center gap-1 text-xs font-medium text-secondary bg-primary/50 rounded-full px-1.5 py-0.5">
-          <Clock className='size-3' />
+        {/* Status Tag */}
+        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${STATUS_STYLES[status]}`}>
+          {STATUS_LABELS[status]}
+        </span>
+
+        {/* Priority Tag */}
+        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${PRIORITY_STYLES[priority]}`}>
           {priorityLabel}
         </span>
 
@@ -135,15 +179,13 @@ export const ProjectCard = memo(function ProjectCard({
 
           if (diffDays <= 3) {
             return (
-              <span className="flex items-center gap-1 text-xs font-medium text-red-700 bg-red-100 rounded-full px-2.5 py-1">
-                <Clock className='size-4' />
+              <span className="text-[10px] font-semibold text-zinc-700 bg-red-100/60 rounded-full px-2 py-0.5">
                 urgente
               </span>
             );
           } else if (diffDays <= 20) {
             return (
-              <span className="flex items-center gap-1 text-xs font-medium text-orange-700 bg-orange-100 rounded-full px-2.5 py-1">
-                <Clock className='size-4' />
+              <span className="text-[10px] font-semibold text-zinc-700 bg-orange-100/60 rounded-full px-2 py-0.5">
                 atenção
               </span>
             );

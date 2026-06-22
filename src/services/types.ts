@@ -130,7 +130,9 @@ export interface PendingPaymentItem {
 
 export interface DashboardData {
   project_summary: ProjectSummary
+  prev_project_summary?: ProjectSummary
   finance_summary: FinanceSummary
+  prev_finance_summary?: FinanceSummary
   projects: ProjectListItem[]
   pending_payments: PendingPaymentItem[]
   weekly_work_level: number[]

@@ -108,7 +108,7 @@ body {
 .subtask-checkbox-control {
   width: 20px !important;
   height: 20px !important;
-  border-radius: 6px !important; /* more rounded */
+  border-radius: 50% !important; /* round */
   border: 2px solid #71717a !important; /* border more visible (zinc-500) */
   background-color: #ffffff !important;
   display: flex !important;
@@ -123,21 +123,45 @@ body {
 }
 
 .subtask-checkbox-control.is-completed {
-  background-color: #10b981 !important; /* Emerald 500 green */
-  border-color: #10b981 !important;
-  color: #ffffff !important;
+  background-color: #BAF08A !important; /* primary theme green */
+  border-color: #BAF08A !important;
+  color: #011D00 !important; /* dark secondary theme green */
 }
 
 .subtask-checkbox-control.is-completed:hover {
-  background-color: #059669 !important;
-  border-color: #059669 !important;
+  background-color: #a9e278 !important;
+  border-color: #a9e278 !important;
 }
 
-/* Ensure the check icon inside the indicator is visible and white */
+/* Ensure check icon inside the indicator inherits the text/checkmark color */
 .subtask-checkbox-indicator {
-  color: #ffffff !important;
-  fill: #ffffff !important;
+  color: inherit !important;
+  fill: inherit !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-}
+}
+
+/* Work level bar chart entry animation */
+@keyframes growUp {
+  from {
+    height: 0px;
+  }
+}
+
+.animate-grow-up {
+  animation: growUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Premium hover effects for Work Level Bar Chart items */
+.chart-bar {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, box-shadow 0.3s ease !important;
+  transform-origin: bottom !important;
+}
+
+.chart-bar:hover {
+  transform: scaleY(1.06) scaleX(1.03) !important;
+  filter: brightness(1.1) contrast(1.05) !important;
+  box-shadow: 0 10px 25px -5px rgba(186, 240, 138, 0.5) !important;
+  cursor: pointer !important;
+}

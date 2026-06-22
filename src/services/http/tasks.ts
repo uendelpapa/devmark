@@ -36,3 +36,8 @@ export async function updateTask(taskId: string, data: Partial<CreateTaskData>):
 export async function deleteTask(taskId: string): Promise<void> {
   await api.delete(`/tasks/${taskId}`)
 }
+
+export async function fetchTaskDetails(taskId: string): Promise<any> {
+  const response = await api.get(`/tasks/${taskId}`)
+  return response.data
+}
