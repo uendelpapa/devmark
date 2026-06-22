@@ -9,18 +9,23 @@ import {
   CircleQuestion,
   ArrowRightFromSquare
 } from '@gravity-ui/icons'
+import { Link, useLocation } from '@tanstack/react-router'
 import { TimerTracker } from './TimerTracker'
 
 interface MenuItemProps {
   icon: React.ComponentType<{ className?: string; width?: string | number; height?: string | number }>
   label: string
   badge?: string
-  active?: boolean
+  href?: string
 }
 
-function MenuItem({ icon: Icon, label, badge, active }: MenuItemProps) {
+function MenuItem({ icon: Icon, label, badge, href }: MenuItemProps) {
+  const location = useLocation()
+  const targetPath = href || `/${label.toLowerCase()}`
+  const active = targetPath === '/' ? location.pathname === '/' : location.pathname.startsWith(targetPath)
+
   return (
-    <a href={`/${label.toLowerCase()}`} className="group flex items-center text-secondary gap-2">
+    <Link to={targetPath} className="group flex items-center text-secondary gap-2">
       <div className="flex justify-center items-center gap-2">
         <Icon
           className={`text-secondary ${active ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}
@@ -36,7 +41,7 @@ function MenuItem({ icon: Icon, label, badge, active }: MenuItemProps) {
           {badge}
         </span>
       )}
-    </a>
+    </Link>
   )
 }
 
@@ -71,7 +76,7 @@ export function Sidebar() {
             Menu
           </h3>
           <div className="flex flex-col gap-4">
-            <MenuItem icon={Rectangles4} label="Dashboard" active />
+            <MenuItem icon={Rectangles4} label="Dashboard" href="/" />
             <MenuItem icon={Layers3Diagonal} label="Tarefas" badge="+12" />
             <MenuItem icon={Persons} label="Clientes" />
             <MenuItem icon={Folder} label="Projetos" />

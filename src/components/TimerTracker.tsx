@@ -1,65 +1,172 @@
 import { Pause, Play, Stop } from '@gravity-ui/icons'
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { fetchTasks, startTimeEntry, stopTimeEntry, fetchTimeEntries } from '../services/api'
+import type { TaskCardData } from '../services/api'
 
 interface TimerContextType {
   hours: number
   minutes: number
   seconds: number
   isRunning: boolean
+  activeTaskId: string | null
+  setActiveTaskId: (id: string | null) => void
   toggleTimer: () => void
+  startTimer: () => void
+  pauseTimer: () => void
   resetTimer: () => void
 }
 
 const TimerContext = createContext<TimerContextType>({
-  hours: 11,
-  minutes: 30,
-  seconds: 6,
-  isRunning: true,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  isRunning: false,
+  activeTaskId: null,
+  setActiveTaskId: () => { },
   toggleTimer: () => { },
+  startTimer: () => { },
+  pauseTimer: () => { },
   resetTimer: () => { },
 })
 
 export function TimerProvider({ children }: { children: ReactNode }) {
-  const [seconds, setSeconds] = useState(6)
-  const [minutes, setMinutes] = useState(30)
-  const [hours, setHours] = useState(11)
-  const [isRunning, setIsRunning] = useState(true)
+  const [seconds, setSeconds] = useState(0)
+  const [minutes, setMinutes] = useState(0)
+  const [hours, setHours] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null)
+  const [activeTimeEntryId, setActiveTimeEntryId] = useState<string | null>(null)
+  const [activeStartTime, setActiveStartTime] = useState<string | null>(null)
 
+  const queryClient = useQueryClient()
+
+  // On mount, check if there's a running timer in the database
+  useEffect(() => {
+    fetchTimeEntries()
+      .then((entries) => {
+        const running = entries.find((e) => !e.end_time)
+        if (running) {
+          setActiveTaskId(running.task_id)
+          setActiveTimeEntryId(running.id)
+          setActiveStartTime(running.start_time)
+          setIsRunning(true)
+
+          const start = new Date(running.start_time).getTime()
+          const now = Date.now()
+          const diffSeconds = Math.max(Math.floor((now - start) / 1000), 0)
+
+          setHours(Math.floor(diffSeconds / 3600))
+          setMinutes(Math.floor((diffSeconds % 3600) / 60))
+          setSeconds(diffSeconds % 60)
+        }
+      })
+      .catch((err) => console.error('Error fetching running timer:', err))
+  }, [])
+
+  // Keep local clock synced with actual start time to prevent drift or suspend issues
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
-    if (isRunning) {
+    if (isRunning && activeStartTime) {
       interval = setInterval(() => {
-        setSeconds((prevSec) => {
-          if (prevSec === 59) {
-            setMinutes((prevMin) => {
-              if (prevMin === 59) {
-                setHours((prevHour) => (prevHour + 1) % 24)
-                return 0
-              }
-              return prevMin + 1
-            })
-            return 0
-          }
-          return prevSec + 1
-        })
+        const start = new Date(activeStartTime).getTime()
+        const now = Date.now()
+        const diffSeconds = Math.max(Math.floor((now - start) / 1000), 0)
+
+        setHours(Math.floor(diffSeconds / 3600))
+        setMinutes(Math.floor((diffSeconds % 3600) / 60))
+        setSeconds(diffSeconds % 60)
       }, 1000)
     }
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isRunning])
+  }, [isRunning, activeStartTime])
 
-  const toggleTimer = () => setIsRunning((prev) => !prev)
-  const resetTimer = () => {
+  const toggleTimer = async () => {
+    if (isRunning) {
+      // Stop/pause timer
+      if (activeTimeEntryId) {
+        try {
+          await stopTimeEntry(activeTimeEntryId)
+          queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+          queryClient.invalidateQueries({ queryKey: ['tasks'] })
+          queryClient.invalidateQueries({ queryKey: ['projectDetails'] })
+        } catch (err) {
+          console.error('Error stopping timer:', err)
+        }
+      }
+      setIsRunning(false)
+      setActiveTimeEntryId(null)
+      setActiveStartTime(null)
+    } else {
+      // Start timer
+      if (!activeTaskId) {
+        alert('Selecione uma tarefa antes de iniciar o timer.')
+        return
+      }
+
+      try {
+        const tasks = await queryClient.fetchQuery<TaskCardData[]>({
+          queryKey: ['tasks'],
+          queryFn: fetchTasks
+        })
+        const task = tasks.find((t) => t.id === activeTaskId)
+        if (!task) {
+          alert('Tarefa não encontrada.')
+          return
+        }
+
+        const entry = await startTimeEntry({
+          project_id: task.project_id,
+          task_id: task.id,
+          description: `Trabalhando em: ${task.title}`
+        })
+
+        setActiveTimeEntryId(entry.id)
+        setActiveStartTime(entry.start_time)
+        setIsRunning(true)
+      } catch (err) {
+        console.error('Error starting timer:', err)
+      }
+    }
+  }
+
+  const startTimer = () => {
+    if (!isRunning) {
+      toggleTimer()
+    }
+  }
+
+  const pauseTimer = () => {
+    if (isRunning) {
+      toggleTimer()
+    }
+  }
+
+  const resetTimer = async () => {
+    if (activeTimeEntryId) {
+      try {
+        await stopTimeEntry(activeTimeEntryId)
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+        queryClient.invalidateQueries({ queryKey: ['tasks'] })
+        queryClient.invalidateQueries({ queryKey: ['projectDetails'] })
+      } catch (err) {
+        console.error('Error resetting timer:', err)
+      }
+    }
     setIsRunning(false)
+    setActiveTimeEntryId(null)
+    setActiveStartTime(null)
     setHours(0)
     setMinutes(0)
     setSeconds(0)
   }
 
+
   return (
-    <TimerContext.Provider value={{ hours, minutes, seconds, isRunning, toggleTimer, resetTimer }}>
+    <TimerContext.Provider value={{ hours, minutes, seconds, isRunning, activeTaskId, setActiveTaskId, toggleTimer, startTimer, pauseTimer, resetTimer }}>
       {children}
     </TimerContext.Provider>
   )
@@ -74,17 +181,31 @@ interface TimerTrackerProps {
 }
 
 export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
-  const { hours, minutes, seconds, isRunning, toggleTimer, resetTimer } = useTimer()
+  const { hours, minutes, seconds, isRunning, activeTaskId, toggleTimer, resetTimer } = useTimer()
+
+  const { data: tasks = [] } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: fetchTasks
+  })
 
   const formatNumber = (num: number) => {
     return num.toString().padStart(2, '0')
   }
 
+  const activeTask = tasks.find(t => t.id === activeTaskId)
+
   if (variant === 'dashboard') {
     return (
       <div className="w-full bg-primary/50 rounded-[24px] space-y-4 px-6 py-4 flex flex-col items-center justify-between text-secondary">
-        {/* Title */}
-        <p className="font-semibold text-center text-secondary leading-tight">Timer Tracker</p>
+        {/* Title & Task */}
+        <div className="w-full flex flex-col items-center gap-1">
+          <p className="font-semibold text-center text-secondary leading-tight">Timer Tracker</p>
+          {activeTask ? (
+            <span className="text-secondary font-medium text-sm truncate block w-full text-center px-2">{activeTask.title}</span>
+          ) : (
+            <span className="text-secondary/50 text-xs italic text-center">Nenhuma tarefa ativa</span>
+          )}
+        </div>
 
         {/* Time display (horizontal) */}
         <div className="text-[36px] font-semibold leading-none tracking-tight">
@@ -124,11 +245,20 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
 
   // Sidebar variant (vertical)
   return (
-    <div className="w-full bg-primary/50 rounded-[24px] px-6 py-8 space-y-4 flex flex-col items-center justify-between text-secondary">
+    <div className="w-full bg-primary/50 rounded-[24px] px-4 py-6 space-y-4 flex flex-col items-center justify-between text-secondary">
       {/* Title */}
-      <div className="text-center">
-        <p className="text-[18px] leading-none font-normal text-secondary">Timer</p>
-        <p className="text-[18px] leading-none font-semibold text-secondary">Tracker</p>
+      <div className="text-center w-full flex flex-col items-center gap-2">
+        <div>
+          <p className="text-[18px] leading-none font-normal text-secondary">Timer</p>
+          <p className="text-[18px] leading-none font-semibold text-secondary">Tracker</p>
+        </div>
+        {activeTask ? (
+          <span className="text-secondary font-bold text-[11px] truncate block w-full text-center px-2 bg-white/40 rounded-full py-1 border border-primary/20">
+            {activeTask.title}
+          </span>
+        ) : (
+          <span className="text-secondary/60 text-[11px] italic text-center">Nenhuma tarefa</span>
+        )}
       </div>
 
       {/* Time Stack */}
