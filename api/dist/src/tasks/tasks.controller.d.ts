@@ -84,6 +84,15 @@ export declare class TasksController {
             end_time: Date | null;
             duration: number | null;
         }[];
+        task_expenses: {
+            description: string | null;
+            title: string;
+            id: string;
+            created_at: Date;
+            category: import("@prisma/client").$Enums.ExpenseCategory;
+            value: import("@prisma/client/runtime/library").Decimal;
+            task_id: string;
+        }[];
         subtasks: {
             id: string;
             created_at: Date;
@@ -91,15 +100,6 @@ export declare class TasksController {
             text: string;
             completed: boolean;
             task_id: string;
-        }[];
-        task_expenses: {
-            description: string | null;
-            title: string;
-            id: string;
-            created_at: Date;
-            task_id: string;
-            category: import("@prisma/client").$Enums.ExpenseCategory;
-            value: import("@prisma/client/runtime/library").Decimal;
         }[];
     } & {
         description: string | null;

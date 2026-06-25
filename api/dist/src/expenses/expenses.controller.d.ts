@@ -46,9 +46,9 @@ export declare class TaskExpensesController {
         title: string;
         id: string;
         created_at: Date;
-        task_id: string;
         category: import("@prisma/client").$Enums.ExpenseCategory;
         value: import("@prisma/client/runtime/library").Decimal;
+        task_id: string;
     }>;
     findAll(task_id: string | undefined, req: Request): Promise<({
         task: {
@@ -61,17 +61,17 @@ export declare class TaskExpensesController {
         title: string;
         id: string;
         created_at: Date;
-        task_id: string;
         category: import("@prisma/client").$Enums.ExpenseCategory;
         value: import("@prisma/client/runtime/library").Decimal;
+        task_id: string;
     })[]>;
     remove(id: string, req: Request): Promise<{
         description: string | null;
         title: string;
         id: string;
         created_at: Date;
-        task_id: string;
         category: import("@prisma/client").$Enums.ExpenseCategory;
         value: import("@prisma/client/runtime/library").Decimal;
+        task_id: string;
     }>;
 }
