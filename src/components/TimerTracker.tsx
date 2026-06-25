@@ -201,7 +201,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
         <div className="w-full flex flex-col items-center gap-1">
           <p className="font-semibold text-center text-secondary leading-tight">Timer Tracker</p>
           {activeTask ? (
-            <span className="text-secondary font-medium text-sm truncate block w-full text-center px-2">{activeTask.title}</span>
+            <span className="max-w-60 text-secondary font-medium text-sm truncate block w-full text-center px-2">{activeTask.title}</span>
           ) : (
             <span className="text-secondary/50 text-xs italic text-center">Nenhuma tarefa ativa</span>
           )}
@@ -253,7 +253,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
           <p className="text-[18px] leading-none font-semibold text-secondary">Tracker</p>
         </div>
         {activeTask ? (
-          <span className="text-secondary font-bold text-[11px] truncate block w-full text-center px-2 bg-white/40 rounded-full py-1 border border-primary/20">
+          <span className="max-w-24 text-secondary font-bold text-[11px] truncate block w-full text-center px-2 bg-white/40 rounded-full py-1 border border-primary/20">
             {activeTask.title}
           </span>
         ) : (

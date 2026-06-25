@@ -2,16 +2,16 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Plus, LayoutHeaderCells, ChartColumnStacked, LayoutRows3, LayoutHeaderCellsLarge } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask } from '../services/api'
-import type { TaskCardData as Task } from '../services/api'
-import { KanbanView } from '../components/tarefas/KanbanView'
-import { ListView } from '../components/tarefas/ListView'
-import { TableView } from '../components/tarefas/TableView'
-import { useTimer } from '../components/TimerTracker'
-import { CreateTaskModal, type CreateTaskPayload } from '../components/CreateTaskModal'
-import { EditTaskModal } from '../components/EditTaskModal'
+import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask } from '../../services/api'
+import type { TaskCardData as Task } from '../../services/api'
+import { KanbanView } from '../../components/tarefas/KanbanView'
+import { ListView } from '../../components/tarefas/ListView'
+import { TableView } from '../../components/tarefas/TableView'
+import { useTimer } from '../../components/TimerTracker'
+import { CreateTaskModal, type CreateTaskPayload } from '../../components/CreateTaskModal'
+import { EditTaskModal } from '../../components/EditTaskModal'
 
-export const Route = createFileRoute('/tarefas')({
+export const Route = createFileRoute('/_authenticated/tarefas')({
   component: Tarefas
 })
 

@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button } from '@heroui/react'
 import { ChevronLeft, Sparkles, Microphone, ArrowRight, Paperclip } from '@gravity-ui/icons'
 
-export const Route = createFileRoute('/projetos_/ia')({
+export const Route = createFileRoute('/_authenticated/projetos_/ia')({
   component: ProjetoIA
 })
 

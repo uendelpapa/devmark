@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Checkbox, ProgressBar, Select, ListBox } from '@heroui/react'
 import { ArrowLeft, Clock, Briefcase, Calendar, TrashBin, FloppyDisk } from '@gravity-ui/icons'
-import { fetchTaskDetails, updateTask, deleteTask } from '../services/api'
-import type { Task } from '../services/api'
+import { fetchTaskDetails, updateTask, deleteTask } from '../../services/api'
+import type { Task } from '../../services/api'
 
-export const Route = createFileRoute('/tarefas_/$taskId')({
+export const Route = createFileRoute('/_authenticated/tarefas_/$taskId')({
   component: TaskDetailsPage
 })
 

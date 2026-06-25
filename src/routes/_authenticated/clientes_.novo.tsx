@@ -5,9 +5,9 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { createClient } from '../services/api'
+import { createClient } from '../../services/api'
 
-export const Route = createFileRoute('/clientes_/novo')({
+export const Route = createFileRoute('/_authenticated/clientes_/novo')({
   component: NovoCliente
 })
 

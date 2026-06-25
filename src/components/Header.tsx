@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchClients, fetchTasks } from '../services/api'
 import { useNavigate } from '@tanstack/react-router'
 import { useState, useRef, useEffect } from 'react'
+import { useAuthStore } from '../lib/auth'
 
 export function Header() {
+  const user = useAuthStore((s) => s.user)
   const [searchQuery, setSearchQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
@@ -43,25 +45,25 @@ export function Header() {
   const query = searchQuery.trim().toLowerCase()
 
   const matchedProjects = query
-    ? projects.filter(p => 
-        p.name.toLowerCase().includes(query) || 
-        (p.description && p.description.toLowerCase().includes(query))
-      )
+    ? projects.filter(p =>
+      p.name.toLowerCase().includes(query) ||
+      (p.description && p.description.toLowerCase().includes(query))
+    )
     : []
 
   const matchedClients = query
-    ? clients.filter(c => 
-        c.name.toLowerCase().includes(query) || 
-        (c.company_name && c.company_name.toLowerCase().includes(query)) || 
-        (c.email && c.email.toLowerCase().includes(query))
-      )
+    ? clients.filter(c =>
+      c.name.toLowerCase().includes(query) ||
+      (c.company_name && c.company_name.toLowerCase().includes(query)) ||
+      (c.email && c.email.toLowerCase().includes(query))
+    )
     : []
 
   const matchedTasks = query
-    ? tasks.filter(t => 
-        t.title.toLowerCase().includes(query) || 
-        (t.description && t.description.toLowerCase().includes(query))
-      )
+    ? tasks.filter(t =>
+      t.title.toLowerCase().includes(query) ||
+      (t.description && t.description.toLowerCase().includes(query))
+    )
     : []
 
   const hasResults = matchedProjects.length > 0 || matchedClients.length > 0 || matchedTasks.length > 0
@@ -69,15 +71,15 @@ export function Header() {
   return (
     <header className="bg-white rounded-[24px] px-6 py-6 flex items-center justify-between shadow-xs shrink-0 relative z-30">
       {/* Search Input with Popover */}
-      <div className="w-80 relative" ref={searchRef}>
+      <div className="w-90 relative" ref={searchRef}>
         <Magnifier className='size-4 absolute top-1/2 left-3.5 -translate-y-1/2 text-secondary/50 z-10' />
-        <input 
-          type='text' 
+        <input
+          type='text'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          placeholder="Pesquisar projetos, clientes ou tarefas..." 
-          className="w-full pl-9 pr-4 py-2.5 bg-zinc-100 rounded-full text-secondary text-sm outline-none border-none placeholder:text-secondary/50 focus:bg-zinc-200/50 transition-colors font-medium" 
+          placeholder="Pesquisar projetos, clientes ou tarefas..."
+          className="w-full pl-9 pr-4 py-2.5 bg-zinc-100 rounded-full text-secondary text-sm outline-none border-none placeholder:text-secondary/50 focus:bg-zinc-200/50 transition-colors font-medium"
         />
 
         {isOpen && query && (
@@ -186,15 +188,13 @@ export function Header() {
         {/* User Identity Info */}
         <div className="flex items-center gap-2">
           <Avatar className='size-9'>
-            <Avatar.Image
-              alt="Blue"
-              src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/blue.jpg"
-            />
-            <Avatar.Fallback>B</Avatar.Fallback>
+            <Avatar.Fallback className="bg-primary/50 text-secondary font-bold text-sm">
+              {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+            </Avatar.Fallback>
           </Avatar>
           <div className="flex flex-col gap-0">
-            <p className="font-bold text-[14px] text-secondary leading-none">Uendel Papa</p>
-            <p className="text-[11px] text-secondary/70 font-semibold leading-none mt-1">uendelpapa@gmail.com</p>
+            <p className="font-bold text-[14px] text-secondary leading-none">{user?.name || 'Usuário'}</p>
+            <p className="text-[11px] text-secondary/70 font-semibold leading-none mt-1">{user?.email || ''}</p>
           </div>
         </div>
       </div>

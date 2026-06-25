@@ -216,12 +216,12 @@ export const ProjectCard = memo(function ProjectCard({
         </div>
 
         {/* Due Date */}
-        <div className="flex items-center gap-1 shrink-0">
+        {/* <div className="flex items-center gap-1 shrink-0">
           <Calendar className="text-secondary size-4" />
           <span className="text-xs text-secondary font-medium whitespace-nowrap">
             Due Date {expected_delivery_date}
           </span>
-        </div>
+        </div> */}
       </div>
     </div>
   )

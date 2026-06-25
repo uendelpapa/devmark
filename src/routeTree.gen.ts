@@ -9,109 +9,140 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TarefasRouteImport } from './routes/tarefas'
-import { Route as ProjetosRouteImport } from './routes/projetos'
-import { Route as ClientesRouteImport } from './routes/clientes'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as TarefasTaskIdRouteImport } from './routes/tarefas_.$taskId'
-import { Route as ProjetosNovoRouteImport } from './routes/projetos_.novo'
-import { Route as ProjetosIaRouteImport } from './routes/projetos_.ia'
-import { Route as ProjetosProjectIdRouteImport } from './routes/projetos_.$projectId'
-import { Route as ClientesNovoRouteImport } from './routes/clientes_.novo'
-import { Route as ProjetosProjectIdEditarRouteImport } from './routes/projetos_.$projectId.editar'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
+import { Route as AuthenticatedProjetosRouteImport } from './routes/_authenticated/projetos'
+import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
+import { Route as AuthenticatedTarefasTaskIdRouteImport } from './routes/_authenticated/tarefas_.$taskId'
+import { Route as AuthenticatedProjetosNovoRouteImport } from './routes/_authenticated/projetos_.novo'
+import { Route as AuthenticatedProjetosIaRouteImport } from './routes/_authenticated/projetos_.ia'
+import { Route as AuthenticatedProjetosProjectIdRouteImport } from './routes/_authenticated/projetos_.$projectId'
+import { Route as AuthenticatedClientesNovoRouteImport } from './routes/_authenticated/clientes_.novo'
+import { Route as AuthenticatedProjetosProjectIdEditarRouteImport } from './routes/_authenticated/projetos_.$projectId.editar'
 
-const TarefasRoute = TarefasRouteImport.update({
-  id: '/tarefas',
-  path: '/tarefas',
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjetosRoute = ProjetosRouteImport.update({
-  id: '/projetos',
-  path: '/projetos',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClientesRoute = ClientesRouteImport.update({
-  id: '/clientes',
-  path: '/clientes',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const TarefasTaskIdRoute = TarefasTaskIdRouteImport.update({
-  id: '/tarefas_/$taskId',
-  path: '/tarefas/$taskId',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
+  id: '/tarefas',
+  path: '/tarefas',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const ProjetosNovoRoute = ProjetosNovoRouteImport.update({
-  id: '/projetos_/novo',
-  path: '/projetos/novo',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedProjetosRoute = AuthenticatedProjetosRouteImport.update({
+  id: '/projetos',
+  path: '/projetos',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const ProjetosIaRoute = ProjetosIaRouteImport.update({
+const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedTarefasTaskIdRoute =
+  AuthenticatedTarefasTaskIdRouteImport.update({
+    id: '/tarefas_/$taskId',
+    path: '/tarefas/$taskId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProjetosNovoRoute =
+  AuthenticatedProjetosNovoRouteImport.update({
+    id: '/projetos_/novo',
+    path: '/projetos/novo',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProjetosIaRoute = AuthenticatedProjetosIaRouteImport.update({
   id: '/projetos_/ia',
   path: '/projetos/ia',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
-const ProjetosProjectIdRoute = ProjetosProjectIdRouteImport.update({
-  id: '/projetos_/$projectId',
-  path: '/projetos/$projectId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClientesNovoRoute = ClientesNovoRouteImport.update({
-  id: '/clientes_/novo',
-  path: '/clientes/novo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjetosProjectIdEditarRoute = ProjetosProjectIdEditarRouteImport.update({
-  id: '/editar',
-  path: '/editar',
-  getParentRoute: () => ProjetosProjectIdRoute,
-} as any)
+const AuthenticatedProjetosProjectIdRoute =
+  AuthenticatedProjetosProjectIdRouteImport.update({
+    id: '/projetos_/$projectId',
+    path: '/projetos/$projectId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedClientesNovoRoute =
+  AuthenticatedClientesNovoRouteImport.update({
+    id: '/clientes_/novo',
+    path: '/clientes/novo',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProjetosProjectIdEditarRoute =
+  AuthenticatedProjetosProjectIdEditarRouteImport.update({
+    id: '/editar',
+    path: '/editar',
+    getParentRoute: () => AuthenticatedProjetosProjectIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/clientes': typeof ClientesRoute
-  '/projetos': typeof ProjetosRoute
-  '/tarefas': typeof TarefasRoute
-  '/clientes/novo': typeof ClientesNovoRoute
-  '/projetos/$projectId': typeof ProjetosProjectIdRouteWithChildren
-  '/projetos/ia': typeof ProjetosIaRoute
-  '/projetos/novo': typeof ProjetosNovoRoute
-  '/tarefas/$taskId': typeof TarefasTaskIdRoute
-  '/projetos/$projectId/editar': typeof ProjetosProjectIdEditarRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/clientes': typeof AuthenticatedClientesRoute
+  '/projetos': typeof AuthenticatedProjetosRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
+  '/clientes/novo': typeof AuthenticatedClientesNovoRoute
+  '/projetos/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
+  '/projetos/ia': typeof AuthenticatedProjetosIaRoute
+  '/projetos/novo': typeof AuthenticatedProjetosNovoRoute
+  '/tarefas/$taskId': typeof AuthenticatedTarefasTaskIdRoute
+  '/projetos/$projectId/editar': typeof AuthenticatedProjetosProjectIdEditarRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/clientes': typeof ClientesRoute
-  '/projetos': typeof ProjetosRoute
-  '/tarefas': typeof TarefasRoute
-  '/clientes/novo': typeof ClientesNovoRoute
-  '/projetos/$projectId': typeof ProjetosProjectIdRouteWithChildren
-  '/projetos/ia': typeof ProjetosIaRoute
-  '/projetos/novo': typeof ProjetosNovoRoute
-  '/tarefas/$taskId': typeof TarefasTaskIdRoute
-  '/projetos/$projectId/editar': typeof ProjetosProjectIdEditarRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/clientes': typeof AuthenticatedClientesRoute
+  '/projetos': typeof AuthenticatedProjetosRoute
+  '/tarefas': typeof AuthenticatedTarefasRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/clientes/novo': typeof AuthenticatedClientesNovoRoute
+  '/projetos/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
+  '/projetos/ia': typeof AuthenticatedProjetosIaRoute
+  '/projetos/novo': typeof AuthenticatedProjetosNovoRoute
+  '/tarefas/$taskId': typeof AuthenticatedTarefasTaskIdRoute
+  '/projetos/$projectId/editar': typeof AuthenticatedProjetosProjectIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/clientes': typeof ClientesRoute
-  '/projetos': typeof ProjetosRoute
-  '/tarefas': typeof TarefasRoute
-  '/clientes_/novo': typeof ClientesNovoRoute
-  '/projetos_/$projectId': typeof ProjetosProjectIdRouteWithChildren
-  '/projetos_/ia': typeof ProjetosIaRoute
-  '/projetos_/novo': typeof ProjetosNovoRoute
-  '/tarefas_/$taskId': typeof TarefasTaskIdRoute
-  '/projetos_/$projectId/editar': typeof ProjetosProjectIdEditarRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/_authenticated/clientes': typeof AuthenticatedClientesRoute
+  '/_authenticated/projetos': typeof AuthenticatedProjetosRoute
+  '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/clientes_/novo': typeof AuthenticatedClientesNovoRoute
+  '/_authenticated/projetos_/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
+  '/_authenticated/projetos_/ia': typeof AuthenticatedProjetosIaRoute
+  '/_authenticated/projetos_/novo': typeof AuthenticatedProjetosNovoRoute
+  '/_authenticated/tarefas_/$taskId': typeof AuthenticatedTarefasTaskIdRoute
+  '/_authenticated/projetos_/$projectId/editar': typeof AuthenticatedProjetosProjectIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/register'
     | '/clientes'
     | '/projetos'
     | '/tarefas'
@@ -123,10 +154,12 @@ export interface FileRouteTypes {
     | '/projetos/$projectId/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/login'
+    | '/register'
     | '/clientes'
     | '/projetos'
     | '/tarefas'
+    | '/'
     | '/clientes/novo'
     | '/projetos/$projectId'
     | '/projetos/ia'
@@ -135,126 +168,171 @@ export interface FileRouteTypes {
     | '/projetos/$projectId/editar'
   id:
     | '__root__'
-    | '/'
-    | '/clientes'
-    | '/projetos'
-    | '/tarefas'
-    | '/clientes_/novo'
-    | '/projetos_/$projectId'
-    | '/projetos_/ia'
-    | '/projetos_/novo'
-    | '/tarefas_/$taskId'
-    | '/projetos_/$projectId/editar'
+    | '/_authenticated'
+    | '/login'
+    | '/register'
+    | '/_authenticated/clientes'
+    | '/_authenticated/projetos'
+    | '/_authenticated/tarefas'
+    | '/_authenticated/'
+    | '/_authenticated/clientes_/novo'
+    | '/_authenticated/projetos_/$projectId'
+    | '/_authenticated/projetos_/ia'
+    | '/_authenticated/projetos_/novo'
+    | '/_authenticated/tarefas_/$taskId'
+    | '/_authenticated/projetos_/$projectId/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ClientesRoute: typeof ClientesRoute
-  ProjetosRoute: typeof ProjetosRoute
-  TarefasRoute: typeof TarefasRoute
-  ClientesNovoRoute: typeof ClientesNovoRoute
-  ProjetosProjectIdRoute: typeof ProjetosProjectIdRouteWithChildren
-  ProjetosIaRoute: typeof ProjetosIaRoute
-  ProjetosNovoRoute: typeof ProjetosNovoRoute
-  TarefasTaskIdRoute: typeof TarefasTaskIdRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tarefas': {
-      id: '/tarefas'
-      path: '/tarefas'
-      fullPath: '/tarefas'
-      preLoaderRoute: typeof TarefasRouteImport
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projetos': {
-      id: '/projetos'
-      path: '/projetos'
-      fullPath: '/projetos'
-      preLoaderRoute: typeof ProjetosRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/clientes': {
-      id: '/clientes'
-      path: '/clientes'
-      fullPath: '/clientes'
-      preLoaderRoute: typeof ClientesRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/tarefas_/$taskId': {
-      id: '/tarefas_/$taskId'
+    '/_authenticated/tarefas': {
+      id: '/_authenticated/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof AuthenticatedTarefasRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/projetos': {
+      id: '/_authenticated/projetos'
+      path: '/projetos'
+      fullPath: '/projetos'
+      preLoaderRoute: typeof AuthenticatedProjetosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/clientes': {
+      id: '/_authenticated/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof AuthenticatedClientesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/tarefas_/$taskId': {
+      id: '/_authenticated/tarefas_/$taskId'
       path: '/tarefas/$taskId'
       fullPath: '/tarefas/$taskId'
-      preLoaderRoute: typeof TarefasTaskIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedTarefasTaskIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/projetos_/novo': {
-      id: '/projetos_/novo'
+    '/_authenticated/projetos_/novo': {
+      id: '/_authenticated/projetos_/novo'
       path: '/projetos/novo'
       fullPath: '/projetos/novo'
-      preLoaderRoute: typeof ProjetosNovoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProjetosNovoRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/projetos_/ia': {
-      id: '/projetos_/ia'
+    '/_authenticated/projetos_/ia': {
+      id: '/_authenticated/projetos_/ia'
       path: '/projetos/ia'
       fullPath: '/projetos/ia'
-      preLoaderRoute: typeof ProjetosIaRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProjetosIaRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/projetos_/$projectId': {
-      id: '/projetos_/$projectId'
+    '/_authenticated/projetos_/$projectId': {
+      id: '/_authenticated/projetos_/$projectId'
       path: '/projetos/$projectId'
       fullPath: '/projetos/$projectId'
-      preLoaderRoute: typeof ProjetosProjectIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProjetosProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/clientes_/novo': {
-      id: '/clientes_/novo'
+    '/_authenticated/clientes_/novo': {
+      id: '/_authenticated/clientes_/novo'
       path: '/clientes/novo'
       fullPath: '/clientes/novo'
-      preLoaderRoute: typeof ClientesNovoRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedClientesNovoRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
-    '/projetos_/$projectId/editar': {
-      id: '/projetos_/$projectId/editar'
+    '/_authenticated/projetos_/$projectId/editar': {
+      id: '/_authenticated/projetos_/$projectId/editar'
       path: '/editar'
       fullPath: '/projetos/$projectId/editar'
-      preLoaderRoute: typeof ProjetosProjectIdEditarRouteImport
-      parentRoute: typeof ProjetosProjectIdRoute
+      preLoaderRoute: typeof AuthenticatedProjetosProjectIdEditarRouteImport
+      parentRoute: typeof AuthenticatedProjetosProjectIdRoute
     }
   }
 }
 
-interface ProjetosProjectIdRouteChildren {
-  ProjetosProjectIdEditarRoute: typeof ProjetosProjectIdEditarRoute
+interface AuthenticatedProjetosProjectIdRouteChildren {
+  AuthenticatedProjetosProjectIdEditarRoute: typeof AuthenticatedProjetosProjectIdEditarRoute
 }
 
-const ProjetosProjectIdRouteChildren: ProjetosProjectIdRouteChildren = {
-  ProjetosProjectIdEditarRoute: ProjetosProjectIdEditarRoute,
+const AuthenticatedProjetosProjectIdRouteChildren: AuthenticatedProjetosProjectIdRouteChildren =
+  {
+    AuthenticatedProjetosProjectIdEditarRoute:
+      AuthenticatedProjetosProjectIdEditarRoute,
+  }
+
+const AuthenticatedProjetosProjectIdRouteWithChildren =
+  AuthenticatedProjetosProjectIdRoute._addFileChildren(
+    AuthenticatedProjetosProjectIdRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
+  AuthenticatedProjetosRoute: typeof AuthenticatedProjetosRoute
+  AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedClientesNovoRoute: typeof AuthenticatedClientesNovoRoute
+  AuthenticatedProjetosProjectIdRoute: typeof AuthenticatedProjetosProjectIdRouteWithChildren
+  AuthenticatedProjetosIaRoute: typeof AuthenticatedProjetosIaRoute
+  AuthenticatedProjetosNovoRoute: typeof AuthenticatedProjetosNovoRoute
+  AuthenticatedTarefasTaskIdRoute: typeof AuthenticatedTarefasTaskIdRoute
 }
 
-const ProjetosProjectIdRouteWithChildren =
-  ProjetosProjectIdRoute._addFileChildren(ProjetosProjectIdRouteChildren)
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedClientesRoute: AuthenticatedClientesRoute,
+  AuthenticatedProjetosRoute: AuthenticatedProjetosRoute,
+  AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedClientesNovoRoute: AuthenticatedClientesNovoRoute,
+  AuthenticatedProjetosProjectIdRoute:
+    AuthenticatedProjetosProjectIdRouteWithChildren,
+  AuthenticatedProjetosIaRoute: AuthenticatedProjetosIaRoute,
+  AuthenticatedProjetosNovoRoute: AuthenticatedProjetosNovoRoute,
+  AuthenticatedTarefasTaskIdRoute: AuthenticatedTarefasTaskIdRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ClientesRoute: ClientesRoute,
-  ProjetosRoute: ProjetosRoute,
-  TarefasRoute: TarefasRoute,
-  ClientesNovoRoute: ClientesNovoRoute,
-  ProjetosProjectIdRoute: ProjetosProjectIdRouteWithChildren,
-  ProjetosIaRoute: ProjetosIaRoute,
-  ProjetosNovoRoute: ProjetosNovoRoute,
-  TarefasTaskIdRoute: TarefasTaskIdRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

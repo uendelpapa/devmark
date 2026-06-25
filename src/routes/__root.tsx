@@ -4,13 +4,13 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
 import { Outlet } from '@tanstack/react-router'
-import { Sidebar } from '../components/Sidebar'
-import { Header } from '../components/Header'
-import { TimerProvider } from '../components/TimerTracker'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from '../lib/queryClient'
 import { ToastContainer } from '../components/Toast'
+import { useAuthStore } from '../lib/auth'
+import { refreshToken } from '../services/http/auth'
+import { useEffect } from 'react'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -23,7 +23,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Devmark — Gestão de Projetos',
       },
     ],
     links: [
@@ -38,22 +38,63 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
-  return (
-    <TimerProvider>
-      <div className="flex h-screen w-screen bg-backpage font-sans overflow-hidden select-none">
-        <Sidebar />
-        <div className="flex-1 flex flex-col px-4.5 py-2.25 gap-2 h-full min-w-0 min-h-0">
-          <Header />
-          <Outlet />
+  const isLoading = useAuthStore((s) => s.isLoading)
+  const setAuth = useAuthStore((s) => s.setAuth)
+  const setLoading = useAuthStore((s) => s.setLoading)
+
+  // Session restoration: attempt to refresh on app mount
+  useEffect(() => {
+    let cancelled = false
+
+    async function restoreSession() {
+      try {
+        const { user, accessToken } = await refreshToken()
+        if (!cancelled) {
+          setAuth(user, accessToken)
+        }
+      } catch {
+        // No valid refresh token — user stays unauthenticated
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    restoreSession()
+
+    return () => {
+      cancelled = true
+    }
+  }, [setAuth, setLoading])
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-backpage">
+        <div className="flex flex-col items-center gap-4">
+          <svg
+            className="w-10 h-10 text-secondary fill-none animate-pulse"
+            viewBox="0 0 28 28"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M14 3C14 3 8.5 7.5 8.5 13.5C8.5 19.5 14 25 14 25C14 25 19.5 19.5 19.5 13.5C19.5 7.5 14 3 14 3Z" />
+            <path d="M14 9C14 9 11.5 12 11.5 15.5C11.5 19 14 22 14 22C14 22 16.5 19 16.5 15.5C16.5 12 14 9 14 9Z" />
+            <path d="M14 25V17" />
+          </svg>
+          <div className="w-6 h-6 border-3 border-secondary/20 border-t-secondary rounded-full animate-spin" />
         </div>
       </div>
-    </TimerProvider>
-  )
+    )
+  }
+
+  return <Outlet />
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -79,4 +120,3 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
-

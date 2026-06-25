@@ -2,10 +2,10 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button, Select, ListBox } from '@heroui/react'
 import { Plus } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchProjects, deleteProject, updateProject } from '../services/api'
+import { fetchProjects, deleteProject, updateProject } from '../../services/api'
 import { useState, useEffect } from 'react'
-import { ProjectCard, ProjectCardSkeleton } from '../components/ProjectCard'
-import { DeleteProjectModal, ChangeProjectStatusModal } from '../components/ProjectActionsModals'
+import { ProjectCard, ProjectCardSkeleton } from '../../components/ProjectCard'
+import { DeleteProjectModal, ChangeProjectStatusModal } from '../../components/ProjectActionsModals'
 
 const PROJECT_STATUSES = [
   { key: 'PLANNING', label: 'Planejamento' },
@@ -16,7 +16,7 @@ const PROJECT_STATUSES = [
   { key: 'CANCELED', label: 'Cancelado' }
 ]
 
-export const Route = createFileRoute('/projetos')({
+export const Route = createFileRoute('/_authenticated/projetos')({
   component: Projetos,
   validateSearch: (search: Record<string, unknown>): { status?: string } => {
     return {
@@ -93,7 +93,7 @@ function Projetos() {
   }
 
   return (
-    <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-6">
+    <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-8">
       {/* Page Heading & Action */}
       <div className="flex justify-between items-center shrink-0">
         <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
@@ -107,9 +107,9 @@ function Projetos() {
             aria-label="Filtrar por Status"
             selectedKey={selectedStatus}
             onSelectionChange={(key) => setSelectedStatus(key as string)}
-            className="w-48 shrink-0 rounded-full"
+            className="shrink-0 rounded-full"
           >
-            <Select.Trigger className="bg-zinc-50 border border-zinc-200 rounded-full shadow-none px-3 py-2 text-secondary text-sm font-medium w-full flex items-center justify-between">
+            <Select.Trigger className="bg-zinc-100 rounded-full shadow-none pl-3 py-2.5 text-secondary text-sm font-semibold w-fit flex items-center justify-between">
               <Select.Value />
               <Select.Indicator />
             </Select.Trigger>
@@ -132,9 +132,9 @@ function Projetos() {
             aria-label="Filtrar por Prioridade"
             selectedKey={selectedPriority}
             onSelectionChange={(key) => setSelectedPriority(key as string)}
-            className="w-44 shrink-0 rounded-full"
+            className="shrink-0 rounded-full"
           >
-            <Select.Trigger className="bg-zinc-50 border border-zinc-200 rounded-full shadow-none px-3 py-2 text-secondary text-sm font-medium w-full flex items-center justify-between">
+            <Select.Trigger className="bg-zinc-100 rounded-full shadow-none pl-3 py-2.5 text-secondary text-sm font-semibold w-full flex items-center justify-between">
               <Select.Value />
               <Select.Indicator />
             </Select.Trigger>

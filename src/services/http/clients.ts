@@ -12,3 +12,11 @@ export async function createClient(
   const response = await api.post('/clients', clientData)
   return response.data
 }
+
+export async function updateClient(
+  id: string,
+  clientData: Partial<Omit<Client, 'id' | 'created_at' | 'updated_at'>>
+): Promise<Client> {
+  const response = await api.patch(`/clients/${id}`, clientData)
+  return response.data
+}

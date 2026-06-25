@@ -1,5 +1,6 @@
 export { ApiError } from '../lib/axios'
 export * from './types'
+export * from './http/auth'
 export * from './http/dashboard'
 export * from './http/projects'
 export * from './http/clients'

@@ -1,5 +1,7 @@
 import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig } from 'axios';
 import { toast } from '../components/Toast';
+import { useAuthStore } from './auth';
 
 export class ApiError extends Error {
   statusCode?: number;
@@ -18,63 +20,80 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // send cookies on cross-origin requests
 });
+
+// ─── Request Interceptor: Attach Access Token ────────────────────────────────
+
+api.interceptors.request.use((config) => {
+  const { accessToken } = useAuthStore.getState();
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  return config;
+});
+
+// ─── Response Interceptor: Success Messages ──────────────────────────────────
 
 function getSuccessMessage(method: string, url: string): string | null {
   const normalizedUrl = url.toLowerCase();
-  
-  if (normalizedUrl.includes('/time-entries')) {
-    return null;
-  }
 
-  
+  // Skip auth endpoints and time-entries
+  if (normalizedUrl.includes('/auth/')) return null;
+  if (normalizedUrl.includes('/time-entries')) return null;
+
   if (method === 'post') {
-    if (normalizedUrl.includes('/clients')) {
-      return 'Cliente cadastrado com sucesso!';
-    }
-    if (normalizedUrl.includes('/projects')) {
-      return 'Projeto criado com sucesso!';
-    }
-    if (normalizedUrl.includes('/tasks')) {
-      return 'Tarefa criada com sucesso!';
-    }
+    if (normalizedUrl.includes('/clients')) return 'Cliente cadastrado com sucesso!';
+    if (normalizedUrl.includes('/projects')) return 'Projeto criado com sucesso!';
+    if (normalizedUrl.includes('/tasks')) return 'Tarefa criada com sucesso!';
     return 'Item cadastrado com sucesso!';
   }
-  
+
   if (method === 'patch' || method === 'put') {
-    if (normalizedUrl.includes('/projects')) {
-      return 'Projeto atualizado com sucesso!';
-    }
-    if (normalizedUrl.includes('/tasks')) {
-      return 'Tarefa atualizada com sucesso!';
-    }
-    if (normalizedUrl.includes('/clients')) {
-      return 'Cliente atualizado com sucesso!';
-    }
+    if (normalizedUrl.includes('/projects')) return 'Projeto atualizado com sucesso!';
+    if (normalizedUrl.includes('/tasks')) return 'Tarefa atualizada com sucesso!';
+    if (normalizedUrl.includes('/clients')) return 'Cliente atualizado com sucesso!';
     return 'Item atualizado com sucesso!';
   }
-  
+
   if (method === 'delete') {
-    if (normalizedUrl.includes('/projects')) {
-      return 'Projeto excluído com sucesso!';
-    }
-    if (normalizedUrl.includes('/tasks')) {
-      return 'Tarefa excluída com sucesso!';
-    }
-    if (normalizedUrl.includes('/clients')) {
-      return 'Cliente excluído com sucesso!';
-    }
+    if (normalizedUrl.includes('/projects')) return 'Projeto excluído com sucesso!';
+    if (normalizedUrl.includes('/tasks')) return 'Tarefa excluída com sucesso!';
+    if (normalizedUrl.includes('/clients')) return 'Cliente excluído com sucesso!';
     return 'Item excluído com sucesso!';
   }
-  
+
   return null;
 }
+
+// ─── Silent Refresh Logic ────────────────────────────────────────────────────
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (err: any) => void;
+}> = [];
+
+function processQueue(error: any, token: string | null = null) {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token!);
+    }
+  });
+  failedQueue = [];
+}
+
+// ─── Response Interceptors ───────────────────────────────────────────────────
 
 api.interceptors.response.use(
   (response) => {
     const method = response.config.method?.toLowerCase();
     const url = response.config.url || '';
-    
+
     if (method && ['post', 'patch', 'put', 'delete'].includes(method)) {
       const msg = getSuccessMessage(method, url);
       if (msg) {
@@ -83,12 +102,69 @@ api.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean; headers?: any };
+
+    // ─── 401 Silent Refresh ──────────────────────────────────────────────────
+    const isAuthEndpoint =
+      originalRequest?.url?.includes('/auth/login') ||
+      originalRequest?.url?.includes('/auth/register') ||
+      originalRequest?.url?.includes('/auth/refresh');
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isAuthEndpoint) {
+      if (isRefreshing) {
+        // Another request already triggered a refresh — queue this one
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              resolve(api(originalRequest));
+            },
+            reject,
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post(
+          `${api.defaults.baseURL}/auth/refresh`,
+          {},
+          { withCredentials: true },
+        );
+
+        const newAccessToken = data.accessToken;
+        useAuthStore.getState().setAuth(data.user, newAccessToken);
+
+        processQueue(null, newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+
+        // Refresh failed — logout and redirect
+        useAuthStore.getState().logout();
+
+        // Only redirect if not already on login page
+        if (!window.location.pathname.startsWith('/login')) {
+          window.location.href = '/login';
+        }
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    // ─── Standard Error Handling ─────────────────────────────────────────────
     let errorMessage = 'Ocorreu um erro inesperado.';
-    
+
     if (error.response) {
-      const { status, data } = error.response;
-      
+      const { status, data } = error.response as any;
+
       // Parse NestJS validation messages
       if (data && data.message) {
         if (Array.isArray(data.message)) {
@@ -121,10 +197,8 @@ api.interceptors.response.use(
     } else {
       errorMessage = error.message;
     }
-    
+
     toast.error(errorMessage);
     return Promise.reject(new ApiError(errorMessage, error.response?.status, error));
   }
 );
-
-

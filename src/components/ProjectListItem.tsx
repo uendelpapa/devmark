@@ -33,7 +33,7 @@ export const ProjectListItem = memo(function ProjectListItem({
         </Avatar>
         <div className="min-w-0 flex-1 -space-y-1">
           <p className="font-bold text-[14px] text-secondary truncate">{name}</p>
-          <p className="text-[12px] font-semibold text-zinc-600 truncate">Entregar {date}</p>
+          <p className="text-[12px] font-medium text-zinc-600 truncate">Entregar {date}</p>
         </div>
       </div>
       <Button

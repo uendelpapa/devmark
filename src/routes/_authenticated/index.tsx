@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { TimerTracker } from '../components/TimerTracker'
+import { TimerTracker } from '../../components/TimerTracker'
 import {
   Button,
   Card,
@@ -9,18 +9,17 @@ import {
 import { FilePlus, Plus } from '@gravity-ui/icons'
 import { useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { fetchDashboardData } from '../services/api'
-import type { DashboardData } from '../services/api'
-import { StatCard, StatCardSkeleton } from '../components/StatCard'
-import { FinanceCard, FinanceCardSkeleton } from '../components/FinanceCard'
-import { ProjectListItem, ProjectListItemSkeleton } from '../components/ProjectListItem'
-import { PaymentListItem, PaymentListItemSkeleton } from '../components/PaymentListItem'
+import { fetchDashboardData } from '../../services/api'
+import type { DashboardData } from '../../services/api'
+import { StatCard, StatCardSkeleton } from '../../components/StatCard'
+import { FinanceCard, FinanceCardSkeleton } from '../../components/FinanceCard'
+import { ProjectListItem, ProjectListItemSkeleton } from '../../components/ProjectListItem'
+import { PaymentListItem, PaymentListItemSkeleton } from '../../components/PaymentListItem'
 // Removed ProjectDetailsModal and useState for it
 
-export const Route = createFileRoute('/')(
-  {
-    component: Home
-  })
+export const Route = createFileRoute('/_authenticated/')({
+  component: Home,
+})
 
 // --- Presentation helpers (frontend responsibility) ---
 
@@ -35,37 +34,37 @@ function mapProjectSummaryToStatCards(data: DashboardData) {
   // 1. Total
   const totalDiff = total - prev.total
   const totalIndicator = totalDiff > 0 ? ('up' as const) : totalDiff < 0 ? ('down' as const) : ('info' as const)
-  const totalText = totalDiff > 0 
-    ? `+${totalDiff} referente ao mês passado` 
-    : totalDiff < 0 
-      ? `${totalDiff} referente ao mês passado` 
+  const totalText = totalDiff > 0
+    ? `+${totalDiff} referente ao mês anterior`
+    : totalDiff < 0
+      ? `${totalDiff} referente ao mês anterior`
       : 'Sem alterações'
 
   // 2. Completed
   const completedDiff = completed - prev.completed
   const completedIndicator = completedDiff > 0 ? ('up' as const) : completedDiff < 0 ? ('down' as const) : ('info' as const)
-  const completedText = completedDiff > 0 
-    ? `+${completedDiff} referente ao mês passado` 
-    : completedDiff < 0 
-      ? `${completedDiff} referente ao mês passado` 
+  const completedText = completedDiff > 0
+    ? `+${completedDiff} referente ao mês anterior`
+    : completedDiff < 0
+      ? `${completedDiff} referente ao mês anterior`
       : 'Sem alterações'
 
   // 3. In Progress
   const inProgressDiff = in_progress - prev.in_progress
   const inProgressIndicator = inProgressDiff > 0 ? ('up' as const) : inProgressDiff < 0 ? ('down' as const) : ('info' as const)
-  const inProgressText = inProgressDiff > 0 
-    ? `+${inProgressDiff} referente ao mês passado` 
-    : inProgressDiff < 0 
-      ? `${inProgressDiff} referente ao mês passado` 
+  const inProgressText = inProgressDiff > 0
+    ? `+${inProgressDiff} referente ao mês anterior`
+    : inProgressDiff < 0
+      ? `${inProgressDiff} referente ao mês anterior`
       : 'Sem alterações'
 
   // 4. Planning (Pending)
   const planningDiff = planning - prev.planning
   const planningIndicator = planningDiff > 0 ? ('down' as const) : planningDiff < 0 ? ('up' as const) : ('info' as const)
-  const planningText = planningDiff > 0 
-    ? `+${planningDiff} referente ao mês passado` 
-    : planningDiff < 0 
-      ? `${planningDiff} referente ao mês passado` 
+  const planningText = planningDiff > 0
+    ? `+${planningDiff} referente ao mês anterior`
+    : planningDiff < 0
+      ? `${planningDiff} referente ao mês anterior`
       : 'Sem alterações'
 
   return [
@@ -107,28 +106,28 @@ function mapFinanceSummaryToCards(data: DashboardData) {
   // 1. Paid
   const paidDiff = total_paid - prev.total_paid
   const paidIndicator = paidDiff > 0 ? ('up' as const) : paidDiff < 0 ? ('down' as const) : ('info' as const)
-  const paidText = paidDiff > 0 
-    ? `+${formatCurrency(paidDiff)} referente ao mês passado` 
-    : paidDiff < 0 
-      ? `-${formatCurrency(Math.abs(paidDiff))} referente ao mês passado` 
+  const paidText = paidDiff > 0
+    ? `+${formatCurrency(paidDiff)} referente ao mês anterior`
+    : paidDiff < 0
+      ? `-${formatCurrency(Math.abs(paidDiff))} referente ao mês anterior`
       : 'Sem alterações'
 
   // 2. Expenses
   const expensesDiff = total_expenses - prev.total_expenses
   const expensesIndicator = expensesDiff > 0 ? ('down' as const) : expensesDiff < 0 ? ('up' as const) : ('info' as const)
-  const expensesText = expensesDiff > 0 
-    ? `+${formatCurrency(expensesDiff)} referente ao mês passado` 
-    : expensesDiff < 0 
-      ? `-${formatCurrency(Math.abs(expensesDiff))} referente ao mês passado` 
+  const expensesText = expensesDiff > 0
+    ? `+${formatCurrency(expensesDiff)} referente ao mês anterior`
+    : expensesDiff < 0
+      ? `-${formatCurrency(Math.abs(expensesDiff))} referente ao mês anterior`
       : 'Sem alterações'
 
   // 3. Pending
   const pendingDiff = total_pending - prev.total_pending
   const pendingIndicator = pendingDiff > 0 ? ('up' as const) : pendingDiff < 0 ? ('down' as const) : ('info' as const)
-  const pendingText = pendingDiff > 0 
-    ? `+${formatCurrency(pendingDiff)} referente ao mês passado` 
-    : pendingDiff < 0 
-      ? `-${formatCurrency(Math.abs(pendingDiff))} referente ao mês passado` 
+  const pendingText = pendingDiff > 0
+    ? `+${formatCurrency(pendingDiff)} referente ao mês anterior`
+    : pendingDiff < 0
+      ? `-${formatCurrency(Math.abs(pendingDiff))} referente ao mês anterior`
       : 'Sem alterações'
 
   return [
@@ -444,8 +443,8 @@ function Home() {
             <CardContent className="p-0 flex flex-col w-full h-full">
               <div className="flex items-center justify-between mb-4 shrink-0">
                 <h3 className="font-semibold">Projetos</h3>
-                <Button 
-                  size='lg' 
+                <Button
+                  size='lg'
                   onPress={() => navigate({ to: '/projetos/novo' })}
                   className="size-9 rounded-full bg-secondary text-primary-light flex items-center justify-center cursor-pointer hover:bg-secondary hover:opacity-90 border-none shadow-md shadow-black/40"
                 >

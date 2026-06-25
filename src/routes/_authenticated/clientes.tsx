@@ -1,22 +1,43 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Plus } from '@gravity-ui/icons'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Select, ListBox } from '@heroui/react'
-import { fetchClients } from '../services/api'
-import { ClientCard } from '../components/clientes/ClientCard'
+import { fetchClients, updateClient } from '../../services/api'
+import { ClientCard } from '../../components/clientes/ClientCard'
+import { EditClientModal } from '../../components/clientes/EditClientModal'
 
-export const Route = createFileRoute('/clientes')({
+export const Route = createFileRoute('/_authenticated/clientes')({
   component: Clientes
 })
 
 function Clientes() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ['clients'],
     queryFn: fetchClients
   })
   const [filter, setFilter] = useState<string>('all')
+  const [editingClient, setEditingClient] = useState<any | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+  const { mutate: handleUpdateClient, isPending: isUpdatingClient, error: updateError } = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => updateClient(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      setIsEditModalOpen(false)
+      setEditingClient(null)
+    }
+  })
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return null
+    return Array.isArray(err.response?.data?.message)
+      ? err.response.data.message.join(', ')
+      : err.response?.data?.message || err.message
+  }
 
   const filteredClients = clients.filter((client) => {
     if (filter === 'pending') return client.hasPendingPayment
@@ -37,10 +58,10 @@ function Clientes() {
           <Select
             selectedKey={filter}
             onSelectionChange={(key) => setFilter(key as string)}
-            className="w-[256px] h-[36px] shrink-0 rounded-[12px]"
+            className="shrink-0 rounded-[12px]"
             aria-label="Filtrar clientes"
           >
-            <Select.Trigger className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-full pl-5 pr-10 h-10 text-[14px] border-none outline-none cursor-pointer flex items-center justify-between transition-colors shadow-none select-none">
+            <Select.Trigger className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-full pl-3 py-2.5 text-[14px] border-none outline-none cursor-pointer flex items-center justify-between transition-colors shadow-none select-none">
               <Select.Value />
               <Select.Indicator />
             </Select.Trigger>
@@ -84,10 +105,29 @@ function Clientes() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-y-auto scrollbar-none pb-4">
           {filteredClients.map((client) => (
-            <ClientCard key={client.id} client={client} />
+            <ClientCard
+              key={client.id}
+              client={client}
+              onEdit={(c) => {
+                setEditingClient(c)
+                setIsEditModalOpen(true)
+              }}
+            />
           ))}
         </div>
       )}
+
+      <EditClientModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditingClient(null)
+        }}
+        onSubmit={(id, data) => handleUpdateClient({ id, data })}
+        client={editingClient}
+        isPending={isUpdatingClient}
+        error={getErrorMessage(updateError)}
+      />
     </div>
   )
 }

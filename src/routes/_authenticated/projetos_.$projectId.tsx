@@ -9,11 +9,11 @@ import {
   deletePayment,
   createProjectExpense,
   deleteProjectExpense 
-} from '../services/api'
-import { AddPaymentModal } from '../components/AddPaymentModal'
-import { AddExpenseModal } from '../components/AddExpenseModal'
+} from '../../services/api'
+import { AddPaymentModal } from '../../components/AddPaymentModal'
+import { AddExpenseModal } from '../../components/AddExpenseModal'
 
-export const Route = createFileRoute('/projetos_/$projectId')({
+export const Route = createFileRoute('/_authenticated/projetos_/$projectId')({
   component: ProjectDetailsPage
 })
 

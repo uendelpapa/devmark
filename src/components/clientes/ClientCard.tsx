@@ -10,7 +10,7 @@ interface ClientCardProps {
 export function ClientCard({ client, onEdit }: ClientCardProps) {
   return (
     <Card className="flex flex-row items-center justify-between p-4 bg-zinc-100 hover:bg-zinc-200/60 rounded-[16px] border-none shadow-none transition-colors group text-secondary">
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         {/* Avatar with custom zinc gradient */}
         <Avatar className="size-8 shrink-0">
           <Avatar.Image
@@ -21,7 +21,7 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
         </Avatar>
 
         {/* Client details */}
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-1 flex-col min-w-0 max-w-32">
           <span className="text-xs text-zinc-800 truncate leading-tight">
             {client.name}
           </span>
@@ -34,7 +34,7 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
       <div className="flex items-center gap-2">
         {/* Payment Status Badge */}
         {client.hasPendingPayment ? (
-          <span className="bg-[#EAB308] text-white px-1.5 py-0.5 rounded-full inline-flex items-center justify-center font-medium">
+          <span className="bg-[#EAB308] text-white px-1.5 py-0.5 rounded-full w-fit items-center justify-center font-medium">
             <span className="flex items-center gap-1.5 text-xs">
               <Clock className="size-3" />
               Pagamento pendênte

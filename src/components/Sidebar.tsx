@@ -9,35 +9,60 @@ import {
   CircleQuestion,
   ArrowRightFromSquare
 } from '@gravity-ui/icons'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { TimerTracker } from './TimerTracker'
+import { useQuery } from '@tanstack/react-query'
+import { fetchTasks, logoutUser } from '../services/api'
+import { useAuthStore } from '../lib/auth'
+import { useState } from 'react'
 
 interface MenuItemProps {
   icon: React.ComponentType<{ className?: string; width?: string | number; height?: string | number }>
   label: string
   badge?: string
   href?: string
+  onClick?: () => void
 }
 
-function MenuItem({ icon: Icon, label, badge, href }: MenuItemProps) {
+function MenuItem({ icon: Icon, label, badge, href, onClick }: MenuItemProps) {
   const location = useLocation()
   const targetPath = href || `/${label.toLowerCase()}`
   const active = targetPath === '/' ? location.pathname === '/' : location.pathname.startsWith(targetPath)
 
+  const isLogout = label === 'Logout'
+  const hoverColor = isLogout ? 'group-hover:text-red-500' : 'group-hover:text-backpage'
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="group flex items-center gap-2 bg-transparent border-none p-0 cursor-pointer">
+        <div className="flex justify-center items-center gap-2">
+          <Icon
+            className={`text-secondary ${hoverColor} transition-colors duration-100 ease-in-out`}
+            width={16}
+            height={16}
+          />
+          <span className={`font-semibold tracking-tight leading-none text-secondary ${hoverColor} transition-colors duration-100 ease-in-out`}>
+            {label}
+          </span>
+        </div>
+      </button>
+    )
+  }
+
   return (
-    <Link to={targetPath} className="group flex items-center text-secondary gap-2">
+    <Link to={targetPath} className="group flex items-center gap-2">
       <div className="flex justify-center items-center gap-2">
         <Icon
-          className={`text-secondary ${active ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}
+          className={`${active ? 'text-backpage' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}
           width={16}
           height={16}
         />
-        <span className={`text-secondary font-semibold tracking-tight leading-none ${active ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
+        <span className={`font-semibold tracking-tight leading-none ${active ? 'text-backpage' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}>
           {label}
         </span>
       </div>
       {badge && (
-        <span className="w-fit h-[15px] bg-secondary leading-none text-center flex items-center justify-center text-primary-light text-[10px] font-semibold px-1 rounded-xs text-center">
+        <span className="w-fit h-[15px] bg-secondary leading-none flex items-center justify-center text-primary-light text-[10px] font-semibold px-1 rounded-xs text-center">
           {badge}
         </span>
       )}
@@ -46,26 +71,39 @@ function MenuItem({ icon: Icon, label, badge, href }: MenuItemProps) {
 }
 
 export function Sidebar() {
+  const navigate = useNavigate()
+  const logout = useAuthStore((s) => s.logout)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const { data: tasks = [] } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: fetchTasks
+  })
+
+  const activeCount = tasks.filter((t: any) => t.status !== 'COMPLETED' && t.status !== 'CANCELED').length
+  const tasksBadge = activeCount > 0 ? `+${activeCount}` : undefined
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return
+    setIsLoggingOut(true)
+    try {
+      await logoutUser()
+    } catch {
+      // Even if API fails, clear local state
+    } finally {
+      logout()
+      navigate({ to: '/login' })
+    }
+  }
+
   return (
     <aside className="w-fit bg-white h-screen flex flex-col justify-between py-6 px-8 shrink-0 select-none overflow-y-auto gap-10 sidebar-scrollbar">
       {/* Top Section */}
       <div className="flex flex-col gap-10">
         {/* Logo */}
-        <div className="flex justify-start items-center">
-          <svg
-            className="w-7 h-7 text-secondary fill-none"
-            viewBox="0 0 28 28"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            {/* Custom Leaf sprout path matching the logo */}
-            <path d="M14 3C14 3 8.5 7.5 8.5 13.5C8.5 19.5 14 25 14 25C14 25 19.5 19.5 19.5 13.5C19.5 7.5 14 3 14 3Z" />
-            <path d="M14 9C14 9 11.5 12 11.5 15.5C11.5 19 14 22 14 22C14 22 16.5 19 16.5 15.5C16.5 12 14 9 14 9Z" />
-            <path d="M14 25V17" />
-          </svg>
-          <span className="text-[21px] font-extrabold text-[#011D00] tracking-tight">
+        <div className="flex justify-center items-center gap-1">
+          <img src="/logo.svg" alt="Logo" />
+          <span className="text-xl font-semibold text-secondary tracking-tight mt-1">
             Devmark
           </span>
         </div>
@@ -77,7 +115,7 @@ export function Sidebar() {
           </h3>
           <div className="flex flex-col gap-4">
             <MenuItem icon={Rectangles4} label="Dashboard" href="/" />
-            <MenuItem icon={Layers3Diagonal} label="Tarefas" badge="+12" />
+            <MenuItem icon={Layers3Diagonal} label="Tarefas" badge={tasksBadge} />
             <MenuItem icon={Persons} label="Clientes" />
             <MenuItem icon={Folder} label="Projetos" />
             <MenuItem icon={Calendar} label="Calendario" />
@@ -93,7 +131,7 @@ export function Sidebar() {
           <div className="flex flex-col gap-4">
             <MenuItem icon={Sliders} label="Configurações" />
             <MenuItem icon={CircleQuestion} label="Ajuda" />
-            <MenuItem icon={ArrowRightFromSquare} label="Logout" />
+            <MenuItem icon={ArrowRightFromSquare} label="Logout" onClick={handleLogout} />
           </div>
         </div>
       </div>
