@@ -1,0 +1,130 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
+import { Prisma } from '@prisma/client';
+export declare class ClientsService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    create(dto: CreateClientDto, userId: string): Promise<{
+        name: string;
+        email: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        company_name: string | null;
+        document: string | null;
+        phone: string | null;
+        website: string | null;
+        instagram: string | null;
+        linkedin: string | null;
+        industry: string | null;
+        source: string | null;
+        status: import("@prisma/client").$Enums.ClientStatus;
+        preferred_communication: import("@prisma/client").$Enums.CommunicationType;
+        preferred_payment_method: import("@prisma/client").$Enums.PaymentMethod;
+        notes: string | null;
+    }>;
+    findAll(params: {
+        page?: number;
+        limit?: number;
+        status?: string;
+        hasPendingPayment?: string;
+    }, userId: string): Promise<{
+        data: {
+            hasPendingPayment: boolean;
+            name: string;
+            email: string;
+            id: string;
+            created_at: Date;
+            updated_at: Date;
+            user_id: string;
+            company_name: string | null;
+            document: string | null;
+            phone: string | null;
+            website: string | null;
+            instagram: string | null;
+            linkedin: string | null;
+            industry: string | null;
+            source: string | null;
+            status: import("@prisma/client").$Enums.ClientStatus;
+            preferred_communication: import("@prisma/client").$Enums.CommunicationType;
+            preferred_payment_method: import("@prisma/client").$Enums.PaymentMethod;
+            notes: string | null;
+        }[];
+        meta: {
+            total: number;
+            page: number;
+            limit: number;
+            totalPages: number;
+        };
+    }>;
+    findOne(id: string, userId: string): Promise<{
+        projects: {
+            name: string;
+            id: string;
+            status: import("@prisma/client").$Enums.ProjectStatus;
+            project_value: Prisma.Decimal;
+            amount_received: Prisma.Decimal;
+        }[];
+    } & {
+        name: string;
+        email: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        company_name: string | null;
+        document: string | null;
+        phone: string | null;
+        website: string | null;
+        instagram: string | null;
+        linkedin: string | null;
+        industry: string | null;
+        source: string | null;
+        status: import("@prisma/client").$Enums.ClientStatus;
+        preferred_communication: import("@prisma/client").$Enums.CommunicationType;
+        preferred_payment_method: import("@prisma/client").$Enums.PaymentMethod;
+        notes: string | null;
+    }>;
+    update(id: string, dto: UpdateClientDto, userId: string): Promise<{
+        name: string;
+        email: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        company_name: string | null;
+        document: string | null;
+        phone: string | null;
+        website: string | null;
+        instagram: string | null;
+        linkedin: string | null;
+        industry: string | null;
+        source: string | null;
+        status: import("@prisma/client").$Enums.ClientStatus;
+        preferred_communication: import("@prisma/client").$Enums.CommunicationType;
+        preferred_payment_method: import("@prisma/client").$Enums.PaymentMethod;
+        notes: string | null;
+    }>;
+    remove(id: string, userId: string): Promise<{
+        name: string;
+        email: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        company_name: string | null;
+        document: string | null;
+        phone: string | null;
+        website: string | null;
+        instagram: string | null;
+        linkedin: string | null;
+        industry: string | null;
+        source: string | null;
+        status: import("@prisma/client").$Enums.ClientStatus;
+        preferred_communication: import("@prisma/client").$Enums.CommunicationType;
+        preferred_payment_method: import("@prisma/client").$Enums.PaymentMethod;
+        notes: string | null;
+    }>;
+}

@@ -1,0 +1,333 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum ClientStatus {
+  LEAD
+  NEGOTIATING
+  ACTIVE
+  INACTIVE
+  LOST
+}
+
+enum CommunicationType {
+  WHATSAPP
+  EMAIL
+  PHONE
+  MEETING
+}
+
+enum PaymentMethod {
+  PIX
+  BANK_TRANSFER
+  CREDIT_CARD
+  CASH
+}
+
+enum ProjectArea {
+  MARKETING
+  DEVELOPER
+}
+
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  WAITING_CLIENT
+  REVIEW
+  COMPLETED
+  CANCELED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  OVERDUE
+  PAID
+  CANCELED
+}
+
+enum ExpenseCategory {
+  AI
+  SOFTWARE
+  DOMAIN
+  HOSTING
+  DESIGN
+  ADS
+  FREELANCER
+  OTHER
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  PDF
+  DOCUMENT
+  SPREADSHEET
+  DESIGN
+  OTHER
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
+model Client {
+  id                      String            @id @default(uuid()) @db.Uuid
+  name                    String            @db.VarChar(255)
+  company_name            String?           @db.VarChar(255)
+  document                String?           @db.VarChar(30)
+  email                   String            @unique @db.VarChar(255)
+  phone                   String?           @db.VarChar(30)
+  website                 String?           @db.VarChar(255)
+  instagram               String?           @db.VarChar(255)
+  linkedin                String?           @db.VarChar(255)
+  industry                String?           @db.VarChar(100)
+  source                  String?           @db.VarChar(100)
+  status                  ClientStatus      @default(LEAD)
+  preferred_communication CommunicationType @default(WHATSAPP)
+  preferred_payment_method PaymentMethod    @default(PIX)
+  notes                   String?           @db.Text
+  created_at              DateTime          @default(now())
+  updated_at              DateTime          @updatedAt
+
+  user_id                 String            @db.Uuid
+  user                    User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  projects Project[]
+
+  @@map("clients")
+}
+
+model Project {
+  id                     String        @id @default(uuid()) @db.Uuid
+  client_id              String        @db.Uuid
+  name                   String        @db.VarChar(255)
+  description            String?       @db.Text
+  area                   ProjectArea
+  specialty              String?       @db.VarChar(100)
+  status                 ProjectStatus @default(PLANNING)
+  priority               Priority      @default(MEDIUM)
+  project_value          Decimal       @default(0) @db.Decimal(12, 2)
+  amount_received        Decimal       @default(0) @db.Decimal(12, 2)
+  amount_pending         Decimal       @default(0) @db.Decimal(12, 2)
+  estimated_hours        Int?
+  worked_hours           Int           @default(0)
+  start_date             DateTime?     @db.Date
+  expected_delivery_date DateTime?     @db.Date
+  delivery_date          DateTime?     @db.Date
+  notes                  String?       @db.Text
+  created_at             DateTime      @default(now())
+  updated_at             DateTime      @updatedAt
+
+  user_id                String        @db.Uuid
+  user                   User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  client           Client           @relation(fields: [client_id], references: [id], onDelete: Restrict)
+  tasks            Task[]
+  payments         Payment[]
+  project_expenses ProjectExpense[]
+  assets           Asset[]
+  events           Event[]
+  project_tags     ProjectTag[]
+  time_entries     TimeEntry[]
+
+  @@map("projects")
+}
+
+model Task {
+  id              String        @id @default(uuid()) @db.Uuid
+  project_id      String        @db.Uuid
+  title           String        @db.VarChar(255)
+  description     String?       @db.Text
+  status          TaskStatus    @default(PENDING)
+  priority        Priority      @default(MEDIUM)
+  estimated_hours Int?
+  worked_hours    Int           @default(0)
+  expected_value  Decimal?      @db.Decimal(12, 2)
+  received_value  Decimal?      @db.Decimal(12, 2)
+  started_at      DateTime?
+  finished_at     DateTime?
+  due_date        DateTime?     @db.Date
+  tags            String[]      @default([])
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+
+  user_id         String        @db.Uuid
+  user            User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project       Project        @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  task_expenses TaskExpense[]
+  assets        Asset[]
+  time_entries  TimeEntry[]
+  subtasks      Subtask[]
+
+  @@map("tasks")
+}
+
+model Subtask {
+  id         String   @id @default(uuid()) @db.Uuid
+  task_id    String   @db.Uuid
+  text       String   @db.VarChar(255)
+  completed  Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  task       Task     @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@map("subtasks")
+}
+
+model Payment {
+  id             String        @id @default(uuid()) @db.Uuid
+  project_id     String        @db.Uuid
+  amount         Decimal       @db.Decimal(12, 2)
+  due_date       DateTime      @db.Date
+  payment_date   DateTime?     @db.Date
+  payment_method PaymentMethod?
+  status         PaymentStatus @default(PENDING)
+  notes          String?       @db.Text
+  created_at     DateTime      @default(now())
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model ProjectExpense {
+  id          String          @id @default(uuid()) @db.Uuid
+  project_id  String          @db.Uuid
+  title       String          @db.VarChar(255)
+  description String?         @db.Text
+  category    ExpenseCategory
+  value       Decimal         @db.Decimal(12, 2)
+  created_at  DateTime        @default(now())
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@map("project_expenses")
+}
+
+model TaskExpense {
+  id          String          @id @default(uuid()) @db.Uuid
+  task_id     String          @db.Uuid
+  title       String          @db.VarChar(255)
+  description String?         @db.Text
+  category    ExpenseCategory
+  value       Decimal         @db.Decimal(12, 2)
+  created_at  DateTime        @default(now())
+
+  task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@map("task_expenses")
+}
+
+model Asset {
+  id         String    @id @default(uuid()) @db.Uuid
+  project_id String    @db.Uuid
+  task_id    String?   @db.Uuid
+  name       String    @db.VarChar(255)
+  type       AssetType
+  url        String    @db.VarChar(500)
+  size       Int?
+  created_at DateTime  @default(now())
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  task    Task?   @relation(fields: [task_id], references: [id], onDelete: SetNull)
+
+  @@map("assets")
+}
+
+model Event {
+  id          String   @id @default(uuid()) @db.Uuid
+  project_id  String?  @db.Uuid
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  start_date  DateTime
+  end_date    DateTime
+  created_at  DateTime @default(now())
+
+  user_id     String   @db.Uuid
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [project_id], references: [id], onDelete: SetNull)
+
+  @@map("events")
+}
+
+model ProjectTag {
+  id         String @id @default(uuid()) @db.Uuid
+  project_id String @db.Uuid
+  name       String @db.VarChar(50)
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  @@unique([project_id, name])
+  @@map("project_tags")
+}
+
+model TimeEntry {
+  id          String    @id @default(uuid()) @db.Uuid
+  project_id  String    @db.Uuid
+  task_id     String    @db.Uuid
+  description String?   @db.Text
+  start_time  DateTime
+  end_time    DateTime?
+  duration    Int?
+  created_at  DateTime  @default(now())
+
+  project Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  task    Task    @relation(fields: [task_id], references: [id], onDelete: Cascade)
+
+  @@map("time_entries")
+}
+
+// ─── Auth Models ─────────────────────────────────────────────────────────────
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  password_hash String         @db.VarChar(255)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  refresh_tokens RefreshToken[]
+  clients        Client[]
+  projects       Project[]
+  tasks          Task[]
+  events         Event[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
+  token_hash String   @db.VarChar(255)
+  expires_at DateTime
+  revoked    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([token_hash])
+  @@map("refresh_tokens")
+}
