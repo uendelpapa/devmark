@@ -68,7 +68,7 @@ function TaskCard({ task, onClick, wasDragging }: TaskCardProps) {
 
       <div className="flex items-center gap-1.5 text-secondary/60">
         <Calendar className="size-4" />
-        <span className="text-[12px] font-semibold">Due Date {task.dueDate}</span>
+        <span className="text-[12px] font-semibold">Entregar {task.dueDate}</span>
       </div>
     </div>
   )
@@ -103,7 +103,7 @@ function KanbanColumn({ id, title, tasks, headerBg, flagColor, onTaskClick, onAd
             {tasks.length} Tarefas
           </span>
         </div>
-        <button 
+        <button
           onClick={() => onAddTask?.(id)}
           className="size-8 bg-secondary text-white rounded-full flex items-center justify-center hover:bg-[#334621] transition-colors cursor-pointer"
         >
@@ -157,9 +157,9 @@ export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, complet
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-4 gap-6 flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pb-4">
         <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-800" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="IN_PROGRESS" title="Doing" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="REVIEW" title="Review" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="COMPLETED" title="Done" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="IN_PROGRESS" title="Fazendo" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="REVIEW" title="Revisão" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="COMPLETED" title="Feito" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
       </div>
     </DndContext>
   )

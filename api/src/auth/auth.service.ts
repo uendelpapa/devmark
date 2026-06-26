@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import * as bcrypt from 'bcrypt';
 import { createHash, randomBytes } from 'crypto';
 
@@ -143,6 +144,46 @@ export class AuthService {
       where: { id: userId },
       select: { id: true, name: true, email: true, created_at: true },
     });
+  }
+
+  // ─── Update Profile ──────────────────────────────────────────────────────────
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException('Usuário não encontrado');
+
+    const updateData: any = {};
+
+    if (dto.name) updateData.name = dto.name;
+    
+    if (dto.email && dto.email !== user.email) {
+      const emailExists = await this.prisma.user.findUnique({ where: { email: dto.email } });
+      if (emailExists) throw new ConflictException('Este e-mail já está em uso');
+      updateData.email = dto.email;
+    }
+
+    if (dto.newPassword) {
+      if (!dto.currentPassword) {
+        throw new UnauthorizedException('A senha atual é necessária para alterar a senha');
+      }
+      const passwordValid = await bcrypt.compare(dto.currentPassword, user.password_hash);
+      if (!passwordValid) {
+        throw new UnauthorizedException('A senha atual está incorreta');
+      }
+      updateData.password_hash = await bcrypt.hash(dto.newPassword, 12);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return this.getProfile(userId);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: { id: true, name: true, email: true, created_at: true },
+    });
+
+    return updatedUser;
   }
 
   // ─── Private Helpers ─────────────────────────────────────────────────────────

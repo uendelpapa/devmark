@@ -115,9 +115,9 @@ export function ListView({ pendingTasks, inProgressTasks, reviewTasks, completed
   return (
     <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pr-2 space-y-6">
       <TaskListSection title="To do" tasks={pendingTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
-      <TaskListSection title="Doing" tasks={inProgressTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
-      <TaskListSection title="Review" tasks={reviewTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
-      <TaskListSection title="Done" tasks={completedTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
+      <TaskListSection title="Fazendo" tasks={inProgressTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
+      <TaskListSection title="Revisão" tasks={reviewTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
+      <TaskListSection title="Feito" tasks={completedTasks} onStatusChange={onTaskStatusChange} onTaskClick={onTaskClick} />
     </div>
   )
 }

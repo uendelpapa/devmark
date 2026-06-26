@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
-import type { CreatePaymentData } from '../services/api'
+import type { CreatePaymentData } from '../../services/api'
 import { Select, ListBox, Calendar } from '@heroui/react'
 import { parseDate } from '@internationalized/date'
 

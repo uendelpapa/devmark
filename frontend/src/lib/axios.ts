@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig } from 'axios';
-import { toast } from '../components/Toast';
+import { toast } from '../components/ui/Toast';
 import { useAuthStore } from './auth';
 
 export class ApiError extends Error {

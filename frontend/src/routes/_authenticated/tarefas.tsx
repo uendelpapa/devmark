@@ -4,12 +4,12 @@ import { Plus, LayoutHeaderCells, ChartColumnStacked, LayoutRows3, LayoutHeaderC
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask } from '../../services/api'
 import type { TaskCardData as Task } from '../../services/api'
-import { KanbanView } from '../../components/tarefas/KanbanView'
-import { ListView } from '../../components/tarefas/ListView'
-import { TableView } from '../../components/tarefas/TableView'
-import { useTimer } from '../../components/TimerTracker'
-import { CreateTaskModal, type CreateTaskPayload } from '../../components/CreateTaskModal'
-import { EditTaskModal } from '../../components/EditTaskModal'
+import { KanbanView } from '../../components/tasks/KanbanView'
+import { ListView } from '../../components/tasks/ListView'
+import { TableView } from '../../components/tasks/TableView'
+import { useTimer } from '../../components/ui/TimerTracker'
+import { CreateTaskModal, type CreateTaskPayload } from '../../components/tasks/CreateTaskModal'
+import { EditTaskModal } from '../../components/tasks/EditTaskModal'
 
 export const Route = createFileRoute('/_authenticated/tarefas')({
   component: Tarefas
@@ -171,6 +171,7 @@ function Tarefas() {
           onTaskStatusChange={handleTaskStatusChange} 
           onTaskReorder={handleTaskReorder} 
           onTaskClick={(task) => setEditingTask(task)}
+          onTaskDelete={(taskId) => mutateDelete(taskId)}
         />
       )}
 

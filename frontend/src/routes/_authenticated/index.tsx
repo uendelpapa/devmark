@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { TimerTracker } from '../../components/TimerTracker'
+import { TimerTracker } from '../../components/ui/TimerTracker'
 import {
   Button,
   Card,
@@ -11,10 +11,10 @@ import { useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDashboardData } from '../../services/api'
 import type { DashboardData } from '../../services/api'
-import { StatCard, StatCardSkeleton } from '../../components/StatCard'
-import { FinanceCard, FinanceCardSkeleton } from '../../components/FinanceCard'
-import { ProjectListItem, ProjectListItemSkeleton } from '../../components/ProjectListItem'
-import { PaymentListItem, PaymentListItemSkeleton } from '../../components/PaymentListItem'
+import { StatCard, StatCardSkeleton } from '../../components/ui/StatCard'
+import { FinanceCard, FinanceCardSkeleton } from '../../components/finance/FinanceCard'
+import { ProjectListItem, ProjectListItemSkeleton } from '../../components/projects/ProjectListItem'
+import { PaymentListItem, PaymentListItemSkeleton } from '../../components/finance/PaymentListItem'
 // Removed ProjectDetailsModal and useState for it
 
 export const Route = createFileRoute('/_authenticated/')({

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
-import type { CreateProjectExpenseData } from '../services/api'
+import type { CreateProjectExpenseData } from '../../services/api'
 import { Select, ListBox } from '@heroui/react'
 
 interface AddExpenseModalProps {

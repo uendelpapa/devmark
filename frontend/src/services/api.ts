@@ -8,4 +8,6 @@ export * from './http/tasks'
 export * from './http/payments'
 export * from './http/expenses'
 export * from './http/time-entries'
+export * from './http/calendar'
+
 

@@ -106,6 +106,39 @@ let AuthService = class AuthService {
             select: { id: true, name: true, email: true, created_at: true },
         });
     }
+    async updateProfile(userId, dto) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user)
+            throw new common_1.UnauthorizedException('Usuário não encontrado');
+        const updateData = {};
+        if (dto.name)
+            updateData.name = dto.name;
+        if (dto.email && dto.email !== user.email) {
+            const emailExists = await this.prisma.user.findUnique({ where: { email: dto.email } });
+            if (emailExists)
+                throw new common_1.ConflictException('Este e-mail já está em uso');
+            updateData.email = dto.email;
+        }
+        if (dto.newPassword) {
+            if (!dto.currentPassword) {
+                throw new common_1.UnauthorizedException('A senha atual é necessária para alterar a senha');
+            }
+            const passwordValid = await bcrypt.compare(dto.currentPassword, user.password_hash);
+            if (!passwordValid) {
+                throw new common_1.UnauthorizedException('A senha atual está incorreta');
+            }
+            updateData.password_hash = await bcrypt.hash(dto.newPassword, 12);
+        }
+        if (Object.keys(updateData).length === 0) {
+            return this.getProfile(userId);
+        }
+        const updatedUser = await this.prisma.user.update({
+            where: { id: userId },
+            data: updateData,
+            select: { id: true, name: true, email: true, created_at: true },
+        });
+        return updatedUser;
+    }
     async generateTokenPair(userId, email) {
         const accessToken = this.jwt.sign({ sub: userId, email }, { expiresIn: this.config.get('JWT_ACCESS_TTL', '15m') });
         const rawRefreshToken = (0, crypto_1.randomBytes)(64).toString('hex');

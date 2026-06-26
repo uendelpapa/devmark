@@ -69,8 +69,10 @@ body {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Custom Toast Keyframe Animations */
@@ -79,6 +81,7 @@ body {
     transform: translateY(1rem) scale(0.95);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0) scale(1);
     opacity: 1;
@@ -90,6 +93,7 @@ body {
     transform: translateX(0) scale(1);
     opacity: 1;
   }
+
   100% {
     transform: translateX(100%) scale(0.9);
     opacity: 0;
@@ -108,8 +112,10 @@ body {
 .subtask-checkbox-control {
   width: 20px !important;
   height: 20px !important;
-  border-radius: 50% !important; /* round */
-  border: 2px solid #71717a !important; /* border more visible (zinc-500) */
+  border-radius: 50% !important;
+  /* round */
+  border: 2px solid #71717a !important;
+  /* border more visible (zinc-500) */
   background-color: #ffffff !important;
   display: flex !important;
   align-items: center !important;
@@ -123,9 +129,11 @@ body {
 }
 
 .subtask-checkbox-control.is-completed {
-  background-color: #BAF08A !important; /* primary theme green */
+  background-color: #BAF08A !important;
+  /* primary theme green */
   border-color: #BAF08A !important;
-  color: #011D00 !important; /* dark secondary theme green */
+  color: #011D00 !important;
+  /* dark secondary theme green */
 }
 
 .subtask-checkbox-control.is-completed:hover {
@@ -164,4 +172,37 @@ body {
   filter: brightness(1.1) contrast(1.05) !important;
   box-shadow: 0 10px 25px -5px rgba(186, 240, 138, 0.5) !important;
   cursor: pointer !important;
+}
+
+/* Calendar Animations */
+@keyframes calendarItemIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes calendarPanelIn {
+  0% {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-calendar-item-in {
+  animation: calendarItemIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-calendar-panel-in {
+  animation: calendarPanelIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

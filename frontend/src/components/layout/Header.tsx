@@ -1,10 +1,10 @@
 import { Avatar } from '@heroui/react'
 import { Magnifier, Envelope, Bell } from '@gravity-ui/icons'
 import { useQuery } from '@tanstack/react-query'
-import { fetchProjects, fetchClients, fetchTasks } from '../services/api'
-import { useNavigate } from '@tanstack/react-router'
+import { fetchProjects, fetchClients, fetchTasks } from '../../services/api'
+import { useNavigate, Link } from '@tanstack/react-router'
 import { useState, useRef, useEffect } from 'react'
-import { useAuthStore } from '../lib/auth'
+import { useAuthStore } from '../../lib/auth'
 
 export function Header() {
   const user = useAuthStore((s) => s.user)
@@ -186,7 +186,7 @@ export function Header() {
         </button>
 
         {/* User Identity Info */}
-        <div className="flex items-center gap-2">
+        <Link to="/configuracoes" className="flex items-center gap-2 hover:bg-zinc-100 p-1.5 rounded-xl transition-colors cursor-pointer border-none no-underline">
           <Avatar className='size-9'>
             <Avatar.Fallback className="bg-primary/50 text-secondary font-bold text-sm">
               {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -196,7 +196,7 @@ export function Header() {
             <p className="font-bold text-[14px] text-secondary leading-none">{user?.name || 'Usuário'}</p>
             <p className="text-[11px] text-secondary/70 font-semibold leading-none mt-1">{user?.email || ''}</p>
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   )

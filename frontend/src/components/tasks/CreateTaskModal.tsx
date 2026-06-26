@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { Xmark, ArrowUpRightFromSquare, Ellipsis, Plus, TrashBin, Flag } from '@gravity-ui/icons'
 
 import { useQuery } from '@tanstack/react-query'
-import { fetchProjects, fetchTasks } from '../services/api'
-import type { Task } from '../services/api'
-import { Checkbox, Select, ListBox } from '@heroui/react'
+import { fetchProjects, fetchTasks } from '../../services/api'
+import type { Task } from '../../services/api'
+import { Checkbox, Select, ListBox, DatePicker, DateField, TimeField, Calendar, Label } from '@heroui/react'
+import type { TimeValue } from '@heroui/react'
+import { getLocalTimeZone } from '@internationalized/date'
+import type { DateValue } from '@internationalized/date'
 
 interface Subtask {
   id: string
@@ -28,7 +31,7 @@ export interface CreateTaskPayload {
   priority: Task['priority']
   status: Task['status']
   estimated_hours: number
-  due_date: string
+  due_date?: string
   tags: string[]
   subtasks: { text: string; completed?: boolean }[]
 }
@@ -61,9 +64,9 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<Task['priority']>('MEDIUM')
   const [status, setStatus] = useState<Task['status']>('PENDING')
-  const [projectId, setProjectId] = useState('')
+  const [projectId, setProjectId] = useState<string | null>(null)
   const [estimatedHours, setEstimatedHours] = useState(0)
-  const [dueDate, setDueDate] = useState('')
+  const [dueDate, setDueDate] = useState<DateValue | null>(null)
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
   const [subtasks, setSubtasks] = useState<Subtask[]>([])
@@ -94,9 +97,9 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
       setDescription('')
       setPriority('MEDIUM')
       setStatus('PENDING')
-      setProjectId('')
+      setProjectId(null)
       setEstimatedHours(0)
-      setDueDate('')
+      setDueDate(null)
       setTags([])
       setSubtasks([])
     } else if (statusPreset) {
@@ -149,7 +152,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
       priority,
       status,
       estimated_hours: estimatedHours,
-      due_date: dueDate,
+      due_date: dueDate ? dueDate.toDate(getLocalTimeZone()).toISOString() : undefined,
       tags,
       subtasks: subtasks.map(s => ({ text: s.text, completed: s.completed }))
     })
@@ -215,7 +218,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                 onSelectionChange={(key) => setProjectId(key as string)}
                 className="flex-1"
               >
-                <Select.Trigger className="bg-zinc-100 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
+                <Select.Trigger className="bg-zinc-100 border border-zinc-200 rounded-xl shadow-none px-2.5 py-1.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
                   <Select.Value />
                   <Select.Indicator />
                 </Select.Trigger>
@@ -239,11 +242,10 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                   <button
                     key={p.key}
                     onClick={() => setPriority(p.key)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${
-                      priority === p.key
-                        ? p.activeColor
-                        : 'bg-zinc-100 text-secondary/60 hover:bg-zinc-200'
-                    }`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${priority === p.key
+                      ? p.activeColor
+                      : 'bg-zinc-100 text-secondary/60 hover:bg-zinc-200'
+                      }`}
                   >
                     <Flag className="size-3" />
                     {p.label}
@@ -255,12 +257,66 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
             {/* Data de Entrega */}
             <div className="flex items-center gap-4">
               <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium">Data de entrega:</span>
-              <input
-                type="date"
+              <DatePicker
+                className="w-fit min-w-[200px]"
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="bg-zinc-100 border border-zinc-200 rounded-xl px-2.5 py-1.5 text-secondary text-sm font-medium outline-none flex-1 focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
-              />
+                onChange={setDueDate}
+                granularity="minute"
+                hideTimeZone={true}
+                hourCycle={24}
+              >
+                {({ state }) => (
+                  <>
+                    <DateField.Group className="bg-zinc-100 border border-zinc-200 rounded-xl shadow-none px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary/50 transition-all flex items-center justify-between w-full">
+                      <DateField.Input className="flex gap-1 text-sm font-medium text-secondary outline-none cursor-text">
+                        {(segment) => <DateField.Segment segment={segment} className="focus:bg-primary/30 focus:text-secondary rounded px-0.5" />}
+                      </DateField.Input>
+                      <DateField.Suffix>
+                        <DatePicker.Trigger>
+                          <DatePicker.TriggerIndicator className="text-secondary/50" />
+                        </DatePicker.Trigger>
+                      </DateField.Suffix>
+                    </DateField.Group>
+                    <DatePicker.Popover className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-xl border border-zinc-200 z-[150] min-w-[280px]">
+                      <Calendar aria-label="Date">
+                        <Calendar.Header className="flex items-center justify-between mb-3">
+                          <Calendar.YearPickerTrigger className="font-bold text-secondary hover:bg-zinc-100 px-2 py-1 rounded cursor-pointer transition-colors">
+                            <Calendar.YearPickerTriggerHeading />
+                          </Calendar.YearPickerTrigger>
+                          <div className="flex gap-1">
+                            <Calendar.NavButton slot="previous" className="size-7 flex items-center justify-center hover:bg-zinc-100 rounded cursor-pointer text-secondary/70 transition-colors" />
+                            <Calendar.NavButton slot="next" className="size-7 flex items-center justify-center hover:bg-zinc-100 rounded cursor-pointer text-secondary/70 transition-colors" />
+                          </div>
+                        </Calendar.Header>
+                        <Calendar.Grid className="w-full border-collapse">
+                          <Calendar.GridHeader className="mb-2">
+                            {(day) => <Calendar.HeaderCell className="text-[11px] font-bold text-secondary/40 pb-2">{day}</Calendar.HeaderCell>}
+                          </Calendar.GridHeader>
+                          <Calendar.GridBody>
+                            {(date) => <Calendar.Cell date={date} className="text-sm size-8 flex items-center justify-center hover:bg-zinc-100 rounded text-center cursor-pointer data-[selected=true]:bg-primary/50 data-[selected=true]:font-bold data-[selected=true]:text-secondary transition-colors" />}
+                          </Calendar.GridBody>
+                        </Calendar.Grid>
+                      </Calendar>
+                      <div className="flex items-center justify-between pt-3 border-t border-zinc-100">
+                        <Label className="text-xs font-bold text-secondary/50 uppercase tracking-wider">Horário</Label>
+                        <TimeField
+                          aria-label="Time"
+                          granularity="minute"
+                          hourCycle={24}
+                          value={state.timeValue}
+                          onChange={(v) => state.setTimeValue(v as TimeValue)}
+                        >
+                          <TimeField.Group className="flex bg-zinc-100 rounded-lg px-2 py-1 border border-zinc-200">
+                            <TimeField.Input className="flex gap-0.5 text-sm font-bold text-secondary outline-none">
+                              {(segment) => <TimeField.Segment segment={segment} className="focus:bg-primary/30 rounded px-0.5" />}
+                            </TimeField.Input>
+                          </TimeField.Group>
+                        </TimeField>
+                      </div>
+                    </DatePicker.Popover>
+                  </>
+                )}
+              </DatePicker>
             </div>
 
             {/* Status */}
@@ -271,11 +327,10 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                   <button
                     key={s.key}
                     onClick={() => setStatus(s.key)}
-                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${
-                      status === s.key
-                        ? STATUS_CHIP_ACTIVE[s.key]
-                        : 'bg-zinc-100 text-secondary/40 hover:bg-zinc-200 hover:text-secondary/60'
-                    }`}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${status === s.key
+                      ? STATUS_CHIP_ACTIVE[s.key]
+                      : 'bg-zinc-100 text-secondary/40 hover:bg-zinc-200 hover:text-secondary/60'
+                      }`}
                   >
                     {s.label}
                   </button>
@@ -397,7 +452,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                     onChange={() => handleToggleSubtask(sub.id)}
                   >
                     <Checkbox.Content>
-                      <Checkbox.Control className={`subtask-checkbox-control ${sub.completed ? 'is-completed' : ''}`}>
+                      <Checkbox.Control className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all after:!hidden ${sub.completed ? '!bg-primary !border-primary text-[#011D00]' : 'border-zinc-500 bg-white text-transparent'}`}>
                         <Checkbox.Indicator className="subtask-checkbox-indicator" />
                       </Checkbox.Control>
                     </Checkbox.Content>
@@ -434,11 +489,10 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                   type="button"
                   onClick={handleAddSubtask}
                   disabled={!subtaskInput.trim()}
-                  className={`text-xs font-bold transition-all bg-transparent border-none cursor-pointer p-1 ${
-                    subtaskInput.trim()
-                      ? 'text-primary hover:text-primary/80 font-extrabold'
-                      : 'text-zinc-400 cursor-not-allowed'
-                  }`}
+                  className={`text-xs font-bold transition-all bg-transparent border-none cursor-pointer p-1 ${subtaskInput.trim()
+                    ? 'text-primary hover:text-primary/80 font-extrabold'
+                    : 'text-zinc-400 cursor-not-allowed'
+                    }`}
                 >
                   Adicionar
                 </button>
@@ -461,11 +515,10 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
           <button
             onClick={handleSubmit}
             disabled={isPending || !title.trim() || !projectId}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${
-              !title.trim() || !projectId
-                ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
-            }`}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${!title.trim() || !projectId
+              ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+              : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
+              }`}
           >
             <Plus className="size-4" />
             Criar Tarefa

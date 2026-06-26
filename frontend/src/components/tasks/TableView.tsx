@@ -28,6 +28,7 @@ import {
 import { Table, Checkbox } from '@heroui/react'
 import type { Task } from './taskData'
 import { UrgencyChip, WebTagChip } from './taskData'
+import { Link } from '@tanstack/react-router'
 
 const ROWS_PER_PAGE = 7
 
@@ -36,9 +37,10 @@ interface TableViewProps {
   onTaskStatusChange?: (taskId: string, newStatus: Task['status']) => void
   onTaskReorder?: (tasks: Task[]) => void
   onTaskClick?: (task: Task) => void
+  onTaskDelete?: (taskId: string) => void
 }
 
-function SortableRow({ task, onStatusChange, onClick }: { task: Task, onStatusChange?: (taskId: string, newStatus: Task['status']) => void, onClick?: (task: Task) => void }) {
+function SortableRow({ task, onStatusChange, onClick, onDelete }: { task: Task, onStatusChange?: (taskId: string, newStatus: Task['status']) => void, onClick?: (task: Task) => void, onDelete?: (taskId: string) => void }) {
   const {
     attributes,
     listeners,
@@ -105,13 +107,13 @@ function SortableRow({ task, onStatusChange, onClick }: { task: Task, onStatusCh
       <Table.Cell className="text-[13px] font-medium text-secondary px-4 py-3">{task.dueDate}</Table.Cell>
       <Table.Cell className="px-4 py-3">
         <div className="flex items-center gap-2 justify-end">
-          <button onClick={() => onClick?.(task)} className="size-8 rounded-full bg-zinc-200 flex items-center justify-center text-secondary hover:bg-zinc-300 transition-colors border-none cursor-pointer">
+          <Link to="/tarefas/$taskId" params={{ taskId: task.id }} className="size-8 rounded-full bg-zinc-200 flex items-center justify-center text-secondary hover:bg-zinc-300 transition-colors border-none cursor-pointer">
             <Eye className="size-4" />
-          </button>
+          </Link>
           <button onClick={() => onClick?.(task)} className="size-8 rounded-full bg-[#F4D35E] flex items-center justify-center text-[#6E5503] hover:bg-[#E2C355] transition-colors border-none cursor-pointer">
             <Pencil className="size-4" />
           </button>
-          <button className="size-8 rounded-full bg-[#96263A] flex items-center justify-center text-white hover:bg-[#7D1F2F] transition-colors border-none cursor-pointer">
+          <button onClick={() => onDelete?.(task.id)} className="size-8 rounded-full bg-[#96263A] flex items-center justify-center text-white hover:bg-[#7D1F2F] transition-colors border-none cursor-pointer">
             <TrashBin className="size-4" />
           </button>
         </div>
@@ -120,7 +122,7 @@ function SortableRow({ task, onStatusChange, onClick }: { task: Task, onStatusCh
   )
 }
 
-export function TableView({ tasks, onTaskStatusChange, onTaskReorder, onTaskClick }: TableViewProps) {
+export function TableView({ tasks, onTaskStatusChange, onTaskReorder, onTaskClick, onTaskDelete }: TableViewProps) {
   const [page, setPage] = useState(1)
   const totalPages = Math.ceil(tasks.length / ROWS_PER_PAGE)
   const pages = useMemo(() => Array.from({ length: totalPages }, (_, i) => i + 1), [totalPages])
@@ -207,6 +209,7 @@ export function TableView({ tasks, onTaskStatusChange, onTaskReorder, onTaskClic
                         task={task}
                         onStatusChange={onTaskStatusChange}
                         onClick={onTaskClick}
+                        onDelete={onTaskDelete}
                       />
                     ))}
                   </Table.Body>

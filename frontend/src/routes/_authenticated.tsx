@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { Sidebar } from '../components/Sidebar'
-import { Header } from '../components/Header'
-import { TimerProvider } from '../components/TimerTracker'
+import { Sidebar } from '../components/layout/Sidebar'
+import { Header } from '../components/layout/Header'
+import { TimerProvider } from '../components/ui/TimerTracker'
 import { useAuthStore } from '../lib/auth'
 
 export const Route = createFileRoute('/_authenticated')({

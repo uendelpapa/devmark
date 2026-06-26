@@ -1,6 +1,6 @@
 import { memo, useState, useRef, useEffect } from 'react'
 import { Avatar, Button } from '@heroui/react'
-import { Calendar, Ellipsis, PencilToLine, Layers, TrashBin, Check } from '@gravity-ui/icons'
+import { Ellipsis, PencilToLine, Layers, TrashBin, Check } from '@gravity-ui/icons'
 
 interface ProjectCardProps {
   id: string

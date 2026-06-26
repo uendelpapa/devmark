@@ -4,8 +4,8 @@ import { Plus } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchProjects, deleteProject, updateProject } from '../../services/api'
 import { useState, useEffect } from 'react'
-import { ProjectCard, ProjectCardSkeleton } from '../../components/ProjectCard'
-import { DeleteProjectModal, ChangeProjectStatusModal } from '../../components/ProjectActionsModals'
+import { ProjectCard, ProjectCardSkeleton } from '../../components/projects/ProjectCard'
+import { DeleteProjectModal, ChangeProjectStatusModal } from '../../components/projects/ProjectActionsModals'
 
 const PROJECT_STATUSES = [
   { key: 'PLANNING', label: 'Planejamento' },

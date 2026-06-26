@@ -10,10 +10,10 @@ import {
   ArrowRightFromSquare
 } from '@gravity-ui/icons'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { TimerTracker } from './TimerTracker'
+import { TimerTracker } from '../ui/TimerTracker'
 import { useQuery } from '@tanstack/react-query'
-import { fetchTasks, logoutUser } from '../services/api'
-import { useAuthStore } from '../lib/auth'
+import { fetchTasks, logoutUser } from '../../services/api'
+import { useAuthStore } from '../../lib/auth'
 import { useState } from 'react'
 
 interface MenuItemProps {
@@ -129,7 +129,7 @@ export function Sidebar() {
             Geral
           </h3>
           <div className="flex flex-col gap-4">
-            <MenuItem icon={Sliders} label="Configurações" />
+            <MenuItem icon={Sliders} label="Configurações" href="/configuracoes" />
             <MenuItem icon={CircleQuestion} label="Ajuda" />
             <MenuItem icon={ArrowRightFromSquare} label="Logout" onClick={handleLogout} />
           </div>

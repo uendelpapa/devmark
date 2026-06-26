@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Get,
   Body,
   Req,
@@ -15,6 +16,7 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 
@@ -121,6 +123,14 @@ export class AuthController {
   @ApiOperation({ summary: 'Obter dados do usuário autenticado' })
   async me(@Req() req: Request) {
     return this.authService.getProfile((req.user as any).id);
+  }
+
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Atualizar dados de perfil (Nome, Email, Senha)' })
+  async updateProfile(@Req() req: Request, @Body() dto: UpdateProfileDto) {
+    return this.authService.updateProfile((req.user as any).id, dto);
   }
 
   // ─── Cookie Helper ─────────────────────────────────────────────────────────

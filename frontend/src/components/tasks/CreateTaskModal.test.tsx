@@ -3,10 +3,10 @@ import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/re
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { CreateTaskModal } from './CreateTaskModal'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import * as api from '../services/api'
+import * as api from '../../services/api'
 
 // Mock the API calls
-vi.mock('../services/api', () => ({
+vi.mock('../../services/api', () => ({
   fetchProjects: vi.fn(),
   fetchTasks: vi.fn(),
 }))

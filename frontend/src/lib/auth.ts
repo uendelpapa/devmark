@@ -16,6 +16,7 @@ interface AuthState {
   setAccessToken: (token: string) => void
   logout: () => void
   setLoading: (loading: boolean) => void
+  updateUser: (user: AuthUser) => void
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -35,4 +36,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setLoading: (isLoading) =>
     set({ isLoading }),
+
+  updateUser: (user) =>
+    set((state) => ({ user: { ...state.user, ...user } })),
 }))

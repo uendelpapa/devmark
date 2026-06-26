@@ -2,8 +2,8 @@ import { Pause, Play, Stop } from '@gravity-ui/icons'
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { fetchTasks, startTimeEntry, stopTimeEntry, fetchTimeEntries } from '../services/api'
-import type { TaskCardData } from '../services/api'
+import { fetchTasks, startTimeEntry, stopTimeEntry, fetchTimeEntries } from '../../services/api'
+import type { TaskCardData } from '../../services/api'
 
 interface TimerContextType {
   hours: number

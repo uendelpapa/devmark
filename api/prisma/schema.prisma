@@ -166,7 +166,7 @@ model Task {
   received_value  Decimal?      @db.Decimal(12, 2)
   started_at      DateTime?
   finished_at     DateTime?
-  due_date        DateTime?     @db.Date
+  due_date        DateTime?
   tags            String[]      @default([])
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt

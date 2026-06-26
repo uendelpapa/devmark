@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Select, ListBox } from '@heroui/react'
 import { fetchClients, updateClient } from '../../services/api'
-import { ClientCard } from '../../components/clientes/ClientCard'
-import { EditClientModal } from '../../components/clientes/EditClientModal'
+import { ClientCard } from '../../components/clients/ClientCard'
+import { EditClientModal } from '../../components/clients/EditClientModal'
 
 export const Route = createFileRoute('/_authenticated/clientes')({
   component: Clientes

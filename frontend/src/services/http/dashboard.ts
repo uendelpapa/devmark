@@ -1,7 +1,7 @@
 import { api } from '../../lib/axios'
 import { formatDate } from './utils'
 import type { DashboardData, ProjectSummary, FinanceSummary } from '../types'
-import { toast } from '../../components/Toast'
+import { toast } from '../../components/ui/Toast'
 
 interface RawProjectListItem {
   id: string

@@ -196,3 +196,30 @@ export interface CreateProjectExpenseData {
   category: ProjectExpense['category']
   value: number
 }
+
+// --- Calendar Types ---
+
+export interface Event {
+  id: string
+  project_id?: string
+  title: string
+  description?: string
+  start_date: string
+  end_date: string
+  created_at: string
+  project?: { id: string; name: string }
+}
+
+export interface CalendarItem {
+  id: string
+  title: string
+  type: 'project' | 'task' | 'event'
+  start: Date
+  end?: Date
+  status?: string
+  priority?: string
+  projectName?: string
+  color: string
+}
+
+export type CalendarViewMode = 'day' | 'week' | 'month' | 'year'

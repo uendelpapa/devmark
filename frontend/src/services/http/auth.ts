@@ -19,6 +19,13 @@ export interface AuthResponse {
   accessToken: string
 }
 
+export interface UpdateProfileData {
+  name?: string
+  email?: string
+  currentPassword?: string
+  newPassword?: string
+}
+
 // ─── API Functions ───────────────────────────────────────────────────────────
 
 export async function loginUser(data: LoginData): Promise<AuthResponse> {
@@ -42,5 +49,10 @@ export async function logoutUser(): Promise<void> {
 
 export async function fetchMe(): Promise<AuthUser> {
   const response = await api.get('/auth/me')
+  return response.data
+}
+
+export async function updateProfile(data: UpdateProfileData): Promise<AuthUser> {
+  const response = await api.patch('/auth/profile', data)
   return response.data
 }

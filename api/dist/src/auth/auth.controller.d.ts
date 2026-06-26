@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ConfigService } from '@nestjs/config';
 export declare class AuthController {
     private readonly authService;
@@ -11,18 +12,18 @@ export declare class AuthController {
     constructor(authService: AuthService, config: ConfigService);
     register(dto: RegisterDto, res: Response): Promise<{
         user: {
+            id: string;
             name: string;
             email: string;
-            id: string;
             created_at: Date;
         };
         accessToken: string;
     }>;
     login(dto: LoginDto, res: Response): Promise<{
         user: {
+            id: string;
             name: string;
             email: string;
-            id: string;
             created_at: Date;
             updated_at: Date;
         };
@@ -30,9 +31,9 @@ export declare class AuthController {
     }>;
     refresh(req: Request, res: Response): Promise<{
         user: {
+            id: string;
             name: string;
             email: string;
-            id: string;
             created_at: Date;
         };
         accessToken: string;
@@ -41,9 +42,15 @@ export declare class AuthController {
         message: string;
     }>;
     me(req: Request): Promise<{
+        id: string;
         name: string;
         email: string;
+        created_at: Date;
+    } | null>;
+    updateProfile(req: Request, dto: UpdateProfileDto): Promise<{
         id: string;
+        name: string;
+        email: string;
         created_at: Date;
     } | null>;
     private setRefreshCookie;
