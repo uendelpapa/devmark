@@ -86,9 +86,17 @@ function ProjetoIA() {
     }
     setIsLoading(true)
 
+    const messagesForApi = newMessages.map((msg, index) => {
+      if (index === newMessages.length - 1) return msg;
+      return {
+        ...msg,
+        parts: msg.parts.map((p: any) => p.text ? { text: p.text } : { text: '[Arquivo anexado na mensagem anterior]' })
+      };
+    });
+
     try {
       const response = await api.post('/ai/chat', {
-        messages: newMessages,
+        messages: messagesForApi,
         model: selectedModel
       })
       const aiData = response.data
@@ -182,7 +190,7 @@ function ProjetoIA() {
       </div>
 
       {/* Conteúdo Central */}
-      <div className={`flex-1 flex flex-col min-h-0 ${messages.length === 0 ? 'items-center justify-center pb-20' : 'justify-end'} max-w-3xl mx-auto w-full relative`}>
+      <div className={`flex-1 flex flex-col min-h-0 ${messages.length === 0 ? 'items-center justify-center pb-20' : 'justify-end'} max-w-3xl mx-auto w-full relative scrollbar-none`}>
 
         {messages.length === 0 && (
           <div className="w-full flex flex-col items-center gap-2">
@@ -275,11 +283,13 @@ function ProjetoIA() {
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="bg-transparent text-zinc-600 cursor-pointer outline-none font-medium"
+                  className="w-fit bg-transparent text-zinc-600 cursor-pointer outline-none font-medium"
                   disabled={isLoading || isComplete}
                 >
-                  <option value="gemini-2.5-flash">Agent Flash</option>
-                  <option value="gemini-2.5-pro">Agent Pro</option>
+                  <option value="gemini-1.5-flash">Gemini Flash</option>
+                  <option value="gemini-1.5-pro">Gemini Pro</option>
+                  <option value="openai/gpt-oss-20b:free">GPT-OSS 20B (OpenRouter)</option>
+                  <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 (OpenRouter)</option>
                 </select>
               </div>
             </div>

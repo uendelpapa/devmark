@@ -6,12 +6,17 @@ export declare class ProjectsController {
     private readonly projectsService;
     constructor(projectsService: ProjectsService);
     create(dto: CreateProjectDto, req: Request): Promise<{
-        id: string;
-        name: string;
         description: string | null;
+        name: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        status: import("@prisma/client").$Enums.ProjectStatus;
+        notes: string | null;
+        client_id: string;
         area: import("@prisma/client").$Enums.ProjectArea;
         specialty: string | null;
-        status: import("@prisma/client").$Enums.ProjectStatus;
         priority: import("@prisma/client").$Enums.Priority;
         project_value: import("@prisma/client/runtime/library").Decimal;
         amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -21,22 +26,22 @@ export declare class ProjectsController {
         start_date: Date | null;
         expected_delivery_date: Date | null;
         delivery_date: Date | null;
-        notes: string | null;
-        created_at: Date;
-        updated_at: Date;
-        client_id: string;
-        user_id: string;
     }>;
     createWithTasks(body: {
         project: CreateProjectDto;
         tasks: any[];
     }, req: Request): Promise<{
-        id: string;
-        name: string;
         description: string | null;
+        name: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        status: import("@prisma/client").$Enums.ProjectStatus;
+        notes: string | null;
+        client_id: string;
         area: import("@prisma/client").$Enums.ProjectArea;
         specialty: string | null;
-        status: import("@prisma/client").$Enums.ProjectStatus;
         priority: import("@prisma/client").$Enums.Priority;
         project_value: import("@prisma/client/runtime/library").Decimal;
         amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -46,26 +51,26 @@ export declare class ProjectsController {
         start_date: Date | null;
         expected_delivery_date: Date | null;
         delivery_date: Date | null;
-        notes: string | null;
-        created_at: Date;
-        updated_at: Date;
-        client_id: string;
-        user_id: string;
     }>;
     findAll(page?: number, limit?: number, status?: string, priority?: string, area?: string, client_id?: string, req?: Request): Promise<{
         data: ({
             client: {
-                id: string;
                 name: string;
                 email: string;
+                id: string;
             };
         } & {
-            id: string;
-            name: string;
             description: string | null;
+            name: string;
+            id: string;
+            created_at: Date;
+            updated_at: Date;
+            user_id: string;
+            status: import("@prisma/client").$Enums.ProjectStatus;
+            notes: string | null;
+            client_id: string;
             area: import("@prisma/client").$Enums.ProjectArea;
             specialty: string | null;
-            status: import("@prisma/client").$Enums.ProjectStatus;
             priority: import("@prisma/client").$Enums.Priority;
             project_value: import("@prisma/client/runtime/library").Decimal;
             amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -75,11 +80,6 @@ export declare class ProjectsController {
             start_date: Date | null;
             expected_delivery_date: Date | null;
             delivery_date: Date | null;
-            notes: string | null;
-            created_at: Date;
-            updated_at: Date;
-            client_id: string;
-            user_id: string;
         })[];
         meta: {
             total: number;
@@ -90,61 +90,66 @@ export declare class ProjectsController {
     }>;
     findOne(id: string, req: Request): Promise<{
         client: {
-            id: string;
             name: string;
             email: string;
+            id: string;
         };
         tasks: {
-            id: string;
             description: string | null;
+            title: string;
+            id: string;
+            created_at: Date;
+            updated_at: Date;
+            user_id: string;
+            tags: string[];
             status: import("@prisma/client").$Enums.TaskStatus;
             priority: import("@prisma/client").$Enums.Priority;
             estimated_hours: number | null;
             worked_hours: number;
-            created_at: Date;
-            updated_at: Date;
-            user_id: string;
             project_id: string;
-            title: string;
+            due_date: Date | null;
             expected_value: import("@prisma/client/runtime/library").Decimal | null;
             received_value: import("@prisma/client/runtime/library").Decimal | null;
             started_at: Date | null;
             finished_at: Date | null;
-            due_date: Date | null;
-            tags: string[];
         }[];
         payments: {
             id: string;
+            created_at: Date;
             status: import("@prisma/client").$Enums.PaymentStatus;
             notes: string | null;
-            created_at: Date;
             project_id: string;
-            due_date: Date;
             amount: import("@prisma/client/runtime/library").Decimal;
+            due_date: Date;
             payment_date: Date | null;
             payment_method: import("@prisma/client").$Enums.PaymentMethod | null;
         }[];
         project_expenses: {
-            id: string;
             description: string | null;
+            title: string;
+            id: string;
             created_at: Date;
             project_id: string;
-            title: string;
             category: import("@prisma/client").$Enums.ExpenseCategory;
             value: import("@prisma/client/runtime/library").Decimal;
         }[];
         project_tags: {
-            id: string;
             name: string;
+            id: string;
             project_id: string;
         }[];
     } & {
-        id: string;
-        name: string;
         description: string | null;
+        name: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        status: import("@prisma/client").$Enums.ProjectStatus;
+        notes: string | null;
+        client_id: string;
         area: import("@prisma/client").$Enums.ProjectArea;
         specialty: string | null;
-        status: import("@prisma/client").$Enums.ProjectStatus;
         priority: import("@prisma/client").$Enums.Priority;
         project_value: import("@prisma/client/runtime/library").Decimal;
         amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -154,19 +159,19 @@ export declare class ProjectsController {
         start_date: Date | null;
         expected_delivery_date: Date | null;
         delivery_date: Date | null;
-        notes: string | null;
-        created_at: Date;
-        updated_at: Date;
-        client_id: string;
-        user_id: string;
     }>;
     update(id: string, dto: UpdateProjectDto, req: Request): Promise<{
-        id: string;
-        name: string;
         description: string | null;
+        name: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        status: import("@prisma/client").$Enums.ProjectStatus;
+        notes: string | null;
+        client_id: string;
         area: import("@prisma/client").$Enums.ProjectArea;
         specialty: string | null;
-        status: import("@prisma/client").$Enums.ProjectStatus;
         priority: import("@prisma/client").$Enums.Priority;
         project_value: import("@prisma/client/runtime/library").Decimal;
         amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -176,19 +181,19 @@ export declare class ProjectsController {
         start_date: Date | null;
         expected_delivery_date: Date | null;
         delivery_date: Date | null;
-        notes: string | null;
-        created_at: Date;
-        updated_at: Date;
-        client_id: string;
-        user_id: string;
     }>;
     remove(id: string, req: Request): Promise<{
-        id: string;
-        name: string;
         description: string | null;
+        name: string;
+        id: string;
+        created_at: Date;
+        updated_at: Date;
+        user_id: string;
+        status: import("@prisma/client").$Enums.ProjectStatus;
+        notes: string | null;
+        client_id: string;
         area: import("@prisma/client").$Enums.ProjectArea;
         specialty: string | null;
-        status: import("@prisma/client").$Enums.ProjectStatus;
         priority: import("@prisma/client").$Enums.Priority;
         project_value: import("@prisma/client/runtime/library").Decimal;
         amount_received: import("@prisma/client/runtime/library").Decimal;
@@ -198,10 +203,5 @@ export declare class ProjectsController {
         start_date: Date | null;
         expected_delivery_date: Date | null;
         delivery_date: Date | null;
-        notes: string | null;
-        created_at: Date;
-        updated_at: Date;
-        client_id: string;
-        user_id: string;
     }>;
 }

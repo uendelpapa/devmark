@@ -13,7 +13,7 @@ export class AiController {
   constructor(
     private readonly aiService: AiService,
     private readonly clientsService: ClientsService
-  ) {}
+  ) { }
 
   @Post('chat')
   @ApiOperation({ summary: 'Chat com a IA para criar projeto' })
@@ -23,6 +23,14 @@ export class AiController {
     const clientsResult = await this.clientsService.findAll({ limit: 100 }, userId);
     const contextClients = clientsResult.data.map(c => ({ id: c.id, name: c.name }));
 
-    return this.aiService.chatWithAI(body.messages, contextClients, body.model || 'gemini-2.5-flash');
+    const model = body.model || 'gemini-1.5-flash';
+    
+    // Modelos do OpenRouter sempre tem '/' no nome (ex: nvidia/nemotron...)
+    if (model.includes('/')) {
+      return this.aiService.chatWithOpenRouter(body.messages, contextClients, model);
+    } else {
+      // Modelos nativos do Gemini
+      return this.aiService.chatWithAI(body.messages, contextClients, model);
+    }
   }
 }

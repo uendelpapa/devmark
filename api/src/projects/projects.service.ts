@@ -55,6 +55,8 @@ export class ProjectsService {
       const project = await tx.project.create({
         data: {
           ...dto,
+          priority: dto.priority || undefined,
+          area: dto.area || undefined,
           user_id: userId,
           start_date: dto.start_date ? new Date(dto.start_date) : undefined,
           expected_delivery_date: dto.expected_delivery_date
