@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Plus, LayoutHeaderCells, ChartColumnStacked, LayoutRows3, LayoutHeaderCellsLarge } from '@gravity-ui/icons'
+import { Select, ListBox, Button } from '@heroui/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask } from '../../services/api'
+import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask, fetchProjects } from '../../services/api'
 import type { TaskCardData as Task } from '../../services/api'
 import { KanbanView } from '../../components/tasks/KanbanView'
 import { ListView } from '../../components/tasks/ListView'
@@ -36,13 +37,21 @@ function Tarefas() {
   }
 
   const queryClient = useQueryClient()
+
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('ALL')
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects'],
+    queryFn: fetchProjects
+  })
+
   const { data: tasks = [] } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks
+    queryKey: ['tasks', selectedProjectId],
+    queryFn: () => fetchTasks(selectedProjectId === 'ALL' ? undefined : selectedProjectId)
   })
 
   const { mutate } = useMutation({
-    mutationFn: ({ taskId, newStatus }: { taskId: string, newStatus: Task['status'] }) => 
+    mutationFn: ({ taskId, newStatus }: { taskId: string, newStatus: Task['status'] }) =>
       updateTaskStatus(taskId, newStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
@@ -128,48 +137,67 @@ function Tarefas() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button
+          <Select
+            aria-label="Filtrar por Projeto"
+            selectedKey={selectedProjectId}
+            onSelectionChange={(key) => setSelectedProjectId(key as string)}
+            className="shrink-0 rounded-full"
+          >
+            <Select.Trigger className="bg-zinc-200 hover:bg-zinc-300 rounded-full shadow-none h-10 text-secondary text-[14px] font-bold w-fit flex items-center justify-between transition-colors border-none outline-none data-[hover=true]:bg-zinc-300">
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover className="bg-white border border-zinc-200 rounded-xl z-[120]">
+              <ListBox className="p-1 max-h-[300px] overflow-y-auto scrollbar-none">
+                <ListBox.Item id="ALL" textValue="Todos os Projetos" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
+                  Todos os Projetos
+                </ListBox.Item>
+                {projects.map((p: any) => (
+                  <ListBox.Item key={p.id} id={p.id} textValue={p.name} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
+                    {p.name}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
+
+          <Button
             className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full border-none text-[14px] transition-colors flex items-center gap-2 px-5 h-10 cursor-pointer"
             onClick={() => handleAddTaskClick()}
           >
             <Plus className="size-4" />
             Adicionar Tarefa
-          </button>
-          <button
-            className="bg-zinc-200 hover:bg-zinc-300 text-secondary font-bold rounded-full border-none text-[14px] transition-colors px-5 h-10 cursor-pointer"
-          >
-            Importar Dados
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Task Views */}
       {view === 'kanban' && (
-        <KanbanView 
-          pendingTasks={pendingTasks} 
-          inProgressTasks={inProgressTasks} 
+        <KanbanView
+          pendingTasks={pendingTasks}
+          inProgressTasks={inProgressTasks}
           reviewTasks={reviewTasks}
-          completedTasks={completedTasks} 
-          onTaskStatusChange={handleTaskStatusChange} 
+          completedTasks={completedTasks}
+          onTaskStatusChange={handleTaskStatusChange}
           onTaskClick={(task) => setEditingTask(task)}
           onAddTask={(status) => handleAddTaskClick(status)}
         />
       )}
       {view === 'list' && (
-        <ListView 
-          pendingTasks={pendingTasks} 
-          inProgressTasks={inProgressTasks} 
+        <ListView
+          pendingTasks={pendingTasks}
+          inProgressTasks={inProgressTasks}
           reviewTasks={reviewTasks}
-          completedTasks={completedTasks} 
-          onTaskStatusChange={handleTaskStatusChange} 
+          completedTasks={completedTasks}
+          onTaskStatusChange={handleTaskStatusChange}
           onTaskClick={(task) => setEditingTask(task)}
         />
       )}
       {view === 'table' && (
-        <TableView 
-          tasks={tasks} 
-          onTaskStatusChange={handleTaskStatusChange} 
-          onTaskReorder={handleTaskReorder} 
+        <TableView
+          tasks={tasks}
+          onTaskStatusChange={handleTaskStatusChange}
+          onTaskReorder={handleTaskReorder}
           onTaskClick={(task) => setEditingTask(task)}
           onTaskDelete={(taskId) => mutateDelete(taskId)}
         />
