@@ -21,6 +21,7 @@ const events_module_1 = require("./events/events.module");
 const tags_module_1 = require("./tags/tags.module");
 const time_entries_module_1 = require("./time-entries/time-entries.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
+const ai_module_1 = require("./ai/ai.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -40,6 +41,7 @@ exports.AppModule = AppModule = __decorate([
             tags_module_1.TagsModule,
             time_entries_module_1.TimeEntriesModule,
             dashboard_module_1.DashboardModule,
+            ai_module_1.AiModule,
         ],
     })
 ], AppModule);

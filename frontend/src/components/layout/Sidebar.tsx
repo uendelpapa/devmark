@@ -41,7 +41,7 @@ function MenuItem({ icon: Icon, label, badge, href, onClick }: MenuItemProps) {
             width={16}
             height={16}
           />
-          <span className={`font-semibold tracking-tight leading-none text-secondary ${hoverColor} transition-colors duration-100 ease-in-out`}>
+          <span className={`font-semibold text-secondary ${hoverColor} transition-colors duration-100 ease-in-out`}>
             {label}
           </span>
         </div>
@@ -50,14 +50,14 @@ function MenuItem({ icon: Icon, label, badge, href, onClick }: MenuItemProps) {
   }
 
   return (
-    <Link to={targetPath} className="group flex items-center gap-2">
+    <Link to={targetPath} className={`${active ? 'border-l-4 border-l-primary rounded-l-full pl-2' : 'border-l-0 border-l-transparent'} group flex items-center gap-2 transition-all duration-100 ease-in-out`}>
       <div className="flex justify-center items-center gap-2">
         <Icon
-          className={`${active ? 'text-backpage' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}
+          className={`${active ? 'text-secondary' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}
           width={16}
           height={16}
         />
-        <span className={`font-semibold tracking-tight leading-none ${active ? 'text-backpage' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}>
+        <span className={`font-semibold ${active ? 'text-secondary' : `text-secondary ${hoverColor}`} transition-colors duration-100 ease-in-out`}>
           {label}
         </span>
       </div>

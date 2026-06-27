@@ -31,6 +31,12 @@ export class ProjectsController {
     return this.projectsService.create(dto, (req.user as any).id);
   }
 
+  @Post('with-tasks')
+  @ApiOperation({ summary: 'Criar novo projeto com tarefas em lote' })
+  createWithTasks(@Body() body: { project: CreateProjectDto, tasks: any[] }, @Req() req: Request) {
+    return this.projectsService.createWithTasks(body.project, body.tasks, (req.user as any).id);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Listar projetos' })
   @ApiQuery({ name: 'page', required: false, type: Number })

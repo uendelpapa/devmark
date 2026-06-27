@@ -26,6 +26,9 @@ let ProjectsController = class ProjectsController {
     create(dto, req) {
         return this.projectsService.create(dto, req.user.id);
     }
+    createWithTasks(body, req) {
+        return this.projectsService.createWithTasks(body.project, body.tasks, req.user.id);
+    }
     findAll(page, limit, status, priority, area, client_id, req) {
         return this.projectsService.findAll({
             page,
@@ -56,6 +59,15 @@ __decorate([
     __metadata("design:paramtypes", [create_project_dto_1.CreateProjectDto, Object]),
     __metadata("design:returntype", void 0)
 ], ProjectsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('with-tasks'),
+    (0, swagger_1.ApiOperation)({ summary: 'Criar novo projeto com tarefas em lote' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], ProjectsController.prototype, "createWithTasks", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Listar projetos' }),

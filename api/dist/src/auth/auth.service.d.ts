@@ -14,9 +14,9 @@ export declare class AuthService {
         accessToken: string;
         refreshToken: string;
         user: {
-            id: string;
             name: string;
             email: string;
+            id: string;
             created_at: Date;
         };
     }>;
@@ -24,9 +24,9 @@ export declare class AuthService {
         accessToken: string;
         refreshToken: string;
         user: {
-            id: string;
             name: string;
             email: string;
+            id: string;
             created_at: Date;
             updated_at: Date;
         };
@@ -35,23 +35,23 @@ export declare class AuthService {
         accessToken: string;
         refreshToken: string;
         user: {
-            id: string;
             name: string;
             email: string;
+            id: string;
             created_at: Date;
         };
     }>;
     logout(rawRefreshToken: string): Promise<void>;
     getProfile(userId: string): Promise<{
-        id: string;
         name: string;
         email: string;
+        id: string;
         created_at: Date;
     } | null>;
     updateProfile(userId: string, dto: UpdateProfileDto): Promise<{
-        id: string;
         name: string;
         email: string;
+        id: string;
         created_at: Date;
     } | null>;
     private generateTokenPair;

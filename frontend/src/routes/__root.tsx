@@ -71,18 +71,7 @@ function RootComponent() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-backpage">
         <div className="flex flex-col items-center gap-4">
-          <svg
-            className="w-10 h-10 text-secondary fill-none animate-pulse"
-            viewBox="0 0 28 28"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 3C14 3 8.5 7.5 8.5 13.5C8.5 19.5 14 25 14 25C14 25 19.5 19.5 19.5 13.5C19.5 7.5 14 3 14 3Z" />
-            <path d="M14 9C14 9 11.5 12 11.5 15.5C11.5 19 14 22 14 22C14 22 16.5 19 16.5 15.5C16.5 12 14 9 14 9Z" />
-            <path d="M14 25V17" />
-          </svg>
+          <img src="/logo.svg" alt="Logo" className="w-12 h-auto animate-pulse" />
           <div className="w-6 h-6 border-3 border-secondary/20 border-t-secondary rounded-full animate-spin" />
         </div>
       </div>

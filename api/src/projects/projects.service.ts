@@ -39,6 +39,49 @@ export class ProjectsService {
     });
   }
 
+  async createWithTasks(dto: CreateProjectDto, tasks: any[], userId: string) {
+    const client = await this.prisma.client.findFirst({
+      where: { id: dto.client_id, user_id: userId },
+    });
+    if (!client) {
+      throw new NotFoundException('Cliente não encontrado');
+    }
+
+    const projectValue = dto.project_value || 0;
+    const amountReceived = dto.amount_received || 0;
+    const amountPending = projectValue - amountReceived;
+
+    return this.prisma.$transaction(async (tx) => {
+      const project = await tx.project.create({
+        data: {
+          ...dto,
+          user_id: userId,
+          start_date: dto.start_date ? new Date(dto.start_date) : undefined,
+          expected_delivery_date: dto.expected_delivery_date
+            ? new Date(dto.expected_delivery_date)
+            : undefined,
+          amount_pending: amountPending,
+        },
+      });
+
+      if (tasks && tasks.length > 0) {
+        await tx.task.createMany({
+          data: tasks.map(t => ({
+            project_id: project.id,
+            user_id: userId,
+            title: t.title,
+            description: t.description,
+            estimated_hours: t.estimated_hours,
+            status: 'PENDING',
+            priority: 'MEDIUM',
+          })),
+        });
+      }
+
+      return project;
+    });
+  }
+
   async findAll(params: {
     page?: number;
     limit?: number;

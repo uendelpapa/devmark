@@ -12,6 +12,7 @@ import { EventsModule } from './events/events.module';
 import { TagsModule } from './tags/tags.module';
 import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TagsModule,
     TimeEntriesModule,
     DashboardModule,
+    AiModule,
   ],
 })
 export class AppModule {}

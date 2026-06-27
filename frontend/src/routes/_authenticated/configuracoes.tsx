@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Card } from '@heroui/react'
 import { Gear, Check, Lock, ShieldCheck } from '@gravity-ui/icons'
 import { useAuthStore } from '../../lib/auth'
 import { useMutation } from '@tanstack/react-query'
@@ -98,7 +97,7 @@ function Configuracoes() {
   }
 
   return (
-    <div className="bg-white rounded-[24px] p-8 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-10">
+    <div className="bg-white rounded-[24px] p-8 overflow-y-auto min-w-0 scrollbar-none flex flex-col gap-10">
       {/* Page Heading */}
       <div className="flex justify-between items-center shrink-0 border-b border-zinc-100 pb-6">
         <div>
@@ -114,9 +113,9 @@ function Configuracoes() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-10 max-w-[800px]">
+      <div className="flex gap-10">
         {/* Profile Card */}
-        <div className="p-8 bg-zinc-50/50 border border-zinc-200/60 rounded-[24px]">
+        <div className="">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-secondary flex items-center gap-2">
               <ShieldCheck className="size-5 text-primary" />
@@ -150,7 +149,7 @@ function Configuracoes() {
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end pt-2">
               <button
                 type="submit"
@@ -165,7 +164,7 @@ function Configuracoes() {
         </div>
 
         {/* Password Card */}
-        <div className="p-8 bg-zinc-50/50 border border-zinc-200/60 rounded-[24px]">
+        <div className="">
           <div className="mb-6">
             <h2 className="text-xl font-bold text-secondary flex items-center gap-2">
               <Lock className="size-5 text-primary" />
@@ -210,7 +209,7 @@ function Configuracoes() {
                 />
               </div>
             </div>
-            
+
             <div className="flex justify-end pt-2">
               <button
                 type="submit"

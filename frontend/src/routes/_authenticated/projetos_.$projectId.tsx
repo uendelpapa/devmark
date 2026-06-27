@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Avatar, Button } from '@heroui/react'
-import { ArrowLeft, Layers, Briefcase, TrashBin, Clock, Envelope, CommentDot, Plus, CircleDollar, ChevronLeft } from '@gravity-ui/icons'
+import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchProjectDetails,
@@ -321,8 +321,8 @@ function ProjectDetailsPage() {
       </div>
 
       {/* ── Sobre o projeto + Duração ─────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-6">
-        <div className="flex-1 gap-2">
+      <div className="flex items-end justify-between gap-6">
+        <div className="flex-1 flex flex-col gap-2">
           <h3 className="font-medium text-secondary text-lg">Sobre o projeto</h3>
           <p className="text-secondary leading-relaxed">
             {isLoading ? (
@@ -333,11 +333,19 @@ function ProjectDetailsPage() {
           </p>
         </div>
 
-        <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
-          <Clock className="size-4" />
-          <div className="flex flex-col text-sm">
-            <span className="font-medium">Duração atual {diffDays} dias</span>
-            <span className="font-medium">Total trabalhado {totalWorkedHours}h</span>
+        <div className='flex items-center gap-2'>
+          <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
+            <Clock className="size-4" />
+            <div className="flex flex-col text-sm">
+              <span className="font-medium">Duração atual {diffDays} dias</span>
+            </div>
+          </div>
+
+          <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
+            <ClockArrowRotateLeft className="size-4" />
+            <div className="flex flex-col text-sm">
+              <span className="font-medium">Total trabalhado {totalWorkedHours}h</span>
+            </div>
           </div>
         </div>
       </div>
@@ -349,7 +357,7 @@ function ProjectDetailsPage() {
         {/* Task Board */}
         <div className="lg:col-span-2 bg-zinc-100 rounded-2xl p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="font-medium text-zinc-700">Quadros de tarefas</span>
+            <span className="font-medium text-zinc-800">Quadros de tarefas</span>
             <span className="text-xs font-semibold text-primary-light bg-secondary px-2 py-1 rounded-full">
               {allTasks.length} {allTasks.length !== 1 ? 'tarefas' : 'tarefa'}
             </span>
@@ -358,20 +366,20 @@ function ProjectDetailsPage() {
           <hr />
 
           {allTasks.length > 0 ? (
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
               {allTasks.map(task => {
                 const priInfo = getPriorityInfo(task.priority)
                 const stInfo = getStatusInfo(task.status)
                 return (
                   <div
                     key={task.id}
-                    className="flex items-center justify-between py-3 border-b border-secondary/5 last:border-0 w-full min-w-0"
+                    className="flex items-center justify-between px-4 py-3 w-full min-w-0 bg-primary/50 rounded-xl"
                   >
                     <div className="flex flex-col gap-1 min-w-0 pr-4 flex-1">
                       <span className="font-bold text-secondary text-[14px] truncate">
                         {task.title}
                       </span>
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1 flex-wrap">
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${stInfo.bg}`}>
                           {stInfo.label}
                         </span>
@@ -622,15 +630,16 @@ function ProjectDetailsPage() {
                 onClick={() => window.location.href = `mailto:${project.client.email}`}
                 isDisabled={!project.client.email}
                 size='lg'
-                className="flex items-center text-base gap-2 bg-primary/50 hover:bg-primary text-secondary font-semibold"
+                className="flex items-center text-base h-10 gap-2 bg-primary/50 hover:bg-primary text-secondary font-medium"
               >
-                <Envelope className="size-4" />
+                <EnvelopeOpen className="size-4" />
                 Enviar e-mail
               </Button>
+
               <Button
                 onClick={() => window.open(`https://wa.me/`, '_blank')}
                 size='lg'
-                className="flex items-center text-base gap-2 bg-primary/50 hover:bg-primay text-secondary font-semibold"
+                className="flex items-center text-base h-10 gap-2 bg-primary/50 hover:bg-primary text-secondary font-medium"
               >
                 <CommentDot className="size-4" />
                 WhatsApp
