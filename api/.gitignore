@@ -1,5 +1,7 @@
 # dependencies
 /node_modules
+/api/node_modules
+/api/dist
 
 # build output
 /dist

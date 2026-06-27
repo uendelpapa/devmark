@@ -28,7 +28,7 @@ export class TasksController {
   @Post()
   @ApiOperation({ summary: 'Criar nova tarefa' })
   create(@Body() dto: CreateTaskDto, @Req() req: Request) {
-    return this.tasksService.create(dto, (req.user as any).id);
+    return this.tasksService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -46,14 +46,14 @@ export class TasksController {
   ) {
     return this.tasksService.findAll(
       { page, limit, project_id, status },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar tarefa por ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.tasksService.findOne(id, (req.user as any).id);
+    return this.tasksService.findOne(id, (req as any).user.id);
   }
 
   @Patch(':id')
@@ -63,12 +63,12 @@ export class TasksController {
     @Body() dto: UpdateTaskDto,
     @Req() req: Request,
   ) {
-    return this.tasksService.update(id, dto, (req.user as any).id);
+    return this.tasksService.update(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir tarefa' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.tasksService.remove(id, (req.user as any).id);
+    return this.tasksService.remove(id, (req as any).user.id);
   }
 }

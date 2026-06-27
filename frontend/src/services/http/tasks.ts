@@ -2,8 +2,9 @@ import { api } from '../../lib/axios'
 import { formatDate } from './utils'
 import type { Task, TaskCardData, CreateTaskData } from '../types'
 
-export async function fetchTasks(projectId?: string): Promise<TaskCardData[]> {
-  const url = projectId ? `/tasks?project_id=${projectId}` : '/tasks'
+export async function fetchTasks(projectId?: string | any): Promise<TaskCardData[]> {
+  const validProjectId = typeof projectId === 'string' ? projectId : undefined;
+  const url = validProjectId ? `/tasks?project_id=${validProjectId}` : '/tasks'
   const response = await api.get(url)
   return response.data.data.map((t: any) => ({
     ...t, // Spread original task fields

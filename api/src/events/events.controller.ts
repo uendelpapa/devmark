@@ -28,7 +28,7 @@ export class EventsController {
   @Post()
   @ApiOperation({ summary: 'Criar evento' })
   create(@Body() dto: CreateEventDto, @Req() req: Request) {
-    return this.eventsService.create(dto, (req.user as any).id);
+    return this.eventsService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -44,14 +44,14 @@ export class EventsController {
   ) {
     return this.eventsService.findAll(
       { project_id, start, end },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar evento por ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.eventsService.findOne(id, (req.user as any).id);
+    return this.eventsService.findOne(id, (req as any).user.id);
   }
 
   @Patch(':id')
@@ -61,12 +61,12 @@ export class EventsController {
     @Body() dto: UpdateEventDto,
     @Req() req: Request,
   ) {
-    return this.eventsService.update(id, dto, (req.user as any).id);
+    return this.eventsService.update(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir evento' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.eventsService.remove(id, (req.user as any).id);
+    return this.eventsService.remove(id, (req as any).user.id);
   }
 }

@@ -18,7 +18,7 @@ export class AiController {
   @Post('chat')
   @ApiOperation({ summary: 'Chat com a IA para criar projeto' })
   async chat(@Body() body: { messages: any[], model?: string }, @Req() req: Request) {
-    const userId = (req.user as any).id;
+    const userId = (req as any).user.id;
     // Buscar clientes do usuário para dar contexto
     const clientsResult = await this.clientsService.findAll({ limit: 100 }, userId);
     const contextClients = clientsResult.data.map(c => ({ id: c.id, name: c.name }));

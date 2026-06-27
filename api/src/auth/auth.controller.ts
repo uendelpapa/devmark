@@ -105,7 +105,7 @@ export class AuthController {
     const refreshToken = req.cookies?.['refresh_token'];
     await this.authService.logout(refreshToken);
 
-    res.clearCookie('refresh_token', {
+    (res as any).clearCookie('refresh_token', {
       httpOnly: true,
       secure: this.isProduction,
       sameSite: 'strict',
@@ -122,7 +122,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Obter dados do usuário autenticado' })
   async me(@Req() req: Request) {
-    return this.authService.getProfile((req.user as any).id);
+    return this.authService.getProfile((req as any).user.id);
   }
 
   @Patch('profile')
@@ -130,13 +130,13 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Atualizar dados de perfil (Nome, Email, Senha)' })
   async updateProfile(@Req() req: Request, @Body() dto: UpdateProfileDto) {
-    return this.authService.updateProfile((req.user as any).id, dto);
+    return this.authService.updateProfile((req as any).user.id, dto);
   }
 
   // ─── Cookie Helper ─────────────────────────────────────────────────────────
 
   private setRefreshCookie(res: Response, token: string) {
-    res.cookie('refresh_token', token, {
+    (res as any).cookie('refresh_token', token, {
       httpOnly: true,
       secure: this.isProduction,
       sameSite: 'strict',

@@ -28,7 +28,7 @@ export class PaymentsController {
   @Post()
   @ApiOperation({ summary: 'Criar parcela de pagamento' })
   create(@Body() dto: CreatePaymentDto, @Req() req: Request) {
-    return this.paymentsService.create(dto, (req.user as any).id);
+    return this.paymentsService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -46,14 +46,14 @@ export class PaymentsController {
   ) {
     return this.paymentsService.findAll(
       { page, limit, project_id, status },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar pagamento por ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.paymentsService.findOne(id, (req.user as any).id);
+    return this.paymentsService.findOne(id, (req as any).user.id);
   }
 
   @Patch(':id')
@@ -63,12 +63,12 @@ export class PaymentsController {
     @Body() dto: UpdatePaymentDto,
     @Req() req: Request,
   ) {
-    return this.paymentsService.update(id, dto, (req.user as any).id);
+    return this.paymentsService.update(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir pagamento' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.paymentsService.remove(id, (req.user as any).id);
+    return this.paymentsService.remove(id, (req as any).user.id);
   }
 }

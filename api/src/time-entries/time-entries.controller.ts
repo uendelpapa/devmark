@@ -23,12 +23,12 @@ import { UpdateTimeEntryDto } from './dto/update-time-entry.dto';
 @UseGuards(JwtAuthGuard)
 @Controller('time-entries')
 export class TimeEntriesController {
-  constructor(private readonly timeEntriesService: TimeEntriesService) {}
+  constructor(private readonly timeEntriesService: TimeEntriesService) { }
 
   @Post()
   @ApiOperation({ summary: 'Iniciar timer (criar time entry)' })
   create(@Body() dto: CreateTimeEntryDto, @Req() req: Request) {
-    return this.timeEntriesService.create(dto, (req.user as any).id);
+    return this.timeEntriesService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -42,7 +42,7 @@ export class TimeEntriesController {
   ) {
     return this.timeEntriesService.findAll(
       { project_id, task_id },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
@@ -53,12 +53,12 @@ export class TimeEntriesController {
     @Body() dto: UpdateTimeEntryDto,
     @Req() req: Request,
   ) {
-    return this.timeEntriesService.stopTimer(id, dto, (req.user as any).id);
+    return this.timeEntriesService.stopTimer(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir time entry' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.timeEntriesService.remove(id, (req.user as any).id);
+    return this.timeEntriesService.remove(id, (req as any).user.id);
   }
 }
