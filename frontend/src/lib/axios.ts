@@ -40,9 +40,10 @@ api.interceptors.request.use((config) => {
 function getSuccessMessage(method: string, url: string): string | null {
   const normalizedUrl = url.toLowerCase();
 
-  // Skip auth endpoints and time-entries
+  // Skip endpoints that shouldn't show global success toasts
   if (normalizedUrl.includes('/auth/')) return null;
   if (normalizedUrl.includes('/time-entries')) return null;
+  if (normalizedUrl.includes('/ai/')) return null;
 
   if (method === 'post') {
     if (normalizedUrl.includes('/clients')) return 'Cliente cadastrado com sucesso!';
