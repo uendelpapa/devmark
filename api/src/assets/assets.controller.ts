@@ -26,7 +26,7 @@ export class AssetsController {
   @Post()
   @ApiOperation({ summary: 'Cadastrar novo arquivo (metadata)' })
   create(@Body() dto: CreateAssetDto, @Req() req: Request) {
-    return this.assetsService.create(dto, (req.user as any).id);
+    return this.assetsService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -44,13 +44,13 @@ export class AssetsController {
   ) {
     return this.assetsService.findAll(
       { page, limit, project_id, task_id },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir arquivo' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.assetsService.remove(id, (req.user as any).id);
+    return this.assetsService.remove(id, (req as any).user.id);
   }
 }

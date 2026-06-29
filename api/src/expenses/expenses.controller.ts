@@ -27,20 +27,20 @@ export class ProjectExpensesController {
   @Post()
   @ApiOperation({ summary: 'Criar custo do projeto' })
   create(@Body() dto: CreateProjectExpenseDto, @Req() req: Request) {
-    return this.expensesService.createProjectExpense(dto, (req.user as any).id);
+    return this.expensesService.createProjectExpense(dto, (req as any).user.id);
   }
 
   @Get()
   @ApiOperation({ summary: 'Listar custos de projetos' })
   @ApiQuery({ name: 'project_id', required: false })
   findAll(@Query('project_id') project_id: string | undefined, @Req() req: Request) {
-    return this.expensesService.findProjectExpenses(project_id, (req.user as any).id);
+    return this.expensesService.findProjectExpenses(project_id, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir custo do projeto' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.expensesService.removeProjectExpense(id, (req.user as any).id);
+    return this.expensesService.removeProjectExpense(id, (req as any).user.id);
   }
 }
 
@@ -54,19 +54,19 @@ export class TaskExpensesController {
   @Post()
   @ApiOperation({ summary: 'Criar custo da tarefa' })
   create(@Body() dto: CreateTaskExpenseDto, @Req() req: Request) {
-    return this.expensesService.createTaskExpense(dto, (req.user as any).id);
+    return this.expensesService.createTaskExpense(dto, (req as any).user.id);
   }
 
   @Get()
   @ApiOperation({ summary: 'Listar custos de tarefas' })
   @ApiQuery({ name: 'task_id', required: false })
   findAll(@Query('task_id') task_id: string | undefined, @Req() req: Request) {
-    return this.expensesService.findTaskExpenses(task_id, (req.user as any).id);
+    return this.expensesService.findTaskExpenses(task_id, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir custo da tarefa' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.expensesService.removeTaskExpense(id, (req.user as any).id);
+    return this.expensesService.removeTaskExpense(id, (req as any).user.id);
   }
 }

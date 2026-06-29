@@ -14,6 +14,6 @@ export class DashboardController {
   @Get()
   @ApiOperation({ summary: 'Obter dados agregados para o dashboard' })
   getDashboardData(@Req() req: Request) {
-    return this.dashboardService.getDashboardData((req.user as any).id);
+    return this.dashboardService.getDashboardData((req as any).user.id);
   }
 }

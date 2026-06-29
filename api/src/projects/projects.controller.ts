@@ -28,13 +28,13 @@ export class ProjectsController {
   @Post()
   @ApiOperation({ summary: 'Criar novo projeto' })
   create(@Body() dto: CreateProjectDto, @Req() req: Request) {
-    return this.projectsService.create(dto, (req.user as any).id);
+    return this.projectsService.create(dto, (req as any).user.id);
   }
 
   @Post('with-tasks')
   @ApiOperation({ summary: 'Criar novo projeto com tarefas em lote' })
   createWithTasks(@Body() body: { project: CreateProjectDto, tasks: any[] }, @Req() req: Request) {
-    return this.projectsService.createWithTasks(body.project, body.tasks, (req.user as any).id);
+    return this.projectsService.createWithTasks(body.project, body.tasks, (req as any).user.id);
   }
 
   @Get()
@@ -61,13 +61,13 @@ export class ProjectsController {
       priority,
       area,
       client_id,
-    }, (req?.user as any)?.id);
+    }, (req as any)?.user?.id);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar projeto por ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.projectsService.findOne(id, (req.user as any).id);
+    return this.projectsService.findOne(id, (req as any).user.id);
   }
 
   @Patch(':id')
@@ -77,12 +77,12 @@ export class ProjectsController {
     @Body() dto: UpdateProjectDto,
     @Req() req: Request,
   ) {
-    return this.projectsService.update(id, dto, (req.user as any).id);
+    return this.projectsService.update(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir projeto' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.projectsService.remove(id, (req.user as any).id);
+    return this.projectsService.remove(id, (req as any).user.id);
   }
 }

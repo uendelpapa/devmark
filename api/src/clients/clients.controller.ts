@@ -28,7 +28,7 @@ export class ClientsController {
   @Post()
   @ApiOperation({ summary: 'Criar novo cliente' })
   create(@Body() dto: CreateClientDto, @Req() req: Request) {
-    return this.clientsService.create(dto, (req.user as any).id);
+    return this.clientsService.create(dto, (req as any).user.id);
   }
 
   @Get()
@@ -46,14 +46,14 @@ export class ClientsController {
   ) {
     return this.clientsService.findAll(
       { page, limit, status, hasPendingPayment },
-      (req?.user as any)?.id,
+      (req as any)?.user?.id,
     );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Buscar cliente por ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.clientsService.findOne(id, (req.user as any).id);
+    return this.clientsService.findOne(id, (req as any).user.id);
   }
 
   @Patch(':id')
@@ -63,12 +63,12 @@ export class ClientsController {
     @Body() dto: UpdateClientDto,
     @Req() req: Request,
   ) {
-    return this.clientsService.update(id, dto, (req.user as any).id);
+    return this.clientsService.update(id, dto, (req as any).user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Excluir cliente' })
   remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
-    return this.clientsService.remove(id, (req.user as any).id);
+    return this.clientsService.remove(id, (req as any).user.id);
   }
 }

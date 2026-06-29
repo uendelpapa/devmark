@@ -192,7 +192,7 @@ export class AuthService {
     // Generate access token
     const accessToken = this.jwt.sign(
       { sub: userId, email },
-      { expiresIn: this.config.get('JWT_ACCESS_TTL', '15m') },
+      { expiresIn: this.config.get('JWT_ACCESS_TTL', '15m') } as any,
     );
 
     // Generate refresh token (opaque random string)
