@@ -7,8 +7,13 @@ import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { nitro } from 'nitro/vite'
 
+console.log('[vite] VITE_API_URL =', process.env.VITE_API_URL)
+
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  define: {
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL),
+  },
   plugins: [
     devtools(),
     tailwindcss(),
