@@ -20,7 +20,7 @@ const projectSchema = z.object({
   specialty: z.string().min(1, 'Obrigatório'),
   project_value: z.number().min(0, 'Inválido'),
   amount_received: z.number().min(0, 'Inválido'),
-  payment_status: z.string().min(1, 'Obrigatório'),
+
   start_date: z.string().min(1, 'Obrigatório'),
   expected_delivery_date: z.string().min(1, 'Obrigatório'),
   estimated_hours: z.number().min(1, 'Inválido'),
@@ -62,7 +62,7 @@ function EditarProjeto() {
       specialty: '',
       project_value: 0,
       amount_received: 0,
-      payment_status: '',
+
       start_date: '',
       expected_delivery_date: '',
       estimated_hours: 0,
@@ -80,7 +80,7 @@ function EditarProjeto() {
         specialty: 'FRONTEND', // Adapte conforme backend
         project_value: project.project_value || 0,
         amount_received: project.amount_received || 0,
-        payment_status: 'PENDING', // Adapte
+
         start_date: project.created_at ? project.created_at.split('T')[0] : '',
         expected_delivery_date: project.expected_delivery_date ? project.expected_delivery_date.split('T')[0] : '',
         estimated_hours: project.estimated_hours || 0,
@@ -104,7 +104,7 @@ function EditarProjeto() {
   const stepFields: Record<number, (keyof ProjectFormValues)[]> = {
     1: ['client_id', 'name'],
     2: ['area', 'specialty'],
-    3: ['project_value', 'amount_received', 'payment_status'],
+    3: ['project_value', 'amount_received'],
     4: ['start_date', 'expected_delivery_date'],
     5: ['estimated_hours', 'priority'],
     6: ['status']
@@ -336,35 +336,7 @@ function EditarProjeto() {
                 />
               </div>
 
-              <div>
-                <Controller
-                  name="payment_status"
-                  control={control}
-                  render={({ field: { name, value, onChange }, fieldState: { error } }) => (
-                    <Select
-                      name={name}
-                      selectedKey={value || null}
-                      onSelectionChange={(k) => onChange(k)}
-                      isInvalid={!!error}
-                      className="flex flex-col gap-1.5 w-full"
-                      placeholder="Selecione o status"
-                    >
-                      <Label className={labelClass}>Status do pagamento <span className="text-red-500">*</span></Label>
-                      <Select.Trigger className={`${inputClass} flex items-center justify-between`}>
-                        <Select.Value />
-                        <Select.Indicator />
-                      </Select.Trigger>
-                      <Select.Popover>
-                        <ListBox>
-                          <ListBox.Item id="PENDING" textValue="Pendente">Pendente</ListBox.Item>
-                          <ListBox.Item id="PAID" textValue="Pago">Pago</ListBox.Item>
-                        </ListBox>
-                      </Select.Popover>
-                      <FieldError className={errorClass}>{error?.message}</FieldError>
-                    </Select>
-                  )}
-                />
-              </div>
+
             </div>
           )}
 

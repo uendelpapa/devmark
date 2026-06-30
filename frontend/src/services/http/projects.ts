@@ -31,6 +31,15 @@ export async function fetchProjectDetails(id: string): Promise<ProjectDetails> {
   const response = await api.get(`/projects/${id}`)
   return response.data
 }
+export async function createProject(data: Partial<Project>): Promise<Project> {
+  const response = await api.post('/projects', data)
+  return response.data
+}
+
+export async function createProjectWithTasks(project: Partial<Project>, tasks: any[]): Promise<Project> {
+  const response = await api.post('/projects/with-tasks', { project, tasks })
+  return response.data
+}
 
 export async function updateProject(id: string, data: Partial<Project>): Promise<Project> {
   const response = await api.patch(`/projects/${id}`, data)

@@ -23,7 +23,7 @@ export class AiController {
     const clientsResult = await this.clientsService.findAll({ limit: 100 }, userId);
     const contextClients = clientsResult.data.map(c => ({ id: c.id, name: c.name }));
 
-    const model = body.model || 'gemini-1.5-flash';
+    const model = body.model || 'gemini-2.5-flash';
     
     // Modelos do OpenRouter sempre tem '/' no nome (ex: nvidia/nemotron...)
     if (model.includes('/')) {

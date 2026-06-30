@@ -286,7 +286,7 @@ function ProjetoIA() {
                   className="w-fit bg-transparent text-zinc-600 cursor-pointer outline-none font-medium"
                   disabled={isLoading || isComplete}
                 >
-                  <option value="gemini-1.5-flash">Gemini Flash</option>
+                  <option value="gemini-2.5-flash">Gemini Flash</option>
                   <option value="gemini-1.5-pro">Gemini Pro</option>
                   <option value="openai/gpt-oss-20b:free">GPT-OSS 20B (OpenRouter)</option>
                   <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 (OpenRouter)</option>

@@ -1,14 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Avatar, Button } from '@heroui/react'
-import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen } from '@gravity-ui/icons'
+import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen, Check } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchProjectDetails,
   createPayment,
   deletePayment,
   createProjectExpense,
-  deleteProjectExpense
+  deleteProjectExpense,
+  updateTaskStatus,
+  deleteTask
 } from '../../services/api'
 import { AddPaymentModal } from '../../components/finance/AddPaymentModal'
 import { AddExpenseModal } from '../../components/finance/AddExpenseModal'
@@ -128,6 +130,7 @@ function TaskRingsChart({ data, size = 170 }: RingsChartProps) {
 
 function ProjectDetailsPage() {
   const { projectId } = Route.useParams()
+  const navigate = useNavigate()
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
 
@@ -168,6 +171,22 @@ function ProjectDetailsPage() {
 
   const { mutate: handleDeleteExpense } = useMutation({
     mutationFn: deleteProjectExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    }
+  })
+
+  const { mutate: handleUpdateTaskStatus } = useMutation({
+    mutationFn: ({ id, status }: { id: string, status: string }) => updateTaskStatus(id, status as any),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    }
+  })
+
+  const { mutate: handleDeleteTask } = useMutation({
+    mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
@@ -359,24 +378,25 @@ function ProjectDetailsPage() {
           <div className="flex items-center justify-between">
             <span className="font-medium text-zinc-800">Quadros de tarefas</span>
             <span className="text-xs font-semibold text-primary-light bg-secondary px-2 py-1 rounded-full">
-              {allTasks.length} {allTasks.length !== 1 ? 'tarefas' : 'tarefa'}
+              {allTasks.filter(t => t.status === 'COMPLETED').length} de {allTasks.length} {allTasks.length !== 1 ? 'tarefas' : 'tarefa'}
             </span>
           </div>
 
           <hr />
 
           {allTasks.length > 0 ? (
-            <div className="flex flex-col gap-1">
+            <div className="relative flex flex-col gap-1">
               {allTasks.map(task => {
                 const priInfo = getPriorityInfo(task.priority)
                 const stInfo = getStatusInfo(task.status)
                 return (
                   <div
                     key={task.id}
-                    className="flex items-center justify-between px-4 py-3 w-full min-w-0 bg-primary/50 rounded-xl"
+                    className="flex items-center justify-between px-4 py-3 w-full min-w-0 bg-primary/50 hover:bg-primary/70 transition-colors rounded-xl cursor-pointer group"
+                    onClick={() => navigate({ to: '/tarefas/$taskId', params: { taskId: task.id } })}
                   >
                     <div className="flex flex-col gap-1 min-w-0 pr-4 flex-1">
-                      <span className="font-bold text-secondary text-[14px] truncate">
+                      <span className={`font-bold text-[14px] truncate transition-colors ${task.status === 'COMPLETED' ? 'text-secondary/50 line-through' : 'text-secondary'}`}>
                         {task.title}
                       </span>
                       <div className="flex items-center gap-1 flex-wrap">
@@ -393,14 +413,50 @@ function ProjectDetailsPage() {
                         )}
                       </div>
                     </div>
-                    {task.worked_hours !== undefined && (
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-[10px] font-bold text-secondary/40 uppercase tracking-wider">Horas</span>
-                        <span className="text-[14px] font-bold text-secondary">
-                          {task.worked_hours}h
-                        </span>
+
+                    <div className="grid shrink-0 justify-items-end items-center min-h-[32px] min-w-[72px]">
+                      {task.worked_hours !== undefined && (
+                        <div className="col-start-1 row-start-1 flex flex-col items-end shrink-0 transition-all duration-300 group-hover:opacity-0 group-hover:-translate-x-2">
+                          <span className="text-[10px] font-bold text-secondary/40 uppercase tracking-wider">Horas</span>
+                          <span className="text-[14px] font-bold text-secondary">
+                            {task.worked_hours}h
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="col-start-1 row-start-1 flex items-center gap-2 transition-all duration-300 opacity-0 translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 z-10">
+                        <Button
+                          size="sm"
+                          className={`size-8 p-0 min-w-8 rounded-full border-none flex items-center justify-center duration-300 ease-in-out transition-colors cursor-pointer ${task.status === 'COMPLETED'
+                            ? 'bg-secondary/50 hover:bg-secondary text-white'
+                            : 'bg-secondary hover:bg-secondary/50 text-white'
+                            }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateTaskStatus({
+                              id: task.id,
+                              status: task.status === 'COMPLETED' ? 'PENDING' : 'COMPLETED'
+                            });
+                          }}
+                          aria-label={task.status === 'COMPLETED' ? "Marcar como pendente" : "Marcar como concluída"}
+                        >
+                          <Check className="size-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="size-8 p-0 min-w-8 bg-red-900 hover:bg-red-700 text-white rounded-full border-none flex items-center justify-center transition-colors cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm('Deseja excluir esta tarefa?')) {
+                              handleDeleteTask(task.id);
+                            }
+                          }}
+                          aria-label="Excluir tarefa"
+                        >
+                          <TrashBin className="size-4" />
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </div>
                 )
               })}
@@ -610,7 +666,7 @@ function ProjectDetailsPage() {
         {isLoading ? (
           <div className="h-16 bg-zinc-100 animate-pulse rounded-2xl w-full" />
         ) : project?.client ? (
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col w-full gap-4">
             <div className="flex items-center gap-3">
               <Avatar className="size-12 shrink-0">
                 <Avatar.Image

@@ -5,7 +5,10 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-
+import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { createProject, createProjectWithTasks, fetchClients } from '../../services/api'
+import { api } from '../../lib/axios'
+import { toast } from '../../components/ui/Toast'
 export const Route = createFileRoute('/_authenticated/projetos_/novo')({
   component: NovoProjeto
 })
@@ -14,16 +17,16 @@ export const Route = createFileRoute('/_authenticated/projetos_/novo')({
 const projectSchema = z.object({
   client_id: z.string().min(1, 'Obrigatório'),
   name: z.string().min(1, 'Obrigatório'),
-  area: z.string().min(1, 'Obrigatório'),
-  specialty: z.string().min(1, 'Obrigatório'),
+  area: z.string().min(1, 'Obrigatório') as z.ZodType<'MARKETING' | 'DEVELOPER'>,
+  specialty: z.string().min(1, 'Obrigatório') as z.ZodType<'FRONTEND' | 'BACKEND' | 'SEO'>,
   project_value: z.number().min(0, 'Inválido'),
   amount_received: z.number().min(0, 'Inválido'),
-  payment_status: z.string().min(1, 'Obrigatório'),
+
   start_date: z.string().min(1, 'Obrigatório'),
   expected_delivery_date: z.string().min(1, 'Obrigatório'),
   estimated_hours: z.number().min(1, 'Inválido'),
-  priority: z.string().min(1, 'Obrigatório'),
-  status: z.string().min(1, 'Obrigatório'),
+  priority: z.string().min(1, 'Obrigatório') as z.ZodType<'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'>,
+  status: z.string().min(1, 'Obrigatório') as z.ZodType<'PLANNING' | 'IN_PROGRESS' | 'WAITING_CLIENT'>,
   create_tasks_ai: z.boolean()
 })
 
@@ -37,6 +40,13 @@ function NovoProjeto() {
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 6
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { data: clients } = useQuery({
+    queryKey: ['clients'],
+    queryFn: fetchClients
+  })
 
   const {
     control,
@@ -47,16 +57,16 @@ function NovoProjeto() {
     defaultValues: {
       client_id: '',
       name: '',
-      area: '',
-      specialty: '',
+      area: '' as any,
+      specialty: '' as any,
       project_value: 0,
       amount_received: 0,
-      payment_status: '',
+
       start_date: '',
       expected_delivery_date: '',
       estimated_hours: 0,
-      priority: '',
-      status: '',
+      priority: '' as any,
+      status: '' as any,
       create_tasks_ai: false
     }
   })
@@ -65,7 +75,7 @@ function NovoProjeto() {
   const stepFields: Record<number, (keyof ProjectFormValues)[]> = {
     1: ['client_id', 'name'],
     2: ['area', 'specialty'],
-    3: ['project_value', 'amount_received', 'payment_status'],
+    3: ['project_value', 'amount_received'],
     4: ['start_date', 'expected_delivery_date'],
     5: ['estimated_hours', 'priority'],
     6: ['status', 'create_tasks_ai']
@@ -87,9 +97,42 @@ function NovoProjeto() {
     }
   }
 
-  const onSubmit = (data: ProjectFormValues) => {
-    console.log('Projeto Criado:', data)
-    navigate({ to: '/projetos' })
+  const onSubmit = async (data: ProjectFormValues) => {
+    setIsSubmitting(true)
+    try {
+      if (data.create_tasks_ai) {
+        toast.info('Criando projeto e gerando tarefas com IA...')
+        
+        const messageText = `O usuário preencheu o formulário de projeto manualmente. Crie as tarefas para este projeto: ${JSON.stringify(data)}. Retorne is_complete: true e as tarefas.`
+        const aiResponse = await api.post('/ai/chat', {
+          messages: [{ role: 'user', parts: [{ text: messageText }] }],
+          model: 'gemini-2.5-flash'
+        })
+        
+        const result = aiResponse.data
+        const { create_tasks_ai, ...projectData } = data
+        if (result.is_complete && result.tasks && result.tasks.length > 0) {
+          await createProjectWithTasks(projectData as any, result.tasks)
+          toast.success('Projeto e tarefas criados com sucesso!')
+        } else {
+          await createProject(projectData as any)
+          toast.success('Projeto criado, mas não foi possível gerar tarefas.')
+        }
+      } else {
+        const { create_tasks_ai, ...projectData } = data
+        await createProject(projectData as any)
+        toast.success('Projeto criado com sucesso!')
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      navigate({ to: '/projetos' })
+    } catch (err: any) {
+      console.error(err)
+      toast.error(err?.response?.data?.message || 'Erro ao criar projeto.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Define títulos das etapas
@@ -148,14 +191,12 @@ function NovoProjeto() {
                       </Select.Trigger>
                       <Select.Popover>
                         <ListBox>
-                          <ListBox.Item id="c1" textValue="Bob Inc">
-                            Bob Inc
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
-                          <ListBox.Item id="c2" textValue="Fred Tech">
-                            Fred Tech
-                            <ListBox.ItemIndicator />
-                          </ListBox.Item>
+                          {clients?.map((client: any) => (
+                            <ListBox.Item key={client.id} id={client.id} textValue={client.name}>
+                              {client.name}
+                              <ListBox.ItemIndicator />
+                            </ListBox.Item>
+                          ))}
                         </ListBox>
                       </Select.Popover>
                       <FieldError className={errorClass}>{error?.message}</FieldError>
@@ -299,35 +340,7 @@ function NovoProjeto() {
                 />
               </div>
 
-              <div>
-                <Controller
-                  name="payment_status"
-                  control={control}
-                  render={({ field: { name, value, onChange }, fieldState: { error } }) => (
-                    <Select
-                      name={name}
-                      selectedKey={value || null}
-                      onSelectionChange={(k) => onChange(k)}
-                      isInvalid={!!error}
-                      className="flex flex-col gap-1.5 w-full"
-                      placeholder="Selecione o status"
-                    >
-                      <Label className={labelClass}>Status do pagamento <span className="text-red-500">*</span></Label>
-                      <Select.Trigger className={`${inputClass} flex items-center justify-between`}>
-                        <Select.Value />
-                        <Select.Indicator />
-                      </Select.Trigger>
-                      <Select.Popover>
-                        <ListBox>
-                          <ListBox.Item id="PENDING" textValue="Pendente">Pendente</ListBox.Item>
-                          <ListBox.Item id="PAID" textValue="Pago">Pago</ListBox.Item>
-                        </ListBox>
-                      </Select.Popover>
-                      <FieldError className={errorClass}>{error?.message}</FieldError>
-                    </Select>
-                  )}
-                />
-              </div>
+
             </div>
           )}
 
@@ -469,8 +482,16 @@ function NovoProjeto() {
                 control={control}
                 render={({ field: { value, onChange }, fieldState: { error } }) => (
                   <Checkbox
-                    isSelected={value}
-                    onChange={onChange}
+                    isSelected={!!value}
+                    onChange={(e: any) => {
+                      if (typeof e === 'boolean') {
+                        onChange(e);
+                      } else if (e && e.target && typeof e.target.checked === 'boolean') {
+                        onChange(e.target.checked);
+                      } else {
+                        onChange(!value);
+                      }
+                    }}
                     isInvalid={!!error}
                     className="w-[60%]"
                   >
@@ -528,9 +549,19 @@ function NovoProjeto() {
               type="submit"
               className="bg-secondary hover:bg-primary hover:text-secondary text-white font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all durantion-200"
               size='lg'
+              isDisabled={isSubmitting}
             >
-              <Plus />
-              Criar Projeto
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Salvando...
+                </span>
+              ) : (
+                <>
+                  <Plus />
+                  Criar Projeto
+                </>
+              )}
             </Button>
           )}
 
