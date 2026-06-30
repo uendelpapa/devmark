@@ -58,18 +58,7 @@ function LoginPage() {
         {/* Logo + Heading */}
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-center gap-0.5">
-            <svg
-              className="w-8 h-8 text-secondary fill-none"
-              viewBox="0 0 28 28"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14 3C14 3 8.5 7.5 8.5 13.5C8.5 19.5 14 25 14 25C14 25 19.5 19.5 19.5 13.5C19.5 7.5 14 3 14 3Z" />
-              <path d="M14 9C14 9 11.5 12 11.5 15.5C11.5 19 14 22 14 22C14 22 16.5 19 16.5 15.5C16.5 12 14 9 14 9Z" />
-              <path d="M14 25V17" />
-            </svg>
+            <img src="/logo.svg" alt="Logo" />
             <span className="text-[24px] font-extrabold text-secondary tracking-tight">
               Devmark
             </span>
