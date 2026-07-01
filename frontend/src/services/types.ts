@@ -160,6 +160,17 @@ export interface ClientWithPaymentStatus extends Client {
   hasPendingPayment: boolean
 }
 
+export interface ClientDetails extends Client {
+  projects: {
+    id: string
+    name: string
+    status: Project['status']
+    project_value: number
+    amount_received: number
+  }[]
+}
+
+
 export interface TaskCardData extends Task {
   taskId: string
   dueDate: string

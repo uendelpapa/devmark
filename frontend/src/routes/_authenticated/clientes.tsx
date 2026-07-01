@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Plus } from '@gravity-ui/icons'
+import { Plus, Magnifier } from '@gravity-ui/icons'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Button, Select, ListBox } from '@heroui/react'
+import { Button, Select, ListBox, Input } from '@heroui/react'
 import { fetchClients, updateClient } from '../../services/api'
 import { ClientCard } from '../../components/clients/ClientCard'
 import { EditClientModal } from '../../components/clients/EditClientModal'
@@ -19,6 +19,7 @@ function Clientes() {
     queryFn: fetchClients
   })
   const [filter, setFilter] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
   const [editingClient, setEditingClient] = useState<any | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
@@ -40,8 +41,14 @@ function Clientes() {
   }
 
   const filteredClients = clients.filter((client) => {
-    if (filter === 'pending') return client.hasPendingPayment
-    if (filter === 'paid') return !client.hasPendingPayment
+    if (filter === 'pending' && !client.hasPendingPayment) return false
+    if (filter === 'paid' && client.hasPendingPayment) return false
+    if (searchQuery.trim() !== '') {
+      const q = searchQuery.toLowerCase()
+      if (!client.name.toLowerCase().includes(q) && !client.email.toLowerCase().includes(q)) {
+        return false
+      }
+    }
     return true
   })
 
@@ -54,6 +61,15 @@ function Clientes() {
         </h1>
 
         <div className="flex items-center gap-3">
+          {/* Search Input */}
+          <Input
+            placeholder="Pesquisar..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Pesquisar clientes"
+            className={"rounded-full shadow-none bg-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0"}
+          />
+
           {/* Custom Select for Filter using HeroUI Select */}
           <Select
             selectedKey={filter}
@@ -99,8 +115,8 @@ function Clientes() {
           ))}
         </div>
       ) : filteredClients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 py-12">
-          <span className="text-zinc-400 text-lg font-medium">Nenhum cliente encontrado.</span>
+        <div className="flex-1 flex items-center justify-center text-zinc-500 text-sm">
+          {searchQuery ? 'Nenhum cliente encontrado para essa busca.' : 'Nenhum cliente encontrado.'}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-y-auto scrollbar-none pb-4">

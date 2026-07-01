@@ -7,7 +7,7 @@ import {
 } from '@gravity-ui/icons'
 import { Checkbox } from '@heroui/react'
 import type { Task } from './taskData'
-import { UrgencyChip, WebTagChip } from './taskData'
+import { UrgencyChip } from './taskData'
 
 interface TaskItemProps {
   task: Task
@@ -46,7 +46,6 @@ function TaskItem({ task, index, total, onStatusChange, onClick }: TaskItemProps
         </div>
 
         <UrgencyChip dueDate={task.dueDate} />
-        <WebTagChip />
 
         <button className="text-secondary/30 hover:text-secondary transition-colors ml-2">
           <Ellipsis className="size-4" />

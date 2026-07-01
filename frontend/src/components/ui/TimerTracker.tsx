@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTasks, startTimeEntry, stopTimeEntry, fetchTimeEntries } from '../../services/api'
 import type { TaskCardData } from '../../services/api'
+import { toast } from '../../components/ui/Toast'
 
 interface TimerContextType {
   hours: number
@@ -12,8 +13,8 @@ interface TimerContextType {
   isRunning: boolean
   activeTaskId: string | null
   setActiveTaskId: (id: string | null) => void
-  toggleTimer: () => void
-  startTimer: () => void
+  toggleTimer: (taskId?: string) => void
+  startTimer: (taskId?: string) => void
   pauseTimer: () => void
   resetTimer: () => void
 }
@@ -84,7 +85,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     }
   }, [isRunning, activeStartTime])
 
-  const toggleTimer = async () => {
+  const toggleTimer = async (explicitTaskId?: string) => {
     if (isRunning) {
       // Stop/pause timer
       if (activeTimeEntryId) {
@@ -102,8 +103,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       setActiveStartTime(null)
     } else {
       // Start timer
-      if (!activeTaskId) {
-        alert('Selecione uma tarefa antes de iniciar o timer.')
+      const idToUse = explicitTaskId || activeTaskId
+      if (!idToUse) {
+        toast.warning('Selecione uma tarefa antes de iniciar o timer.')
         return
       }
 
@@ -112,9 +114,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
           queryKey: ['tasks'],
           queryFn: fetchTasks
         })
-        const task = tasks.find((t) => t.id === activeTaskId)
+        const task = tasks.find((t) => t.id === idToUse)
         if (!task) {
-          alert('Tarefa não encontrada.')
+          toast.error('Tarefa não encontrada.')
           return
         }
 
@@ -133,9 +135,9 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const startTimer = () => {
+  const startTimer = (explicitTaskId?: string) => {
     if (!isRunning) {
-      toggleTimer()
+      toggleTimer(explicitTaskId)
     }
   }
 
@@ -216,7 +218,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
         <div className="flex gap-2 items-center">
           {/* Pause Button */}
           <button
-            onClick={toggleTimer}
+            onClick={() => toggleTimer()}
             className={`w-[40px] h-[40px] rounded-full flex items-center justify-center transition-all cursor-pointer ${isRunning
               ? 'bg-[#8F9E7C] hover:bg-[#7E8C6A]'
               : 'bg-secondary text-[#EAFFE9] hover:bg-[#023c00]'
@@ -292,7 +294,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
       <div className="flex flex-col gap-2 items-center">
         {/* Pause / Play Button */}
         <button
-          onClick={toggleTimer}
+          onClick={() => toggleTimer()}
           className={`size-[40px] rounded-full flex items-center justify-center transition-all cursor-pointer ${isRunning
             ? 'bg-[#8F9E7C] hover:bg-[#7E8C6A]'
             : 'bg-secondary text-[#EAFFE9] hover:bg-[#023c00]'

@@ -36,7 +36,7 @@ function TaskRingsChart({ data, size = 170 }: RingsChartProps) {
           {data.slice(0, 4).map((d, i) => (
             <div key={i} className="flex items-center gap-2">
               <div className="size-2.5 rounded-full bg-zinc-200" />
-              <span className="text-xs text-secondary/40 font-medium">{d.label}</span>
+              <span className="text-xs text-zinc-600 font-medium">{d.label}</span>
             </div>
           ))}
         </div>
@@ -101,7 +101,7 @@ function TaskRingsChart({ data, size = 170 }: RingsChartProps) {
                 cy={center}
                 r={r}
                 fill="none"
-                stroke="#e4e4e7"
+                stroke="#A9A9A9"
                 strokeWidth={strokeWidth}
                 opacity={0.5}
               />
@@ -179,7 +179,28 @@ function ProjectDetailsPage() {
 
   const { mutate: handleUpdateTaskStatus } = useMutation({
     mutationFn: ({ id, status }: { id: string, status: string }) => updateTaskStatus(id, status as any),
-    onSuccess: () => {
+    onMutate: async ({ id, status }) => {
+      await queryClient.cancelQueries({ queryKey: ['projectDetails', projectId] })
+      const previousProject = queryClient.getQueryData(['projectDetails', projectId])
+
+      queryClient.setQueryData(['projectDetails', projectId], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          tasks: old.tasks?.map((task: any) =>
+            task.id === id ? { ...task, status } : task
+          )
+        }
+      })
+
+      return { previousProject }
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousProject) {
+        queryClient.setQueryData(['projectDetails', projectId], context.previousProject)
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
@@ -285,10 +306,10 @@ function ProjectDetailsPage() {
     const counts: Record<string, number> = { PENDING: 0, IN_PROGRESS: 0, REVIEW: 0, COMPLETED: 0, CANCELED: 0 }
     project.tasks.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1 })
     return [
-      { label: 'To do', value: counts.PENDING, color: '#d4d4d8' },
+      { label: 'To do', value: counts.PENDING, color: '#89898B' },
       { label: 'Fazendo', value: counts.IN_PROGRESS, color: '#fde68a' },
       { label: 'Revisão', value: counts.REVIEW, color: '#bfdbfe' },
-      { label: 'Feito', value: counts.COMPLETED, color: '#a7f3d0' },
+      { label: 'Feito', value: counts.COMPLETED, color: '#BAF08A ' },
       { label: 'Cancelado', value: counts.CANCELED, color: '#fecdd3' },
     ]
   }, [project?.tasks])
@@ -341,7 +362,7 @@ function ProjectDetailsPage() {
 
       {/* ── Sobre o projeto + Duração ─────────────────────────────────── */}
       <div className="flex items-end justify-between gap-6">
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 flex flex-col gap-1">
           <h3 className="font-medium text-secondary text-lg">Sobre o projeto</h3>
           <p className="text-secondary leading-relaxed">
             {isLoading ? (
@@ -356,14 +377,14 @@ function ProjectDetailsPage() {
           <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
             <Clock className="size-4" />
             <div className="flex flex-col text-sm">
-              <span className="font-medium">Duração atual {diffDays} dias</span>
+              <span className="font-medium">Duração atual: {diffDays} dias</span>
             </div>
           </div>
 
           <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
             <ClockArrowRotateLeft className="size-4" />
             <div className="flex flex-col text-sm">
-              <span className="font-medium">Total trabalhado {totalWorkedHours}h</span>
+              <span className="font-medium">Total trabalhado: {totalWorkedHours}h</span>
             </div>
           </div>
         </div>
@@ -470,8 +491,8 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Activity Rings Chart */}
-        <div className="bg-primary/50 rounded-2xl p-4 flex items-center justify-center">
-          <TaskRingsChart data={pieData} size={170} />
+        <div className="bg-zinc-100 rounded-2xl p-4 flex items-center justify-center">
+          <TaskRingsChart data={pieData} size={250} />
         </div>
       </div>
 
@@ -660,14 +681,14 @@ function ProjectDetailsPage() {
       <hr />
 
       {/* ── Cliente ───────────────────────────────────────────────────── */}
-      <div className="">
-        <h3 className="font-medium text-secondary text-lg mb-4">Cliente</h3>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-medium text-secondary text-lg">Cliente</h3>
 
         {isLoading ? (
           <div className="h-16 bg-zinc-100 animate-pulse rounded-2xl w-full" />
         ) : project?.client ? (
-          <div className="flex flex-col w-full gap-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col w-full gap-6">
+            <div className="flex items-center gap-4">
               <Avatar className="size-12 shrink-0">
                 <Avatar.Image
                   alt={project.client.name}
@@ -676,8 +697,8 @@ function ProjectDetailsPage() {
                 <Avatar.Fallback>{project.client.name.charAt(0).toUpperCase()}</Avatar.Fallback>
               </Avatar>
               <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-secondary text-xl">{project.client.name}</span>
-                <span className="text-zinc-600 text-base">{project.client.email || 'Sem email cadastrado'}</span>
+                <span className="font-semibold text-secondary text-lg">{project.client.name}</span>
+                <span className="text-zinc-600 text-sm">{project.client.email || 'Sem email cadastrado'}</span>
               </div>
             </div>
 

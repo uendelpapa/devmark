@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Checkbox, ProgressBar, Select, ListBox } from '@heroui/react'
 import { ArrowLeft, Clock, Briefcase, Calendar, TrashBin, FloppyDisk } from '@gravity-ui/icons'
-import { fetchTaskDetails, updateTask, deleteTask } from '../../services/api'
-import type { Task } from '../../services/api'
+import { fetchTaskDetails, updateTask, deleteTask, fetchTasks } from '../../services/api'
+import type { Task, TaskCardData } from '../../services/api'
+import { toast } from '../../components/ui/Toast'
+import { useTimer } from '../../components/ui/TimerTracker'
 
 export const Route = createFileRoute('/_authenticated/tarefas_/$taskId')({
   component: TaskDetailsPage
@@ -29,6 +31,7 @@ function TaskDetailsPage() {
   const { taskId } = Route.useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { startTimer, pauseTimer, activeTaskId, setActiveTaskId } = useTimer()
 
   // Task details fetch
   const { data: task, isLoading, error } = useQuery({
@@ -100,8 +103,31 @@ function TaskDetailsPage() {
   const currentStatusInfo = TASK_STATUSES.find(s => s.key === task.status) || TASK_STATUSES[0]
 
   // Handle status update directly
-  const handleStatusChange = (newStatus: any) => {
+  const handleStatusChange = async (newStatus: any) => {
+    if (newStatus === 'IN_PROGRESS') {
+      try {
+        const tasksList = await queryClient.fetchQuery<TaskCardData[]>({
+          queryKey: ['tasks'],
+          queryFn: fetchTasks
+        })
+        const inProgress = tasksList.find(t => t.status === 'IN_PROGRESS')
+        if (inProgress && inProgress.id !== taskId) {
+          toast.warning('Você já tem uma tarefa em andamento. Conclua ou pause ela antes de iniciar outra.')
+          return
+        }
+      } catch (err) {
+        console.error('Failed to validate in-progress tasks:', err)
+      }
+    }
+    
     updateMutation.mutate({ status: newStatus })
+
+    if (newStatus === 'IN_PROGRESS') {
+      setActiveTaskId(taskId)
+      startTimer(taskId)
+    } else if (activeTaskId === taskId) {
+      pauseTimer()
+    }
   }
 
   // Handle priority update directly

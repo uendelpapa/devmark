@@ -6,6 +6,10 @@ import { useMutation } from '@tanstack/react-query'
 import { updateProfile } from '../../services/api'
 import type { UpdateProfileData } from '../../services/api'
 import { toast } from '../../components/ui/Toast'
+import { Button, TextField, Label, Input } from '@heroui/react'
+
+const inputClass = "w-full bg-zinc-100 rounded-[12px] px-3 py-2 text-[14px] text-zinc-600 outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-zinc-700 transition-all border border-transparent data-[invalid=true]:border-red-500 appearance-none shadow-none"
+const labelClass = "text-[14px] font-semibold text-secondary block"
 
 export const Route = createFileRoute('/_authenticated/configuracoes')({
   component: Configuracoes
@@ -99,126 +103,119 @@ function Configuracoes() {
   return (
     <div className="bg-white rounded-[24px] p-8 overflow-y-auto min-w-0 scrollbar-none flex flex-col gap-10">
       {/* Page Heading */}
-      <div className="flex justify-between items-center shrink-0 border-b border-zinc-100 pb-6">
-        <div>
-          <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none flex items-center gap-3">
-            <div className="size-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
-              <Gear className="size-6" />
-            </div>
-            Configurações
-          </h1>
-          <p className="text-sm font-medium text-secondary/50 mt-4">
-            Gerencie suas informações pessoais e de segurança
-          </p>
-        </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none flex items-center gap-3">
+          Configurações
+        </h1>
+        <p className="text-sm text-zinc-400">
+          Gerencie suas informações pessoais e de segurança
+        </p>
       </div>
 
-      <div className="flex gap-10">
+      <hr />
+
+      <div className="flex flex-col gap-10">
         {/* Profile Card */}
-        <div className="">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-secondary flex items-center gap-2">
-              <ShieldCheck className="size-5 text-primary" />
+        <div className="max-w-[400px] flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold text-secondary">
               Perfil
             </h2>
-            <p className="text-sm text-secondary/50">
+            <p className="text-sm text-zinc-400">
               Atualize seu nome e endereço de e-mail.
             </p>
           </div>
 
           <form onSubmit={handleProfileSubmit} className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-secondary/70">Nome Completo</label>
-                <input
-                  type="text"
-                  placeholder="Seu nome"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-secondary/70">E-mail</label>
-                <input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                />
-              </div>
+            <div className="grid grid-cols-1 gap-6">
+              <TextField
+                value={name}
+                onChange={setName}
+                className="flex flex-col gap-2 w-full"
+              >
+                <Label className={labelClass}>Nome Completo</Label>
+                <Input type="text" className={inputClass} placeholder="Seu nome" />
+              </TextField>
+
+              <TextField
+                value={email}
+                onChange={setEmail}
+                className="flex flex-col gap-2 w-full"
+              >
+                <Label className={labelClass}>E-mail</Label>
+                <Input type="email" className={inputClass} placeholder="seu@email.com" />
+              </TextField>
             </div>
 
-            <div className="flex justify-end pt-2">
-              <button
+            <div className="flex">
+              <Button
                 type="submit"
-                className="font-bold rounded-xl px-8 bg-primary text-white hover:bg-primary/90 py-2.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
-                disabled={isSavingProfile || !name.trim() || !email.trim() || (name === user?.name && email === user?.email)}
+                size="lg"
+                className="font-medium text-sm rounded-full bg-primary/50 text-secondary hover:bg-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
+                isDisabled={isSavingProfile || !name.trim() || !email.trim() || (name === user?.name && email === user?.email)}
               >
                 {!isSavingProfile && <Check className="size-4" />}
                 {isSavingProfile ? 'Salvando...' : 'Salvar Perfil'}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
 
+        <hr />
+
         {/* Password Card */}
-        <div className="">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-secondary flex items-center gap-2">
-              <Lock className="size-5 text-primary" />
+        <div className="max-w-[400px] flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xl font-semibold text-secondary">
               Segurança
             </h2>
-            <p className="text-sm text-secondary/50">
+            <p className="text-sm text-zinc-400">
               Altere sua senha para manter sua conta segura.
             </p>
           </div>
 
           <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-6">
             <div className="max-w-md flex flex-col gap-6">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-secondary/70">Senha Atual</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                />
-              </div>
+              <TextField
+                value={currentPassword}
+                onChange={setCurrentPassword}
+                className="flex flex-col gap-2 w-full"
+              >
+                <Label className={labelClass}>Senha Atual</Label>
+                <Input type="password" className={inputClass} placeholder="••••••••" />
+              </TextField>
+
               <div className="my-1 h-px bg-zinc-200" />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-secondary/70">Nova Senha</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-bold text-secondary/70">Confirmar Nova Senha</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all text-secondary"
-                />
-              </div>
+
+              <TextField
+                value={newPassword}
+                onChange={setNewPassword}
+                className="flex flex-col gap-2 w-full"
+              >
+                <Label className={labelClass}>Nova Senha</Label>
+                <Input type="password" className={inputClass} placeholder="••••••••" />
+              </TextField>
+
+              <TextField
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                className="flex flex-col gap-2 w-full"
+              >
+                <Label className={labelClass}>Confirmar Nova Senha</Label>
+                <Input type="password" className={inputClass} placeholder="••••••••" />
+              </TextField>
             </div>
 
-            <div className="flex justify-end pt-2">
-              <button
+            <div className="flex">
+              <Button
                 type="submit"
-                className="font-bold rounded-xl px-8 bg-secondary text-white hover:bg-secondary/90 py-2.5 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
-                disabled={isSavingPassword || !currentPassword || !newPassword || !confirmPassword}
+                size="lg"
+                className="font-medium text-sm rounded-full bg-primary/50 text-secondary hover:bg-primary cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
+                isDisabled={isSavingPassword || !currentPassword || !newPassword || !confirmPassword}
               >
                 {!isSavingPassword && <Lock className="size-4" />}
                 {isSavingPassword ? 'Alterando...' : 'Alterar Senha'}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

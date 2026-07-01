@@ -1,6 +1,7 @@
 import type { ClientWithPaymentStatus } from '../../services/api'
 import { Ellipsis, Clock, CircleInfo } from '@gravity-ui/icons'
 import { Card, Button, Avatar } from '@heroui/react'
+import { useNavigate } from '@tanstack/react-router'
 
 interface ClientCardProps {
   client: ClientWithPaymentStatus
@@ -8,8 +9,13 @@ interface ClientCardProps {
 }
 
 export function ClientCard({ client, onEdit }: ClientCardProps) {
+  const navigate = useNavigate()
+
   return (
-    <Card className="flex flex-row items-center justify-between p-4 bg-zinc-100 hover:bg-zinc-200/60 rounded-[16px] border-none shadow-none transition-colors group text-secondary">
+    <Card
+      onClick={() => navigate({ to: '/clientes/$clientId', params: { clientId: client.id } })}
+      className="flex flex-row items-center justify-between p-4 bg-zinc-100 hover:bg-zinc-200 rounded-[16px] border-none shadow-none duration-300 ease-in-out transition-colors group text-secondary cursor-pointer"
+    >
       <div className="flex items-center gap-2 min-w-0">
         {/* Avatar with custom zinc gradient */}
         <Avatar className="size-8 shrink-0">
@@ -21,8 +27,8 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
         </Avatar>
 
         {/* Client details */}
-        <div className="flex flex-1 flex-col min-w-0 max-w-32">
-          <span className="text-xs text-zinc-800 truncate leading-tight">
+        <div className="flex flex-1 flex-col min-w-0 max-w-32 items-start">
+          <span className="text-xs text-zinc-800 truncate leading-tight font-medium">
             {client.name}
           </span>
           <span className="text-xs text-zinc-800 truncate">
@@ -37,7 +43,7 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
           <span className="bg-[#EAB308] text-white px-1.5 py-0.5 rounded-full w-fit items-center justify-center font-medium">
             <span className="flex items-center gap-1.5 text-xs">
               <Clock className="size-3" />
-              Pagamento pendênte
+              Pagamento pendente
             </span>
           </span>
         ) : (
@@ -54,6 +60,7 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
           isIconOnly
           size="sm"
           onPress={() => onEdit?.(client)}
+          onClick={(e) => e.stopPropagation()}
           className="text-zinc-400 hover:text-zinc-700 bg-transparent hover:bg-zinc-200 size-6 rounded-full cursor-pointer transition-colors border-none p-0 flex items-center justify-center"
         >
           <Ellipsis className="size-4" />

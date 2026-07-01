@@ -87,7 +87,7 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <div
       onClick={() => onPress?.(id)}
-      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all hover:shadow-md cursor-pointer ${isCompleted ? 'bg-primary/50' : 'bg-zinc-100'
+      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all cursor-pointer duration-300 ease-in-out ${isCompleted ? 'bg-primary/50 hover:bg-primary' : 'bg-zinc-100 hover:bg-zinc-200'
         }`}
     >
       {/* Header: Title + Menu */}
@@ -155,12 +155,12 @@ export const ProjectCard = memo(function ProjectCard({
       {/* Tags de status e prioridade */}
       <div className="flex flex-wrap items-center gap-1.5">
         {/* Status Tag */}
-        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${STATUS_STYLES[status]}`}>
+        <span className={`text-[11px] font-semibold rounded-full px-2 py-1 ${STATUS_STYLES[status]}`}>
           {STATUS_LABELS[status]}
         </span>
 
         {/* Priority Tag */}
-        <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${PRIORITY_STYLES[priority]}`}>
+        <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${PRIORITY_STYLES[priority]}`}>
           {priorityLabel}
         </span>
 

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import { createProject, createProjectWithTasks, fetchClients } from '../../services/api'
 import { api } from '../../lib/axios'
 import { toast } from '../../components/ui/Toast'
@@ -46,6 +46,37 @@ function NovoProjeto() {
   const { data: clients } = useQuery({
     queryKey: ['clients'],
     queryFn: fetchClients
+  })
+
+  const { mutate: mutateCreateNormal } = useMutation({
+    mutationFn: (data: any) => createProject(data),
+    onMutate: async (newProject) => {
+      await queryClient.cancelQueries({ queryKey: ['projects'] })
+      const previousProjects = queryClient.getQueryData(['projects'])
+      queryClient.setQueryData(['projects'], (old: any) => {
+        const optimisticProject = {
+          ...newProject,
+          id: `temp-${Date.now()}`,
+          created_at: new Date().toISOString(),
+          status: 'PENDING'
+        }
+        return [optimisticProject, ...(old || [])]
+      })
+      return { previousProjects }
+    },
+    onError: (err: any, _newProject, context) => {
+      if (context?.previousProjects) {
+        queryClient.setQueryData(['projects'], context.previousProjects)
+      }
+      toast.error(err?.response?.data?.message || 'Erro ao criar projeto.')
+    },
+    onSuccess: () => {
+      toast.success('Projeto criado com sucesso!')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    }
   })
 
   const {
@@ -118,15 +149,15 @@ function NovoProjeto() {
           await createProject(projectData as any)
           toast.success('Projeto criado, mas não foi possível gerar tarefas.')
         }
+        queryClient.invalidateQueries({ queryKey: ['projects'] })
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+        navigate({ to: '/projetos' })
       } else {
         const { create_tasks_ai, ...projectData } = data
-        await createProject(projectData as any)
-        toast.success('Projeto criado com sucesso!')
+        mutateCreateNormal(projectData as any)
+        // Redirecionamento instantâneo (optimistic UI)
+        navigate({ to: '/projetos' })
       }
-
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      navigate({ to: '/projetos' })
     } catch (err: any) {
       console.error(err)
       toast.error(err?.response?.data?.message || 'Erro ao criar projeto.')

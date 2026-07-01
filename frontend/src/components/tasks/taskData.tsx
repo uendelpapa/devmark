@@ -29,14 +29,3 @@ export function UrgencyChip({ dueDate }: { dueDate: string }) {
   )
 }
 
-export function WebTagChip() {
-  return (
-    <span className="bg-[#1C6ED7] text-white border-none px-1.5 py-0.5 rounded-full inline-flex items-center justify-center">
-      <span className="flex items-center gap-1 text-xs">
-        <span className="font-mono text-[10px]">
-          <Code />
-        </span> web
-      </span>
-    </span>
-  )
-}

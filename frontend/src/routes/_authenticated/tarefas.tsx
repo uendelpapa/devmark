@@ -11,6 +11,7 @@ import { TableView } from '../../components/tasks/TableView'
 import { useTimer } from '../../components/ui/TimerTracker'
 import { CreateTaskModal, type CreateTaskPayload } from '../../components/tasks/CreateTaskModal'
 import { EditTaskModal } from '../../components/tasks/EditTaskModal'
+import { toast } from '../../components/ui/Toast'
 
 export const Route = createFileRoute('/_authenticated/tarefas')({
   component: Tarefas
@@ -25,7 +26,7 @@ const viewButtons: { key: ViewMode; label: string; icon: typeof LayoutHeaderCell
 ]
 
 function Tarefas() {
-  const [view, setView] = useState<ViewMode>('table')
+  const [view, setView] = useState<ViewMode>('kanban')
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [createTaskStatusPreset, setCreateTaskStatusPreset] = useState<Task['status'] | undefined>(undefined)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
@@ -53,7 +54,26 @@ function Tarefas() {
   const { mutate } = useMutation({
     mutationFn: ({ taskId, newStatus }: { taskId: string, newStatus: Task['status'] }) =>
       updateTaskStatus(taskId, newStatus),
-    onSuccess: () => {
+    onMutate: async ({ taskId, newStatus }) => {
+      const queryKey = ['tasks', selectedProjectId]
+      await queryClient.cancelQueries({ queryKey })
+      const previousTasks = queryClient.getQueryData(queryKey)
+
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old) return old;
+        return old.map((task: any) =>
+          task.id === taskId ? { ...task, status: newStatus } : task
+        )
+      })
+
+      return { previousTasks, queryKey }
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousTasks) {
+        queryClient.setQueryData(context.queryKey, context.previousTasks)
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
@@ -94,12 +114,17 @@ function Tarefas() {
   const completedTasks = tasks.filter((t: Task) => t.status === 'COMPLETED')
 
   const handleTaskStatusChange = (taskId: string, newStatus: Task['status']) => {
+    if (newStatus === 'IN_PROGRESS' && inProgressTasks.length > 0 && !inProgressTasks.find((t) => t.id === taskId)) {
+      toast.warning('Você já tem uma tarefa em andamento. Conclua ou pause ela antes de iniciar outra.')
+      return
+    }
+
     // Optimistic update logic could be added here
     mutate({ taskId, newStatus })
 
     if (newStatus === 'IN_PROGRESS') {
       setActiveTaskId(taskId)
-      startTimer()
+      startTimer(taskId)
     } else if (activeTaskId === taskId) {
       pauseTimer()
     }

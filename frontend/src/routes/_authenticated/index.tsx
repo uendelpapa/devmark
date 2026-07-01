@@ -278,9 +278,12 @@ function Home() {
                       <div
                         style={{
                           height: `${getBarHeight(weeklyWorkLevel[0], 108)}px`,
-                          animationDelay: '0ms'
+                          animationDelay: '0ms',
+                          backgroundImage: 'url(/bgcharts.jpg)',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
                         }}
-                        className="flex w-full max-w-[256px] bg-[#BAF08A] rounded-full chart-bar animate-grow-up"
+                        className="flex w-full max-w-[256px] rounded-full chart-bar animate-grow-up"
                       />
                     </Tooltip.Trigger>
                     <Tooltip.Content
@@ -322,9 +325,12 @@ function Home() {
                       <div
                         style={{
                           height: `${getBarHeight(weeklyWorkLevel[2], 88)}px`,
-                          animationDelay: '120ms'
+                          animationDelay: '120ms',
+                          backgroundImage: 'url(/bgcharts.jpg)',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
                         }}
-                        className="flex w-full max-w-[256px] bg-[#BAF08A] rounded-full chart-bar animate-grow-up"
+                        className="flex w-full max-w-[256px] rounded-full chart-bar animate-grow-up"
                       />
                     </Tooltip.Trigger>
                     <Tooltip.Content
@@ -370,9 +376,12 @@ function Home() {
                       <div
                         style={{
                           height: `${getBarHeight(weeklyWorkLevel[4], 120)}px`,
-                          animationDelay: '240ms'
+                          animationDelay: '240ms',
+                          backgroundImage: 'url(/bgcharts.jpg)',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
                         }}
-                        className="flex w-full max-w-[256px] bg-[#BAF08A] rounded-full chart-bar animate-grow-up"
+                        className="flex w-full max-w-[256px] rounded-full chart-bar animate-grow-up"
                       />
                     </Tooltip.Trigger>
                     <Tooltip.Content
@@ -417,9 +426,12 @@ function Home() {
                       <div
                         style={{
                           height: `${getBarHeight(weeklyWorkLevel[6], 65)}px`,
-                          animationDelay: '360ms'
+                          animationDelay: '360ms',
+                          backgroundImage: 'url(/bgcharts.jpg)',
+                          backgroundSize: 'cover',
+                          backgroundPosition: 'center'
                         }}
-                        className="flex w-full max-w-[256px] bg-[#BAF08A] rounded-full chart-bar animate-grow-up"
+                        className="flex w-full max-w-[256px] rounded-full chart-bar animate-grow-up"
                       />
                     </Tooltip.Trigger>
                     <Tooltip.Content

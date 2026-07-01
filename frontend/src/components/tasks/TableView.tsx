@@ -27,7 +27,7 @@ import {
 } from '@gravity-ui/icons'
 import { Table, Checkbox } from '@heroui/react'
 import type { Task } from './taskData'
-import { UrgencyChip, WebTagChip } from './taskData'
+import { UrgencyChip } from './taskData'
 import { Link } from '@tanstack/react-router'
 
 const ROWS_PER_PAGE = 7
@@ -40,7 +40,7 @@ interface TableViewProps {
   onTaskDelete?: (taskId: string) => void
 }
 
-function SortableRow({ task, onStatusChange, onClick, onDelete }: { task: Task, onStatusChange?: (taskId: string, newStatus: Task['status']) => void, onClick?: (task: Task) => void, onDelete?: (taskId: string) => void }) {
+function SortableRow({ task, isFirst, isLast, onStatusChange, onClick, onDelete }: { task: Task, isFirst?: boolean, isLast?: boolean, onStatusChange?: (taskId: string, newStatus: Task['status']) => void, onClick?: (task: Task) => void, onDelete?: (taskId: string) => void }) {
   const {
     attributes,
     listeners,
@@ -57,12 +57,13 @@ function SortableRow({ task, onStatusChange, onClick, onDelete }: { task: Task, 
   }
 
   const isDone = task.status === 'COMPLETED'
+  const roundedClass = `${isFirst ? 'rounded-t-lg' : ''} ${isLast ? 'rounded-b-lg' : ''}`.trim()
 
   return (
-    <Table.Row ref={setNodeRef} style={style} className={`hover:bg-zinc-200 ${isDone ? "opacity-60" : ""} bg-white`}>
+    <Table.Row ref={setNodeRef} style={style} className={`${isDone ? "opacity-60" : ""} ${roundedClass}`}>
       <Table.Cell className="pr-0 px-4 py-3">
         <div className="flex items-center gap-2">
-          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 rounded hover:bg-zinc-100">
+          <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 rounded">
             <Grip className="size-4 text-zinc-300 shrink-0 outline-none" />
           </div>
           <Checkbox
@@ -101,7 +102,6 @@ function SortableRow({ task, onStatusChange, onClick, onDelete }: { task: Task, 
       <Table.Cell className="px-4 py-3">
         <div className="flex items-center gap-2">
           <UrgencyChip dueDate={task.dueDate} />
-          <WebTagChip />
         </div>
       </Table.Cell>
       <Table.Cell className="text-[13px] font-medium text-secondary px-4 py-3">{task.dueDate}</Table.Cell>
@@ -118,7 +118,7 @@ function SortableRow({ task, onStatusChange, onClick, onDelete }: { task: Task, 
           </button>
         </div>
       </Table.Cell>
-    </Table.Row>
+    </Table.Row >
   )
 }
 
@@ -203,10 +203,12 @@ export function TableView({ tasks, onTaskStatusChange, onTaskReorder, onTaskClic
                     <Table.Column className="bg-transparent text-zinc-900 font-medium text-xs text-right px-4 py-2">Ações</Table.Column>
                   </Table.Header>
                   <Table.Body>
-                    {paginatedTasks.map((task) => (
+                    {paginatedTasks.map((task, index) => (
                       <SortableRow
                         key={task.id}
                         task={task}
+                        isFirst={index === 0}
+                        isLast={index === paginatedTasks.length - 1}
                         onStatusChange={onTaskStatusChange}
                         onClick={onTaskClick}
                         onDelete={onTaskDelete}

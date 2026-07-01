@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Check } from '@gravity-ui/icons'
-import type { ClientWithPaymentStatus } from '../../services/api'
+import type { Client } from '../../services/api'
 import { Select, ListBox } from '@heroui/react'
 
 interface EditClientModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (id: string, data: any) => void
-  client: ClientWithPaymentStatus | null
+  client: Client | null
   isPending?: boolean
   error?: string | null
 }

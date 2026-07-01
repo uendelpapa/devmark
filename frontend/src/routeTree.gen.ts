@@ -23,6 +23,7 @@ import { Route as AuthenticatedProjetosNovoRouteImport } from './routes/_authent
 import { Route as AuthenticatedProjetosIaRouteImport } from './routes/_authenticated/projetos_.ia'
 import { Route as AuthenticatedProjetosProjectIdRouteImport } from './routes/_authenticated/projetos_.$projectId'
 import { Route as AuthenticatedClientesNovoRouteImport } from './routes/_authenticated/clientes_.novo'
+import { Route as AuthenticatedClientesClientIdRouteImport } from './routes/_authenticated/clientes_.$clientId'
 import { Route as AuthenticatedProjetosProjectIdEditarRouteImport } from './routes/_authenticated/projetos_.$projectId.editar'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -99,6 +100,12 @@ const AuthenticatedClientesNovoRoute =
     path: '/clientes/novo',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedClientesClientIdRoute =
+  AuthenticatedClientesClientIdRouteImport.update({
+    id: '/clientes_/$clientId',
+    path: '/clientes/$clientId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProjetosProjectIdEditarRoute =
   AuthenticatedProjetosProjectIdEditarRouteImport.update({
     id: '/editar',
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/projetos': typeof AuthenticatedProjetosRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
+  '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes/novo': typeof AuthenticatedClientesNovoRoute
   '/projetos/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
   '/projetos/ia': typeof AuthenticatedProjetosIaRoute
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/projetos': typeof AuthenticatedProjetosRoute
   '/tarefas': typeof AuthenticatedTarefasRoute
   '/': typeof AuthenticatedIndexRoute
+  '/clientes/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/clientes/novo': typeof AuthenticatedClientesNovoRoute
   '/projetos/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
   '/projetos/ia': typeof AuthenticatedProjetosIaRoute
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/projetos': typeof AuthenticatedProjetosRoute
   '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/clientes_/$clientId': typeof AuthenticatedClientesClientIdRoute
   '/_authenticated/clientes_/novo': typeof AuthenticatedClientesNovoRoute
   '/_authenticated/projetos_/$projectId': typeof AuthenticatedProjetosProjectIdRouteWithChildren
   '/_authenticated/projetos_/ia': typeof AuthenticatedProjetosIaRoute
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/projetos'
     | '/tarefas'
+    | '/clientes/$clientId'
     | '/clientes/novo'
     | '/projetos/$projectId'
     | '/projetos/ia'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/projetos'
     | '/tarefas'
     | '/'
+    | '/clientes/$clientId'
     | '/clientes/novo'
     | '/projetos/$projectId'
     | '/projetos/ia'
@@ -200,6 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated/projetos'
     | '/_authenticated/tarefas'
     | '/_authenticated/'
+    | '/_authenticated/clientes_/$clientId'
     | '/_authenticated/clientes_/novo'
     | '/_authenticated/projetos_/$projectId'
     | '/_authenticated/projetos_/ia'
@@ -314,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesNovoRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/clientes_/$clientId': {
+      id: '/_authenticated/clientes_/$clientId'
+      path: '/clientes/$clientId'
+      fullPath: '/clientes/$clientId'
+      preLoaderRoute: typeof AuthenticatedClientesClientIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/projetos_/$projectId/editar': {
       id: '/_authenticated/projetos_/$projectId/editar'
       path: '/editar'
@@ -346,6 +366,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProjetosRoute: typeof AuthenticatedProjetosRoute
   AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedClientesClientIdRoute: typeof AuthenticatedClientesClientIdRoute
   AuthenticatedClientesNovoRoute: typeof AuthenticatedClientesNovoRoute
   AuthenticatedProjetosProjectIdRoute: typeof AuthenticatedProjetosProjectIdRouteWithChildren
   AuthenticatedProjetosIaRoute: typeof AuthenticatedProjetosIaRoute
@@ -360,6 +381,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProjetosRoute: AuthenticatedProjetosRoute,
   AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedClientesClientIdRoute: AuthenticatedClientesClientIdRoute,
   AuthenticatedClientesNovoRoute: AuthenticatedClientesNovoRoute,
   AuthenticatedProjetosProjectIdRoute:
     AuthenticatedProjetosProjectIdRouteWithChildren,
