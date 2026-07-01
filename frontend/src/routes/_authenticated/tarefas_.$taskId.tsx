@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button, Checkbox, ProgressBar, Select, ListBox } from '@heroui/react'
-import { ArrowLeft, Clock, Briefcase, Calendar, TrashBin, FloppyDisk } from '@gravity-ui/icons'
+import { ArrowLeft, Clock, Briefcase, Calendar, TrashBin, FloppyDisk, ChevronLeft } from '@gravity-ui/icons'
 import { fetchTaskDetails, updateTask, deleteTask, fetchTasks } from '../../services/api'
 import type { Task, TaskCardData } from '../../services/api'
 import { toast } from '../../components/ui/Toast'
@@ -119,7 +119,7 @@ function TaskDetailsPage() {
         console.error('Failed to validate in-progress tasks:', err)
       }
     }
-    
+
     updateMutation.mutate({ status: newStatus })
 
     if (newStatus === 'IN_PROGRESS') {
@@ -138,7 +138,7 @@ function TaskDetailsPage() {
   // Handle subtask toggle
   const handleToggleSubtask = (subtaskIndex: number) => {
     if (!task.subtasks) return
-    const updatedSubtasks = task.subtasks.map((sub: any, idx: number) => 
+    const updatedSubtasks = task.subtasks.map((sub: any, idx: number) =>
       idx === subtaskIndex ? { text: sub.text, completed: !sub.completed } : { text: sub.text, completed: sub.completed }
     )
     updateMutation.mutate({ subtasks: updatedSubtasks })
@@ -156,17 +156,16 @@ function TaskDetailsPage() {
 
   return (
     <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-6">
-      
+
       {/* Header Bar */}
       <div className="flex items-center justify-between gap-4 shrink-0 flex-wrap">
         <div className="flex items-center gap-4">
           <Button
-            isIconOnly
-            variant="ghost"
-            onPress={() => window.history.back()}
-            className="text-secondary hover:bg-zinc-100 rounded-full"
+            onClick={() => window.history.back()}
+            size='lg'
+            className="size-9 text-secondary bg-primary/50 transition-colors cursor-pointer"
           >
-            <ArrowLeft width={20} height={20} />
+            <ChevronLeft className='size-4' />
           </Button>
           <div className="flex flex-col">
             <div className="flex items-center gap-2.5">
@@ -198,9 +197,9 @@ function TaskDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left main content columns */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          
+
           {/* Description Section */}
-          <div className="bg-zinc-50 rounded-[16px] p-6 border border-zinc-100">
+          <div className="bg-zinc-50 rounded-[16px] p-6 ">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-semibold text-secondary text-base">Descrição da Tarefa</h3>
               {!isEditingDesc ? (
@@ -238,7 +237,7 @@ function TaskDetailsPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Insira a descrição da tarefa..."
                 rows={4}
-                className="w-full bg-white border border-zinc-200 rounded-xl px-3 py-2 text-secondary text-sm outline-none resize-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="w-full bg-white rounded-xl px-3 py-2 text-secondary text-sm outline-none resize-none focus:ring-2 focus:ring-primary/50 transition-all"
               />
             ) : (
               <p className="text-secondary/80 text-sm whitespace-pre-wrap leading-relaxed">
@@ -249,7 +248,7 @@ function TaskDetailsPage() {
 
           {/* Subtasks Progress */}
           {totalSubtasks > 0 && (
-            <div className="bg-zinc-50 rounded-[16px] p-6 border border-zinc-100 flex flex-col gap-3">
+            <div className="bg-zinc-100 rounded-[16px] p-6  flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="text-secondary font-bold text-base">Progresso das Subtasks</span>
                 <span className="text-secondary font-bold text-sm">{completedSubtasks} de {totalSubtasks} ({subtasksPercent}%)</span>
@@ -263,12 +262,12 @@ function TaskDetailsPage() {
           )}
 
           {/* Subtasks Checklist */}
-          <div className="bg-zinc-50 rounded-[16px] p-6 border border-zinc-100 flex flex-col gap-4">
+          <div className="bg-zinc-100 rounded-[16px] p-6  flex flex-col gap-4">
             <h3 className="font-semibold text-secondary text-base">Checklist de Subtasks</h3>
             {task.subtasks && task.subtasks.length > 0 ? (
               <div className="flex flex-col gap-3">
                 {task.subtasks.map((sub: any, idx: number) => (
-                  <div key={sub.id} className="bg-white rounded-xl p-4 border border-zinc-100 flex items-center gap-3 shadow-xs">
+                  <div key={sub.id} className="bg-white rounded-xl p-4  flex items-center gap-3 shadow-xs">
                     <Checkbox
                       isSelected={sub.completed}
                       onChange={() => handleToggleSubtask(idx)}
@@ -294,11 +293,11 @@ function TaskDetailsPage() {
 
         {/* Sidebar Info Panel */}
         <div className="flex flex-col gap-4">
-          
+
           {/* Attributes Grid */}
-          <div className="bg-zinc-50 rounded-[16px] p-6 border border-zinc-100 flex flex-col gap-4">
-            <h3 className="font-bold text-secondary text-base border-b border-zinc-200 pb-2">Detalhes</h3>
-            
+          <div className="bg-zinc-50 rounded-[16px] p-6  flex flex-col gap-4">
+            <h3 className="font-bold text-secondary text-base border-b  pb-2">Detalhes</h3>
+
             {/* Status Option */}
             <div className="flex flex-col gap-1.5">
               <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Status</span>
@@ -308,11 +307,11 @@ function TaskDetailsPage() {
                 onSelectionChange={(key) => handleStatusChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-secondary text-sm font-semibold w-full flex items-center justify-between shadow-xs">
+                <Select.Trigger className="bg-white border  rounded-xl px-3 py-1.5 text-secondary text-sm font-semibold w-full flex items-center justify-between shadow-xs">
                   <Select.Value />
                   <Select.Indicator />
                 </Select.Trigger>
-                <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
+                <Select.Popover className="bg-white border  rounded-xl shadow-lg z-[120]">
                   <ListBox className="p-1">
                     {TASK_STATUSES.map((status) => (
                       <ListBox.Item key={status.key} id={status.key} textValue={status.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
@@ -333,11 +332,11 @@ function TaskDetailsPage() {
                 onSelectionChange={(key) => handlePriorityChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-white border border-zinc-200 rounded-xl px-3 py-1.5 text-secondary text-sm font-semibold w-full flex items-center justify-between shadow-xs">
+                <Select.Trigger className="bg-white border  rounded-xl px-3 py-1.5 text-secondary text-sm font-semibold w-full flex items-center justify-between shadow-xs">
                   <Select.Value />
                   <Select.Indicator />
                 </Select.Trigger>
-                <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
+                <Select.Popover className="bg-white border  rounded-xl shadow-lg z-[120]">
                   <ListBox className="p-1">
                     {PRIORITIES.map((priority) => (
                       <ListBox.Item key={priority.key} id={priority.key} textValue={priority.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
@@ -355,7 +354,7 @@ function TaskDetailsPage() {
                 <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Projeto Relacionado</span>
                 <button
                   onClick={() => navigate({ to: '/projetos/$projectId', params: { projectId: task.project.id } })}
-                  className="w-full text-left bg-white border border-zinc-200 rounded-xl px-3.5 py-3 hover:border-zinc-350 transition-colors shadow-xs flex items-center gap-2 cursor-pointer text-secondary/80 hover:text-secondary"
+                  className="w-full text-left bg-white border  rounded-xl px-3.5 py-3 hover:border-zinc-350 transition-colors shadow-xs flex items-center gap-2 cursor-pointer text-secondary/80 hover:text-secondary"
                 >
                   <Briefcase className="size-4 text-primary-dark" />
                   <span className="text-sm font-bold truncate">{task.project.name}</span>

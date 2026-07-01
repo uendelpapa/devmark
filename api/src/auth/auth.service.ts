@@ -27,6 +27,14 @@ export class AuthService {
   // ─── Register ────────────────────────────────────────────────────────────────
 
   async register(dto: RegisterDto) {
+    const inviteCode = await this.prisma.inviteCode.findUnique({
+      where: { code: dto.accessKey },
+    });
+
+    if (!inviteCode || inviteCode.used_at) {
+      throw new UnauthorizedException('Chave de acesso inválida ou já utilizada');
+    }
+
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -43,6 +51,11 @@ export class AuthService {
         password_hash: passwordHash,
       },
       select: { id: true, name: true, email: true, created_at: true },
+    });
+
+    await this.prisma.inviteCode.update({
+      where: { id: inviteCode.id },
+      data: { used_at: new Date() },
     });
 
     const tokens = await this.generateTokenPair(user.id, user.email);

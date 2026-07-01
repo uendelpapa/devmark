@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Xmark, ArrowUpRightFromSquare, Ellipsis, Plus, TrashBin, Flag } from '@gravity-ui/icons'
+import { Xmark, ArrowUpRightFromSquare, Ellipsis, Plus, TrashBin, Flag, Briefcase } from '@gravity-ui/icons'
 
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchTasks } from '../../services/api'
@@ -62,8 +62,8 @@ const STATUS_CHIP_ACTIVE: Record<Task['status'], string> = {
 export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, error = null, statusPreset }: CreateTaskModalProps) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<Task['priority']>('MEDIUM')
-  const [status, setStatus] = useState<Task['status']>('PENDING')
+  const [priority, setPriority] = useState<Task['priority'] | null>(null)
+  const [status, setStatus] = useState<Task['status'] | null>(null)
   const [projectId, setProjectId] = useState<string | null>(null)
   const [estimatedHours, setEstimatedHours] = useState(0)
   const [dueDate, setDueDate] = useState<DateValue | null>(null)
@@ -72,6 +72,9 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
   const [subtasks, setSubtasks] = useState<Subtask[]>([])
   const [subtaskInput, setSubtaskInput] = useState('')
   const [isTagSuggestionsOpen, setIsTagSuggestionsOpen] = useState(false)
+  const [isPriorityOpen, setIsPriorityOpen] = useState(false)
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [isProjectOpen, setIsProjectOpen] = useState(false)
 
   const { data: tasks = [] } = useQuery<any[]>({
     queryKey: ['tasks'],
@@ -95,13 +98,16 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
     if (!isOpen) {
       setTitle('')
       setDescription('')
-      setPriority('MEDIUM')
-      setStatus('PENDING')
+      setPriority(null)
+      setStatus(null)
       setProjectId(null)
       setEstimatedHours(0)
       setDueDate(null)
       setTags([])
       setSubtasks([])
+      setIsPriorityOpen(false)
+      setIsStatusOpen(false)
+      setIsProjectOpen(false)
     } else if (statusPreset) {
       setStatus(statusPreset)
     }
@@ -149,8 +155,8 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
       project_id: projectId,
       title: title.trim(),
       description: description.trim(),
-      priority,
-      status,
+      priority: priority || 'MEDIUM',
+      status: status || 'PENDING',
       estimated_hours: estimatedHours,
       due_date: dueDate ? dueDate.toDate(getLocalTimeZone()).toISOString() : undefined,
       tags,
@@ -209,48 +215,89 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
           <div className="space-y-3.5">
 
             {/* Projeto */}
-            <div className="flex items-center gap-4">
-              <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium">Projeto:</span>
-              <Select
-                aria-label="Projeto"
-                placeholder="Selecione um projeto"
-                selectedKey={projectId}
-                onSelectionChange={(key) => setProjectId(key as string)}
-                className="flex-1"
-              >
-                <Select.Trigger className="bg-zinc-100 border border-zinc-200 rounded-xl shadow-none px-2.5 py-1.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
-                  <Select.Value />
-                  <Select.Indicator />
-                </Select.Trigger>
-                <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
-                  <ListBox className="p-1">
-                    {projects.map((p) => (
-                      <ListBox.Item key={p.id} id={p.id} textValue={p.name} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer">
-                        {p.name}
-                      </ListBox.Item>
-                    ))}
-                  </ListBox>
-                </Select.Popover>
-              </Select>
+            <div className="flex items-start gap-4">
+              <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium pt-1">Projeto:</span>
+              <div className="relative">
+                {projectId ? (
+                  <button
+                    onClick={() => setIsProjectOpen(!isProjectOpen)}
+                    className="flex items-center gap-1.5 py-1 text-sm font-medium transition-all cursor-pointer border-none whitespace-nowrap bg-transparent text-secondary hover:text-secondary/70"
+                  >
+                    {projects.find(p => p.id === projectId)?.name || 'Projeto'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsProjectOpen(!isProjectOpen)}
+                    className="flex items-center gap-1.5 py-1 text-sm font-medium transition-all cursor-pointer border-none whitespace-nowrap bg-transparent text-secondary/40 hover:text-secondary/60"
+                  >
+                    <Plus className="size-3" />
+                    Adicionar
+                  </button>
+                )}
+                {isProjectOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[109]" onClick={() => setIsProjectOpen(false)} />
+                    <div className="absolute left-0 top-full mt-1.5 w-56 bg-white border border-zinc-200 rounded-xl shadow-lg z-[110] py-1 max-h-60 overflow-y-auto">
+                      <div className="px-3 py-1.5 text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Projeto</div>
+                      {projects.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => { setProjectId(p.id); setIsProjectOpen(false) }}
+                          className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center gap-2 border-none bg-transparent cursor-pointer transition-colors rounded-lg mx-auto hover:bg-zinc-50 ${projectId === p.id ? 'text-secondary' : 'text-secondary/70'
+                            }`}
+                        >
+                          <Briefcase className="size-3 text-zinc-400" />
+                          <span className="truncate">{p.name}</span>
+                          {projectId === p.id && <span className="ml-auto text-primary shrink-0">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Prioridade */}
             <div className="flex items-start gap-4">
               <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium pt-1">Prioridade:</span>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {PRIORITIES.map((p) => (
+              <div className="relative">
+                {priority ? (
                   <button
-                    key={p.key}
-                    onClick={() => setPriority(p.key)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${priority === p.key
-                      ? p.activeColor
-                      : 'bg-zinc-100 text-secondary/60 hover:bg-zinc-200'
-                      }`}
+                    onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${PRIORITIES.find(p => p.key === priority)?.activeColor}`}
                   >
                     <Flag className="size-3" />
-                    {p.label}
+                    {PRIORITIES.find(p => p.key === priority)?.label}
                   </button>
-                ))}
+                ) : (
+                  <button
+                    onClick={() => setIsPriorityOpen(!isPriorityOpen)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap bg-zinc-100 text-secondary/50 hover:bg-zinc-200 hover:text-secondary/70"
+                  >
+                    <Plus className="size-3" />
+                    Adicionar
+                  </button>
+                )}
+                {isPriorityOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[109]" onClick={() => setIsPriorityOpen(false)} />
+                    <div className="absolute left-0 top-full mt-1.5 w-48 bg-white border border-zinc-200 rounded-xl shadow-lg z-[110] py-1">
+                      <div className="px-3 py-1.5 text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Prioridade</div>
+                      {PRIORITIES.map((p) => (
+                        <button
+                          key={p.key}
+                          onClick={() => { setPriority(p.key); setIsPriorityOpen(false) }}
+                          className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center gap-2 border-none bg-transparent cursor-pointer transition-colors rounded-lg mx-auto hover:bg-zinc-50 ${priority === p.key ? 'text-secondary' : 'text-secondary/70'
+                            }`}
+                        >
+                          <span className={`size-2.5 rounded-full ${p.activeColor.split(' ')[0]}`} />
+                          {p.label}
+                          {priority === p.key && <span className="ml-auto text-primary">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -258,7 +305,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
             <div className="flex items-center gap-4">
               <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium">Data de entrega:</span>
               <DatePicker
-                className="w-fit min-w-[200px]"
+                className="w-fit"
                 value={dueDate}
                 onChange={setDueDate}
                 granularity="minute"
@@ -267,17 +314,21 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
               >
                 {({ state }) => (
                   <>
-                    <DateField.Group className="bg-zinc-100 border border-zinc-200 rounded-xl shadow-none px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-primary/50 transition-all flex items-center justify-between w-full">
-                      <DateField.Input className="flex gap-1 text-sm font-medium text-secondary outline-none cursor-text">
-                        {(segment) => <DateField.Segment segment={segment} className="focus:bg-primary/30 focus:text-secondary rounded px-0.5" />}
-                      </DateField.Input>
-                      <DateField.Suffix>
-                        <DatePicker.Trigger>
-                          <DatePicker.TriggerIndicator className="text-secondary/50" />
-                        </DatePicker.Trigger>
-                      </DateField.Suffix>
+                    <DateField.Group className="border-none bg-transparent shadow-none p-0 m-0 w-fit cursor-pointer">
+                      <DatePicker.Trigger className="bg-transparent border-none shadow-none p-0 cursor-pointer outline-none w-full text-left flex items-center">
+                        {dueDate ? (
+                          <span className="text-sm font-medium text-secondary hover:text-secondary/70 transition-colors py-1 flex items-center">
+                            {dueDate.toDate(getLocalTimeZone()).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1.5 py-1 text-sm font-medium text-secondary/40 hover:text-secondary/60 transition-colors">
+                            <Plus className="size-3" />
+                            Adicionar
+                          </span>
+                        )}
+                      </DatePicker.Trigger>
                     </DateField.Group>
-                    <DatePicker.Popover className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-xl border border-zinc-200 z-[150] min-w-[280px]">
+                    <DatePicker.Popover placement="bottom start" className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-xl border border-zinc-200 z-[150] min-w-[280px]">
                       <Calendar aria-label="Date">
                         <Calendar.Header className="flex items-center justify-between mb-3">
                           <Calendar.YearPickerTrigger className="font-bold text-secondary hover:bg-zinc-100 px-2 py-1 rounded cursor-pointer transition-colors">
@@ -308,7 +359,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                         >
                           <TimeField.Group className="flex bg-zinc-100 rounded-lg px-2 py-1 border border-zinc-200">
                             <TimeField.Input className="flex gap-0.5 text-sm font-bold text-secondary outline-none">
-                              {(segment) => <TimeField.Segment segment={segment} className="focus:bg-primary/30 rounded px-0.5" />}
+                              {(segment) => <TimeField.Segment segment={segment} className="focus:bg-primary/50 rounded px-0.5" />}
                             </TimeField.Input>
                           </TimeField.Group>
                         </TimeField>
@@ -322,19 +373,43 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
             {/* Status */}
             <div className="flex items-start gap-4">
               <span className="text-secondary/50 text-sm w-28 shrink-0 font-medium pt-1">Status</span>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {TASK_STATUSES.slice(0, 4).map((s) => (
+              <div className="relative">
+                {status ? (
                   <button
-                    key={s.key}
-                    onClick={() => setStatus(s.key)}
-                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${status === s.key
-                      ? STATUS_CHIP_ACTIVE[s.key]
-                      : 'bg-zinc-100 text-secondary/40 hover:bg-zinc-200 hover:text-secondary/60'
-                      }`}
+                    onClick={() => setIsStatusOpen(!isStatusOpen)}
+                    className={`px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap ${STATUS_CHIP_ACTIVE[status]}`}
                   >
-                    {s.label}
+                    {TASK_STATUSES.find(s => s.key === status)?.label}
                   </button>
-                ))}
+                ) : (
+                  <button
+                    onClick={() => setIsStatusOpen(!isStatusOpen)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border-none whitespace-nowrap bg-zinc-100 text-secondary/50 hover:bg-zinc-200 hover:text-secondary/70"
+                  >
+                    <Plus className="size-3" />
+                    Adicionar
+                  </button>
+                )}
+                {isStatusOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[109]" onClick={() => setIsStatusOpen(false)} />
+                    <div className="absolute left-0 top-full mt-1.5 w-48 bg-white border border-zinc-200 rounded-xl shadow-lg z-[110] py-1">
+                      <div className="px-3 py-1.5 text-[10px] text-zinc-400 uppercase font-bold tracking-wider">Status</div>
+                      {TASK_STATUSES.map((s) => (
+                        <button
+                          key={s.key}
+                          onClick={() => { setStatus(s.key); setIsStatusOpen(false) }}
+                          className={`w-full text-left px-3 py-2 text-xs font-semibold flex items-center gap-2 border-none bg-transparent cursor-pointer transition-colors rounded-lg mx-auto hover:bg-zinc-50 ${status === s.key ? 'text-secondary' : 'text-secondary/70'
+                            }`}
+                        >
+                          <span className={`size-2.5 rounded-full ${STATUS_CHIP_ACTIVE[s.key].split(' ')[0]}`} />
+                          {s.label}
+                          {status === s.key && <span className="ml-auto text-primary">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -411,7 +486,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
                 value={estimatedHours || ''}
                 onChange={(e) => setEstimatedHours(parseInt(e.target.value) || 0)}
                 placeholder="0"
-                className="bg-zinc-100 border border-zinc-200 rounded-xl px-2.5 py-1 text-secondary text-sm font-medium outline-none w-20 appearance-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="text-secondary text-sm font-medium outline-none w-6 border-b border-transparent focus:border-b focus:border-secondary transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
 
@@ -433,7 +508,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Adicione uma descrição para esta tarefa..."
               rows={4}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-4 py-3 text-secondary text-sm outline-none resize-none placeholder:text-zinc-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-4 py-3 text-secondary text-sm outline-none resize-none placeholder:text-zinc-400 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
             />
           </div>
 
@@ -471,7 +546,7 @@ export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, 
               ))}
 
               {/* New subtask input with Add Link-Button */}
-              <div className="flex items-center gap-3 bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-primary/30 transition-all">
+              <div className="flex items-center gap-3 bg-zinc-50 border border-zinc-200 rounded-xl px-3 py-2.5 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50 transition-all">
                 <input
                   type="text"
                   value={subtaskInput}

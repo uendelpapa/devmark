@@ -14,10 +14,9 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
   return (
     <Card
       onClick={() => navigate({ to: '/clientes/$clientId', params: { clientId: client.id } })}
-      className="flex flex-row items-center justify-between p-4 bg-zinc-100 hover:bg-zinc-200 rounded-[16px] border-none shadow-none duration-300 ease-in-out transition-colors group text-secondary cursor-pointer"
+      className="relative overflow-hidden flex flex-row items-center justify-between gap-3 p-4 bg-zinc-100 hover:bg-zinc-200 rounded-[16px] border-none shadow-none duration-300 ease-in-out transition-colors group text-zinc-800 cursor-pointer"
     >
-      <div className="flex items-center gap-2 min-w-0">
-        {/* Avatar with custom zinc gradient */}
+      <div className="flex flex-1 items-center gap-2 min-w-0">
         <Avatar className="size-8 shrink-0">
           <Avatar.Image
             alt={client.name}
@@ -26,30 +25,29 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
           <Avatar.Fallback>{client.name.charAt(0)}</Avatar.Fallback>
         </Avatar>
 
-        {/* Client details */}
-        <div className="flex flex-1 flex-col min-w-0 max-w-32 items-start">
-          <span className="text-xs text-zinc-800 truncate leading-tight font-medium">
+        <div className="flex flex-col items-start flex-1 min-w-0">
+          <span className="w-full text-xs text-zinc-800 font-medium truncate">
             {client.name}
           </span>
-          <span className="text-xs text-zinc-800 truncate">
+          <span className="w-full text-xs text-zinc-400 truncate">
             {client.email}
           </span>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         {/* Payment Status Badge */}
         {client.hasPendingPayment ? (
           <span className="bg-[#EAB308] text-white px-1.5 py-0.5 rounded-full w-fit items-center justify-center font-medium">
-            <span className="flex items-center gap-1.5 text-xs">
-              <Clock className="size-3" />
+            <span className="flex items-center text-nowrap gap-1.5 text-xs">
+              <Clock className="size-3 shrink-0" />
               Pagamento pendente
             </span>
           </span>
         ) : (
           <span className="bg-zinc-400 text-white px-2.5 py-0.5 rounded-full inline-flex items-center justify-center font-medium">
-            <span className="flex items-center gap-1.5 text-xs">
-              <CircleInfo className="size-3" />
+            <span className="flex items-center text-nowrap gap-1.5 text-xs">
+              <CircleInfo className="size-3 shrink-0" />
               Sem pendências
             </span>
           </span>
@@ -61,9 +59,9 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
           size="sm"
           onPress={() => onEdit?.(client)}
           onClick={(e) => e.stopPropagation()}
-          className="text-zinc-400 hover:text-zinc-700 bg-transparent hover:bg-zinc-200 size-6 rounded-full cursor-pointer transition-colors border-none p-0 flex items-center justify-center"
+          className="text-zinc-400 hover:text-zinc-700 bg-transparent hover:bg-zinc-200 size-6 shrink-0 rounded-full cursor-pointer transition-colors border-none p-0 flex items-center justify-center"
         >
-          <Ellipsis className="size-4" />
+          <Ellipsis className="size-4 shrink-0" />
         </Button>
       </div>
     </Card>

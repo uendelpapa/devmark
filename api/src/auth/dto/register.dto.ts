@@ -21,4 +21,8 @@ export class RegisterDto {
   @MinLength(6, { message: 'A senha deve ter no mínimo 6 caracteres' })
   @MaxLength(100)
   password: string;
+
+  @ApiProperty({ example: 'CHAVE123' })
+  @IsString({ message: 'A chave de acesso é obrigatória' })
+  accessKey: string;
 }

@@ -17,6 +17,7 @@ const registerSchema = z
     email: z.string().email('Endereço de e-mail inválido').min(1, 'E-mail é obrigatório'),
     password: z.string().min(6, 'A senha deve ter no mínimo 6 caracteres'),
     confirmPassword: z.string().min(1, 'Confirme sua senha'),
+    accessKey: z.string().min(1, 'A chave de acesso é obrigatória'),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',
@@ -43,6 +44,7 @@ function RegisterPage() {
       email: '',
       password: '',
       confirmPassword: '',
+      accessKey: '',
     },
   })
 
@@ -54,6 +56,7 @@ function RegisterPage() {
         name: data.name,
         email: data.email,
         password: data.password,
+        accessKey: data.accessKey,
       })
       setAuth(user, accessToken)
       navigate({ to: '/' })
@@ -179,6 +182,28 @@ function RegisterPage() {
                   type="password"
                   autoComplete="new-password"
                   id="register-confirm-password"
+                />
+                <FieldError className={errorClass}>{error?.message}</FieldError>
+              </TextField>
+            )}
+          />
+
+          <Controller
+            name="accessKey"
+            control={control}
+            render={({ field: { name, value, onChange }, fieldState: { error } }) => (
+              <TextField
+                name={name}
+                value={value || ''}
+                onChange={onChange}
+                isInvalid={!!error}
+                className="flex flex-col gap-1.5 w-full"
+              >
+                <Label className={labelClass}>Chave de acesso</Label>
+                <Input
+                  placeholder="XXXXXXXX-XXXX"
+                  className={inputClass}
+                  id="register-access-key"
                 />
                 <FieldError className={errorClass}>{error?.message}</FieldError>
               </TextField>

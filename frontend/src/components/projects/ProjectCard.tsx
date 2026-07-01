@@ -44,7 +44,7 @@ const STATUS_STYLES: Record<ProjectCardProps['status'], string> = {
 }
 
 const PRIORITY_STYLES: Record<ProjectCardProps['priority'], string> = {
-  LOW: 'bg-zinc-200 text-zinc-900',
+  LOW: 'bg-zinc-300 text-zinc-900',
   MEDIUM: 'bg-sky-200 text-zinc-900',
   HIGH: 'bg-orange-200 text-zinc-900',
   URGENT: 'bg-red-200 text-zinc-900'
@@ -93,10 +93,10 @@ export const ProjectCard = memo(function ProjectCard({
       {/* Header: Title + Menu */}
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col gap-1 min-w-0 flex-1">
-          <h4 className="font-semibold text-secondary text-lg leading-tight truncate">
+          <h4 className="font-semibold text-zinc-800 text-lg leading-tight truncate">
             {name}
           </h4>
-          <p className="text-secondary/60 text-sm leading-tight truncate">
+          <p className="text-zinc-600 text-sm leading-tight truncate">
             {description}
           </p>
         </div>
@@ -155,7 +155,7 @@ export const ProjectCard = memo(function ProjectCard({
       {/* Tags de status e prioridade */}
       <div className="flex flex-wrap items-center gap-1.5">
         {/* Status Tag */}
-        <span className={`text-[11px] font-semibold rounded-full px-2 py-1 ${STATUS_STYLES[status]}`}>
+        <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${STATUS_STYLES[status]}`}>
           {STATUS_LABELS[status]}
         </span>
 
@@ -206,10 +206,10 @@ export const ProjectCard = memo(function ProjectCard({
             <Avatar.Fallback>{client_name.charAt(0)}</Avatar.Fallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-secondary leading-tight truncate">
+            <span className="text-xs text-zinc-800 leading-tight truncate">
               {client_name}
             </span>
-            <span className="text-xs text-secondary/50 leading-tight truncate">
+            <span className="text-xs text-zinc-600 leading-tight truncate">
               {client_email}
             </span>
           </div>
