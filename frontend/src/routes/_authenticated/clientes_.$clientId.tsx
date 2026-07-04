@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
-import { ChevronLeft, EnvelopeOpen, CircleInfo, Briefcase, CircleDollar, Layers } from '@gravity-ui/icons'
+import { ChevronLeft, EnvelopeOpen, CircleInfo, Briefcase, CircleDollar, Layers, Pencil } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchClient, updateClient } from '../../services/api'
-import { Button } from '@heroui/react'
 import { useState } from 'react'
 import { EditClientModal } from '../../components/clients/EditClientModal'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/clientes_/$clientId')({
   component: ClientDetailsPage
@@ -105,7 +105,7 @@ function ClientDetailsPage() {
           <Button
             onClick={() => window.history.back()}
             size='lg'
-            className="size-9 text-secondary bg-primary/50 transition-colors cursor-pointer"
+            variant='onlyIcon'
           >
             <ChevronLeft className='size-4' />
           </Button>
@@ -124,15 +124,16 @@ function ClientDetailsPage() {
 
         <Button
           onPress={() => setIsEditModalOpen(true)}
-          className="bg-primary/50 hover:bg-primary text-secondary shadow-lg shadow-primary/20 font-semibold rounded-full px-6 h-10 border-none transition-all cursor-pointer w-full sm:w-auto"
+          variant='primary'
         >
+          <Pencil />
           Editar Cliente
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Info Card */}
-        <div className="lg:col-span-1 bg-zinc-100 border border-zinc-100 rounded-[24px] p-6 flex flex-col gap-6">
+        <div className="lg:col-span-1 bg-zinc-100 border border-zinc-200 rounded-[24px] p-6 flex flex-col gap-6">
           <h3 className="font-medium text-sm text-zinc-600 mb-1">Informações do Cliente</h3>
 
           <div className="flex items-center gap-4">
@@ -168,7 +169,7 @@ function ClientDetailsPage() {
 
         {/* Finance Summary */}
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div className="bg-zinc-100 h-36 transition-colors rounded-[24px] p-6 border border-zinc-100 flex flex-col justify-center gap-1 cursor-default">
+          <div className="bg-zinc-100 h-36 transition-colors rounded-[24px] p-6 border border-zinc-200 flex flex-col justify-center gap-1 cursor-default">
             <div className="flex items-center gap-2 text-zinc-600 mb-1">
               <Layers className="size-4" />
               <span className="text-sm font-medium">Projetos Ativos</span>
@@ -176,7 +177,7 @@ function ClientDetailsPage() {
             <span className="text-4xl font-extrabold text-zinc-800 tracking-tight">{client.projects.length}</span>
           </div>
 
-          <div className="bg-primary/50 h-36 transition-colors rounded-[24px] p-6 border border-primary/50 flex flex-col justify-center gap-1 cursor-default">
+          <div className="bg-primary/50 h-36 transition-colors rounded-[24px] p-6 border border-primary flex flex-col justify-center gap-1 cursor-default">
             <div className="flex items-center gap-2 text-secondary mb-1">
               <CircleDollar className="size-4" />
               <span className="text-sm font-medium">Valor Recebido</span>
@@ -190,7 +191,7 @@ function ClientDetailsPage() {
             </div>
           </div>
 
-          <div className={`transition-colors h-36 rounded-[24px] p-6 border flex flex-col justify-center gap-1 cursor-default ${isPendingZero ? 'bg-zinc-50 border-zinc-50' : 'bg-amber-100 border-amber-100'}`}>
+          <div className={`transition-colors h-36 rounded-[24px] p-6 border flex flex-col justify-center gap-1 cursor-default ${isPendingZero ? 'bg-zinc-50 border-zinc-200' : 'bg-amber-100 border-amber-200'}`}>
             <div className={`flex items-center gap-2 mb-1 ${isPendingZero ? 'text-zinc-500' : 'text-amber-950'}`}>
               <CircleDollar className="size-4" />
               <span className="text-sm font-medium">Valor Pendente</span>
@@ -204,7 +205,7 @@ function ClientDetailsPage() {
               </span>
             )}
           </div>
-          <div className="bg-zinc-100 h-36 transition-colors rounded-[24px] p-6 border border-zinc-100 flex flex-col justify-center gap-1 cursor-default">
+          <div className="bg-zinc-100 h-36 transition-colors rounded-[24px] p-6 border border-zinc-200 flex flex-col justify-center gap-1 cursor-default">
             <div className="flex items-center gap-2 text-zinc-600 mb-1">
               <CircleDollar className="size-4" />
               <span className="text-sm font-medium">Total Acumulado</span>

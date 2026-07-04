@@ -198,7 +198,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
 
   if (variant === 'dashboard') {
     return (
-      <div className="w-full bg-primary/50 rounded-[24px] space-y-4 px-6 py-4 flex flex-col items-center justify-between text-secondary">
+      <div className="w-full bg-primary/50 border border-primary rounded-[24px] space-y-4 px-6 py-4 flex flex-col items-center justify-between text-secondary">
         {/* Title & Task */}
         <div className="w-full flex flex-col items-center gap-1">
           <p className="font-semibold text-center text-secondary leading-tight">Timer Tracker</p>
@@ -247,7 +247,7 @@ export function TimerTracker({ variant = 'sidebar' }: TimerTrackerProps) {
 
   // Sidebar variant (vertical)
   return (
-    <div className="w-full bg-primary/50 rounded-[24px] px-4 py-6 space-y-4 flex flex-col items-center justify-between text-secondary">
+    <div className="w-full bg-primary/50 border border-primary rounded-[24px] px-4 py-6 space-y-4 flex flex-col items-center justify-between text-secondary">
       {/* Title */}
       <div className="text-center w-full flex flex-col items-center gap-2">
         <div>

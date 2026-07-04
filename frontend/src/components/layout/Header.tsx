@@ -1,5 +1,6 @@
 import { Avatar } from '@heroui/react'
 import { Magnifier, Envelope, Bell } from '@gravity-ui/icons'
+import { Input } from '../ui/Input'
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchClients, fetchTasks } from '../../services/api'
 import { useNavigate, Link } from '@tanstack/react-router'
@@ -72,14 +73,15 @@ export function Header() {
     <header className="bg-white rounded-[24px] px-6 py-6 flex items-center justify-between shadow-xs shrink-0 relative z-30">
       {/* Search Input with Popover */}
       <div className="w-90 relative" ref={searchRef}>
-        <Magnifier className='size-4 absolute top-1/2 left-3.5 -translate-y-1/2 text-secondary/50 z-10' />
-        <input
+        <Input
           type='text'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Pesquisar projetos, clientes ou tarefas..."
-          className="w-full pl-9 pr-4 py-2.5 bg-zinc-100 rounded-full text-secondary text-sm outline-none border-none placeholder:text-secondary/50 focus:bg-zinc-200/50 transition-colors font-medium"
+          variant="zinc"
+          icon={<Magnifier className="text-zinc-500 size-4" />}
+          className="w-[370px]"
         />
 
         {isOpen && query && (
@@ -175,15 +177,15 @@ export function Header() {
       {/* User Profile & Notifications */}
       <div className="flex items-center gap-4">
         {/* Mail Button */}
-        <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center cursor-pointer hover:bg-primary transition-colors">
+        {/* <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center cursor-pointer hover:bg-primary transition-colors">
           <Envelope className="text-secondary size-4" />
-        </button>
+        </button> */}
 
         {/* Notification Bell Button */}
-        <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center relative cursor-pointer hover:bg-primary transition-colors">
+        {/* <button className="size-8 rounded-full bg-primary/50 flex items-center justify-center relative cursor-pointer hover:bg-primary transition-colors">
           <Bell className="text-secondary size-4" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-red-400 rounded-full border border-white" />
-        </button>
+        </button> */}
 
         {/* User Identity Info */}
         <Link to="/configuracoes" className="flex items-center gap-2 hover:bg-zinc-100 p-1.5 rounded-xl transition-colors cursor-pointer border-none no-underline">

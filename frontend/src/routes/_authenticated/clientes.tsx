@@ -2,10 +2,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Plus, Magnifier } from '@gravity-ui/icons'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Button, Select, ListBox, Input } from '@heroui/react'
+import { Select, SelectItem } from '../../components/ui/Select'
+import { Input } from '../../components/ui/Input'
 import { fetchClients, updateClient } from '../../services/api'
 import { ClientCard } from '../../components/clients/ClientCard'
 import { EditClientModal } from '../../components/clients/EditClientModal'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/clientes')({
   component: Clientes
@@ -67,39 +69,32 @@ function Clientes() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Pesquisar clientes"
-            className={"rounded-full shadow-none bg-zinc-100 placeholder:text-zinc-700 focus:outline-none focus:ring-0"}
+            icon={<Magnifier className="text-zinc-500 size-4 mr-1" />}
+            className="w-64 shrink-0"
+            variant="zinc"
           />
 
           {/* Custom Select for Filter using HeroUI Select */}
           <Select
             selectedKey={filter}
             onSelectionChange={(key) => setFilter(key as string)}
-            className="shrink-0 rounded-[12px]"
-            aria-label="Filtrar clientes"
+            ariaLabel="Filtrar clientes"
+            variant="zinc"
           >
-            <Select.Trigger className="bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-full pl-3 py-2.5 text-[14px] border-none outline-none cursor-pointer flex items-center justify-between transition-colors shadow-none select-none">
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover>
-              <ListBox>
-                <ListBox.Item id="all" textValue="Filtro: Todos">
-                  Filtro: Todos
-                </ListBox.Item>
-                <ListBox.Item id="pending" textValue="Com pendências">
-                  Com pendências
-                </ListBox.Item>
-                <ListBox.Item id="paid" textValue="Sem pendências">
-                  Sem pendências
-                </ListBox.Item>
-              </ListBox>
-            </Select.Popover>
+            <SelectItem id="all" textValue="Filtro: Todos">
+              Filtro: Todos
+            </SelectItem>
+            <SelectItem id="pending" textValue="Com pendências">
+              Com pendências
+            </SelectItem>
+            <SelectItem id="paid" textValue="Sem pendências">
+              Sem pendências
+            </SelectItem>
           </Select>
 
           {/* Add Client Button using HeroUI Button */}
           <Button
             onPress={() => navigate({ to: '/clientes/novo' })}
-            className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full px-5 h-10 border-none text-[14px] transition-colors flex items-center gap-2 cursor-pointer"
           >
             <Plus className="size-4" />
             Novo Cliente

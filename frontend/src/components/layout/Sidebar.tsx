@@ -30,7 +30,7 @@ function MenuItem({ icon: Icon, label, badge, href, onClick }: MenuItemProps) {
   const active = targetPath === '/' ? location.pathname === '/' : location.pathname.startsWith(targetPath)
 
   const isLogout = label === 'Logout'
-  const hoverColor = isLogout ? 'group-hover:text-red-500' : 'group-hover:text-backpage'
+  const hoverColor = isLogout ? 'group-hover:text-red-500' : 'group-hover:text-secondary/75'
 
   if (onClick) {
     return (

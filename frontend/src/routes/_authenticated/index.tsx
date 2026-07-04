@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { TimerTracker } from '../../components/ui/TimerTracker'
 import {
-  Button,
   Card,
   CardContent,
   Tooltip
@@ -15,6 +14,7 @@ import { StatCard, StatCardSkeleton } from '../../components/ui/StatCard'
 import { FinanceCard, FinanceCardSkeleton } from '../../components/finance/FinanceCard'
 import { ProjectListItem, ProjectListItemSkeleton } from '../../components/projects/ProjectListItem'
 import { PaymentListItem, PaymentListItemSkeleton } from '../../components/finance/PaymentListItem'
+import { Button } from '#/components/ui/Button'
 // Removed ProjectDetailsModal and useState for it
 
 export const Route = createFileRoute('/_authenticated/')({
@@ -34,66 +34,50 @@ function mapProjectSummaryToStatCards(data: DashboardData) {
   // 1. Total
   const totalDiff = total - prev.total
   const totalIndicator = totalDiff > 0 ? ('up' as const) : totalDiff < 0 ? ('down' as const) : ('info' as const)
-  const totalText = totalDiff > 0
-    ? `+${totalDiff} referente ao mês anterior`
-    : totalDiff < 0
-      ? `${totalDiff} referente ao mês anterior`
-      : 'Sem alterações'
+  const totalDiffStr = totalDiff > 0 ? `+${totalDiff}` : totalDiff < 0 ? `${totalDiff}` : undefined
 
   // 2. Completed
   const completedDiff = completed - prev.completed
   const completedIndicator = completedDiff > 0 ? ('up' as const) : completedDiff < 0 ? ('down' as const) : ('info' as const)
-  const completedText = completedDiff > 0
-    ? `+${completedDiff} referente ao mês anterior`
-    : completedDiff < 0
-      ? `${completedDiff} referente ao mês anterior`
-      : 'Sem alterações'
+  const completedDiffStr = completedDiff > 0 ? `+${completedDiff}` : completedDiff < 0 ? `${completedDiff}` : undefined
 
   // 3. In Progress
   const inProgressDiff = in_progress - prev.in_progress
   const inProgressIndicator = inProgressDiff > 0 ? ('up' as const) : inProgressDiff < 0 ? ('down' as const) : ('info' as const)
-  const inProgressText = inProgressDiff > 0
-    ? `+${inProgressDiff} referente ao mês anterior`
-    : inProgressDiff < 0
-      ? `${inProgressDiff} referente ao mês anterior`
-      : 'Sem alterações'
+  const inProgressDiffStr = inProgressDiff > 0 ? `+${inProgressDiff}` : inProgressDiff < 0 ? `${inProgressDiff}` : undefined
 
   // 4. Planning (Pending)
   const planningDiff = planning - prev.planning
   const planningIndicator = planningDiff > 0 ? ('down' as const) : planningDiff < 0 ? ('up' as const) : ('info' as const)
-  const planningText = planningDiff > 0
-    ? `+${planningDiff} referente ao mês anterior`
-    : planningDiff < 0
-      ? `${planningDiff} referente ao mês anterior`
-      : 'Sem alterações'
+  const planningDiffStr = planningDiff > 0 ? `+${planningDiff}` : planningDiff < 0 ? `${planningDiff}` : undefined
 
   return [
     {
       title: 'Total de Projetos',
       value: total,
       indicator: totalIndicator,
-      indicatorText: totalText,
+      diffValue: totalDiffStr,
       variant: 'primary' as const
     },
     {
       title: 'Projetos Finalizados',
       value: completed,
       indicator: completedIndicator,
-      indicatorText: completedText,
+      diffValue: completedDiffStr,
       variant: 'zinc' as const
     },
     {
       title: 'Projetos Iniciados',
       value: in_progress,
       indicator: inProgressIndicator,
-      indicatorText: inProgressText,
+      diffValue: inProgressDiffStr,
       variant: 'zinc' as const
     },
     {
       title: 'Projetos Pendentes',
       value: planning,
       indicator: planningIndicator,
-      indicatorText: planningText,
+      diffValue: planningDiffStr,
       variant: 'zinc' as const
     }
   ]
@@ -106,48 +90,36 @@ function mapFinanceSummaryToCards(data: DashboardData) {
   // 1. Paid
   const paidDiff = total_paid - prev.total_paid
   const paidIndicator = paidDiff > 0 ? ('up' as const) : paidDiff < 0 ? ('down' as const) : ('info' as const)
-  const paidText = paidDiff > 0
-    ? `+${formatCurrency(paidDiff)} referente ao mês anterior`
-    : paidDiff < 0
-      ? `-${formatCurrency(Math.abs(paidDiff))} referente ao mês anterior`
-      : 'Sem alterações'
+  const paidDiffStr = paidDiff > 0 ? `+${formatCurrency(paidDiff)}` : paidDiff < 0 ? `-${formatCurrency(Math.abs(paidDiff))}` : undefined
 
   // 2. Expenses
   const expensesDiff = total_expenses - prev.total_expenses
   const expensesIndicator = expensesDiff > 0 ? ('down' as const) : expensesDiff < 0 ? ('up' as const) : ('info' as const)
-  const expensesText = expensesDiff > 0
-    ? `+${formatCurrency(expensesDiff)} referente ao mês anterior`
-    : expensesDiff < 0
-      ? `-${formatCurrency(Math.abs(expensesDiff))} referente ao mês anterior`
-      : 'Sem alterações'
+  const expensesDiffStr = expensesDiff > 0 ? `+${formatCurrency(expensesDiff)}` : expensesDiff < 0 ? `-${formatCurrency(Math.abs(expensesDiff))}` : undefined
 
   // 3. Pending
   const pendingDiff = total_pending - prev.total_pending
   const pendingIndicator = pendingDiff > 0 ? ('up' as const) : pendingDiff < 0 ? ('down' as const) : ('info' as const)
-  const pendingText = pendingDiff > 0
-    ? `+${formatCurrency(pendingDiff)} referente ao mês anterior`
-    : pendingDiff < 0
-      ? `-${formatCurrency(Math.abs(pendingDiff))} referente ao mês anterior`
-      : 'Sem alterações'
+  const pendingDiffStr = pendingDiff > 0 ? `+${formatCurrency(pendingDiff)}` : pendingDiff < 0 ? `-${formatCurrency(Math.abs(pendingDiff))}` : undefined
 
   return [
     {
       title: 'Entrada',
       value: formatCurrency(total_paid),
       indicator: paidIndicator,
-      indicatorText: paidText
+      diffValue: paidDiffStr
     },
     {
       title: 'Gastos c/ ferramentas',
       value: formatCurrency(total_expenses),
       indicator: expensesIndicator,
-      indicatorText: expensesText
+      diffValue: expensesDiffStr
     },
     {
-      title: 'A Receber',
+      title: 'A receber',
       value: formatCurrency(total_pending),
       indicator: pendingIndicator,
-      indicatorText: pendingText
+      diffValue: pendingDiffStr
     }
   ]
 }
@@ -210,14 +182,13 @@ function Home() {
         <div className="flex gap-3">
           <Button
             size='lg'
-            className="bg-[#E5E7EB] hover:bg-neutral-300 text-secondary font-bold rounded-full px-6 py-3 cursor-pointer shadow-xs text-[14px] border-none"
+            variant='zinc'
           >
             Importar Dados
           </Button>
           <Button
             size='lg'
             onPress={() => navigate({ to: '/projetos/novo' })}
-            className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full cursor-pointer shadow-xs text-[14px] flex items-center gap-1.5 border-none"
           >
             <FilePlus className="stroke-[2.5]" width={16} height={16} /> Novo Projeto
           </Button>
@@ -234,7 +205,7 @@ function Home() {
               title={stat.title}
               value={stat.value}
               indicator={stat.indicator}
-              indicatorText={stat.indicatorText}
+              diffValue={stat.diffValue}
               variant={stat.variant}
               onAction={handleStatCardAction}
             />
@@ -246,7 +217,7 @@ function Home() {
         {/* Left Column: Finanças & Nível de trabalho */}
         <div className="col-span-6 flex flex-col gap-2">
           {/* Finanças Card */}
-          <Card className="p-0 bg-zinc-100 border-none shadow-none rounded-[24px]">
+          <Card className="p-0 bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px]">
             <CardContent className="space-y-4 p-0 text-secondary">
               <h3 className="font-semibold px-6 pt-6">Finanças</h3>
               <div className="flex gap-2 overflow-x-auto px-6 pb-6 scrollbar-none">
@@ -258,7 +229,7 @@ function Home() {
                       title={finance.title}
                       value={finance.value}
                       indicator={finance.indicator}
-                      indicatorText={finance.indicatorText}
+                      diffValue={finance.diffValue}
                     />
                   ))}
               </div>
@@ -266,7 +237,7 @@ function Home() {
           </Card>
 
           {/* Nível de trabalho Card */}
-          <Card className="bg-[#F4F4F6] border-none shadow-none rounded-[24px] p-6 text-secondary flex flex-col justify-between">
+          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary flex flex-col justify-between">
             <CardContent className="p-0">
               <h3 className="font-semibold">Nível de trabalho</h3>
               {/* Custom Styled Bar Chart */}
@@ -451,22 +422,22 @@ function Home() {
 
         {/* Middle Column: Projetos List */}
         <div className="col-span-3">
-          <Card className="h-[542px] bg-zinc-100 border-none shadow-none rounded-[24px] p-6 text-secondary">
+          <Card className="h-[542px] bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary">
             <CardContent className="p-0 flex flex-col w-full h-full">
               <div className="flex items-center justify-between mb-4 shrink-0">
                 <h3 className="font-semibold">Projetos</h3>
                 <Button
                   size='lg'
                   onPress={() => navigate({ to: '/projetos/novo' })}
-                  className="size-9 rounded-full bg-secondary text-primary-light flex items-center justify-center cursor-pointer hover:bg-secondary hover:opacity-90 border-none shadow-md shadow-black/40"
+                  variant='onlyIcon'
                 >
                   <Plus width={16} height={16} />
                 </Button>
               </div>
 
               <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3 scrollbar-none">
-                {isLoading
-                  ? Array.from({ length: 5 }).map((_, i) => <ProjectListItemSkeleton key={i} />)
+                {isLoading || projects.length === 0
+                  ? Array.from({ length: 8 }).map((_, i) => <ProjectListItemSkeleton key={i} />)
                   : projects.map((project) => (
                     <ProjectListItem
                       key={project.id}
@@ -489,7 +460,7 @@ function Home() {
           </div>
 
           {/* Pagamentos Pendentes Card */}
-          <Card className="bg-[#F4F4F6] border-none shadow-none rounded-[24px] p-6 text-secondary h-[352px]">
+          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary h-[352px]">
             <CardContent className="p-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold leading-tight">Pagamentos pendentes</h3>
@@ -497,7 +468,7 @@ function Home() {
               </div>
 
               <div className="flex flex-col gap-3 overflow-y-auto h-[300px] scrollbar-none">
-                {isLoading
+                {isLoading || pendingPayments.length === 0
                   ? Array.from({ length: 5 }).map((_, i) => <PaymentListItemSkeleton key={i} />)
                   : pendingPayments.map((person) => (
                     <PaymentListItem

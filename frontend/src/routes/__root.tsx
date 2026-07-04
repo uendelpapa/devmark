@@ -12,6 +12,8 @@ import { useAuthStore } from '../lib/auth'
 import { refreshToken } from '../services/http/auth'
 import { useEffect } from 'react'
 
+import { NotFound } from '../components/ui/NotFound'
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -35,6 +37,7 @@ export const Route = createRootRoute({
   }),
   component: RootComponent,
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
 
 function RootComponent() {

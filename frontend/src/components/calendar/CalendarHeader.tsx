@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, Plus } from '@gravity-ui/icons'
 import type { CalendarViewMode } from '../../services/types'
+import { Button } from '../ui/Button'
 
 interface CalendarHeaderProps {
   currentDate: Date
@@ -63,11 +64,10 @@ export function CalendarHeader({
             <button
               key={key}
               onClick={() => onViewModeChange(key)}
-              className={`${
-                viewMode === key
-                  ? 'bg-primary/50 text-secondary hover:bg-primary'
-                  : 'bg-secondary text-white hover:bg-secondary/80'
-              } font-bold rounded-full px-4 h-9 border-none text-[13px] transition-colors cursor-pointer`}
+              className={`${viewMode === key
+                ? 'bg-primary text-secondary hover:bg-primary/50 border border-primary/50'
+                : 'bg-primary/50 text-secondary hover:bg-primary border border-primary'
+                } font-bold rounded-full px-4 h-9 text-xs transition-colors cursor-pointer`}
             >
               {label}
             </button>
@@ -106,13 +106,12 @@ export function CalendarHeader({
         </span>
 
         {/* Add Task Button */}
-        <button
+        <Button
           onClick={onAddTask}
-          className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full border-none text-[14px] transition-colors flex items-center gap-2 px-5 h-10 cursor-pointer"
         >
           <Plus className="size-4" />
           Nova Tarefa
-        </button>
+        </Button>
       </div>
     </div>
   )

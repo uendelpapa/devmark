@@ -9,24 +9,35 @@ interface FinanceCardProps {
   title: string
   value: string
   indicator: 'up' | 'down' | 'info'
-  indicatorText: string
+  diffValue?: string
 }
 
 export const FinanceCard = memo(function FinanceCard({
   title,
   value,
   indicator,
-  indicatorText
+  diffValue
 }: FinanceCardProps) {
   return (
-    <div className="flex flex-col shrink-0 bg-primary/50 border border-zinc-200/50 space-y-4 px-6 py-4 rounded-[24px] min-w-[200px]">
-      <span className="font-semibold text-secondary">{title}</span>
+    <div className="flex flex-col shrink-0 bg-primary/50 border border-primary space-y-4 px-6 py-4 rounded-[24px] min-w-[227px]">
+      <span className="font-medium text-secondary">{title}</span>
       <span className="text-3xl font-bold text-secondary">{value}</span>
-      <div className="flex items-center gap-1.5 text-sm font-semibold text-secondary">
-        {indicator === 'down' && <CircleChevronDown className="text-secondary" width={16} height={16} />}
-        {indicator === 'up' && <CircleChevronUp className="text-secondary" width={16} height={16} />}
+      <div className="flex items-center gap-1">
+        {indicator === 'down' && <CircleChevronDown className="text-rose-500" width={16} height={16} />}
+        {indicator === 'up' && <CircleChevronUp className="text-emerald-700" width={16} height={16} />}
         {indicator === 'info' && <CircleInfo className="text-secondary" width={16} height={16} />}
-        <span className="font-normal opacity-90">{indicatorText}</span>
+        <span className="text-sm tracking-tight leading-none">
+          {indicator === 'info' ? (
+            'Sem alterações'
+          ) : (
+            <>
+              <span className={`font-semibold ${indicator === 'down' ? 'text-rose-500' : 'text-emerald-700'}`}>
+                {diffValue}
+              </span>
+              referente ao mês anterior
+            </>
+          )}
+        </span>
       </div>
     </div>
   )

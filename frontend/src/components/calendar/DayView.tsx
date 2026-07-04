@@ -54,7 +54,7 @@ export function DayView({ currentDate, items, onCreateTask }: DayViewProps) {
           </h3>
           <button
             onClick={() => onCreateTask(currentDate)}
-            className="text-xs font-bold text-primary hover:text-secondary/80 bg-transparent border-none cursor-pointer transition-colors"
+            className="text-xs font-bold text-secondary hover:text-secondary/80 bg-transparent border-none cursor-pointer transition-colors"
           >
             + Tarefa
           </button>

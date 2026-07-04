@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button, Select, ListBox } from '@heroui/react'
+import { Select, SelectItem } from '../../components/ui/Select'
 import { Plus } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchProjects, deleteProject, updateProject } from '../../services/api'
 import { useState, useEffect } from 'react'
 import { ProjectCard, ProjectCardSkeleton } from '../../components/projects/ProjectCard'
 import { DeleteProjectModal, ChangeProjectStatusModal } from '../../components/projects/ProjectActionsModals'
+import { Button } from '#/components/ui/Button'
 
 const PROJECT_STATUSES = [
   { key: 'PLANNING', label: 'Planejamento' },
@@ -104,64 +105,49 @@ function Projetos() {
 
           {/* Status Filter */}
           <Select
-            aria-label="Filtrar por Status"
+            ariaLabel="Filtrar por Status"
             selectedKey={selectedStatus}
             onSelectionChange={(key) => setSelectedStatus(key as string)}
-            className="shrink-0 rounded-full"
+            variant="zinc"
+            triggerClassName="text-sm font-semibold w-fit py-2"
           >
-            <Select.Trigger className="bg-zinc-100 rounded-full shadow-none pl-3 py-2.5 text-secondary text-sm font-semibold w-fit flex items-center justify-between">
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover className="bg-white border border-zinc-200 rounded-xl z-[120]">
-              <ListBox className="p-1">
-                <ListBox.Item id="ALL" textValue="Todos os Status" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Todos os Status
-                </ListBox.Item>
-                {PROJECT_STATUSES.map((s) => (
-                  <ListBox.Item key={s.key} id={s.key} textValue={s.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                    {s.label}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
+            <SelectItem id="ALL" textValue="Todos os Status">
+              Todos os Status
+            </SelectItem>
+            {PROJECT_STATUSES.map((s) => (
+              <SelectItem key={s.key} id={s.key} textValue={s.label}>
+                {s.label}
+              </SelectItem>
+            ))}
           </Select>
 
           {/* Priority Filter */}
           <Select
-            aria-label="Filtrar por Prioridade"
+            ariaLabel="Filtrar por Prioridade"
             selectedKey={selectedPriority}
             onSelectionChange={(key) => setSelectedPriority(key as string)}
-            className="shrink-0 rounded-full"
+            variant="zinc"
+            triggerClassName="text-sm font-semibold w-full py-2"
           >
-            <Select.Trigger className="bg-zinc-100 rounded-full shadow-none pl-3 py-2.5 text-secondary text-sm font-semibold w-full flex items-center justify-between">
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover className="bg-white border border-zinc-200 rounded-xl z-[120]">
-              <ListBox className="p-1">
-                <ListBox.Item id="ALL" textValue="Todas as Prioridades" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Todas as Prioridades
-                </ListBox.Item>
-                <ListBox.Item id="LOW" textValue="Baixa" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Baixa
-                </ListBox.Item>
-                <ListBox.Item id="MEDIUM" textValue="Média" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Média
-                </ListBox.Item>
-                <ListBox.Item id="HIGH" textValue="Alta" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Alta
-                </ListBox.Item>
-                <ListBox.Item id="URGENT" textValue="Urgente" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Urgente
-                </ListBox.Item>
-              </ListBox>
-            </Select.Popover>
+            <SelectItem id="ALL" textValue="Todas as Prioridades">
+              Todas as Prioridades
+            </SelectItem>
+            <SelectItem id="LOW" textValue="Baixa">
+              Baixa
+            </SelectItem>
+            <SelectItem id="MEDIUM" textValue="Média">
+              Média
+            </SelectItem>
+            <SelectItem id="HIGH" textValue="Alta">
+              Alta
+            </SelectItem>
+            <SelectItem id="URGENT" textValue="Urgente">
+              Urgente
+            </SelectItem>
           </Select>
 
           <Button
             size='lg'
-            className="bg-primary/50 hover:bg-[#a9e278] text-secondary font-bold rounded-full px-6 py-3 cursor-pointer shadow-xs text-[14px] flex items-center gap-1.5 border-none"
             onPress={() => navigate({ to: '/projetos/novo' })}
           >
             <Plus className="stroke-[2.5]" width={16} height={16} />

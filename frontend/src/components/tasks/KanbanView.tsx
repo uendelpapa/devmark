@@ -91,16 +91,16 @@ function KanbanColumn({ id, title, tasks, headerBg, flagColor, onTaskClick, onAd
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col w-full h-fit shrink-0 rounded-[24px] p-2 gap-1 transition-colors ${isOver ? 'bg-zinc-200' : 'bg-zinc-100'}`}
+      className={`flex flex-col w-full h-fit shrink-0 rounded-[24px] p-2 gap-1 transition-colors ${isOver ? 'bg-zinc-200 border border-zinc-300' : 'bg-zinc-100 border border-zinc-200'}`}
     >
-      <div className={`bg-backpage w-full rounded-[16px] p-2 flex items-center justify-between shrink-0`}>
+      <div className={`bg-backpage border border-secondary/10 w-full rounded-[16px] p-2 flex items-center justify-between shrink-0`}>
         <div className="flex items-center gap-2">
           <div className={`${headerBg} size-6 flex items-center justify-center rounded-3xl`}>
             <Flag className={`${flagColor} size-4`} />
           </div>
-          <span className="font-bold text-zinc-800 text-lg">{title}</span>
+          <span className="font-bold text-secondary text-lg">{title}</span>
           <span className="bg-white/80 text-secondary font-bold text-[11px] px-2 py-0.5 rounded-full">
-            {tasks.length} Tarefas
+            {tasks.length === 1 ? `${tasks.length} tarefa` : `${tasks.length} tarefas`}
           </span>
         </div>
         <button
@@ -156,9 +156,9 @@ export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, complet
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-4 gap-6 flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pb-4">
-        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-800" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="IN_PROGRESS" title="Fazendo" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="REVIEW" title="Revisão" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-600" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="IN_PROGRESS" title="Fazendo" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-700" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="REVIEW" title="Revisão" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
         <KanbanColumn id="COMPLETED" title="Feito" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
       </div>
     </DndContext>

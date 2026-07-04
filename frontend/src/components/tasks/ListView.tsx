@@ -67,7 +67,7 @@ function TaskListSection({ title, tasks, onStatusChange, onTaskClick }: TaskList
 
   return (
     <div className="flex flex-col rounded-[24px] overflow-hidden bg-zinc-200 shrink-0 p-2 gap-2">
-      <div className="bg-[#A7B99E] p-2 flex items-center justify-between rounded-2xl">
+      <div className="bg-backpage p-2 flex items-center justify-between rounded-2xl">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCollapsed(prev => !prev)}

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button, TextField, Label, Input, FieldError, Select, ListBox, Checkbox, Description } from '@heroui/react'
+import { TextField, Label, Input, FieldError, Select, ListBox, Checkbox, Description } from '@heroui/react'
 import { ChevronLeft, ChevronRight, Plus, Sparkles } from '@gravity-ui/icons'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -9,6 +9,7 @@ import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query'
 import { createProject, createProjectWithTasks, fetchClients } from '../../services/api'
 import { api } from '../../lib/axios'
 import { toast } from '../../components/ui/Toast'
+import { Button } from '#/components/ui/Button'
 export const Route = createFileRoute('/_authenticated/projetos_/novo')({
   component: NovoProjeto
 })
@@ -133,13 +134,13 @@ function NovoProjeto() {
     try {
       if (data.create_tasks_ai) {
         toast.info('Criando projeto e gerando tarefas com IA...')
-        
+
         const messageText = `O usuário preencheu o formulário de projeto manualmente. Crie as tarefas para este projeto: ${JSON.stringify(data)}. Retorne is_complete: true e as tarefas.`
         const aiResponse = await api.post('/ai/chat', {
           messages: [{ role: 'user', parts: [{ text: messageText }] }],
           model: 'gemini-2.5-flash'
         })
-        
+
         const result = aiResponse.data
         const { create_tasks_ai, ...projectData } = data
         if (result.is_complete && result.tasks && result.tasks.length > 0) {
@@ -182,8 +183,8 @@ function NovoProjeto() {
       <div className="flex items-center gap-3 mb-8">
         <Button
           size="sm"
-          className="size-8 min-w-8 bg-primary/50 hover:bg-primary text-secondary border-none rounded-full p-0 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
           onPress={handleBack}
+          variant='onlyIcon'
         >
           <ChevronLeft width={16} height={16} />
         </Button>
@@ -547,7 +548,7 @@ function NovoProjeto() {
         <div className="flex items-center gap-3 mt-10">
           {currentStep === 1 ? (
             <Button
-              className="bg-zinc-700 text-white font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-not-allowed"
+              className="bg-zinc-500 text-zinc-800 border border-zinc-600 cursor-not-allowed"
               onPress={() => navigate({ to: '/projetos' })}
               size='lg'
               isDisabled
@@ -557,7 +558,6 @@ function NovoProjeto() {
             </Button>
           ) : (
             <Button
-              className="bg-secondary hover:bg-primary text-white hover:text-secondary font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all duration-200"
               onPress={handleBack}
               size='lg'
             >
@@ -568,7 +568,6 @@ function NovoProjeto() {
 
           {currentStep < totalSteps ? (
             <Button
-              className="bg-secondary hover:bg-primary text-white hover:text-secondary font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all duration-200"
               onPress={handleNext}
               size='lg'
             >
@@ -578,7 +577,6 @@ function NovoProjeto() {
           ) : (
             <Button
               type="submit"
-              className="bg-secondary hover:bg-primary hover:text-secondary text-white font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all durantion-200"
               size='lg'
               isDisabled={isSubmitting}
             >
@@ -597,7 +595,6 @@ function NovoProjeto() {
           )}
 
           <Button
-            className="bg-primary/50 hover:bg-primary text-secondary font-semibold rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-colors duration-200"
             onPress={() => navigate({ to: '/projetos/ia' })}
             size='lg'
           >

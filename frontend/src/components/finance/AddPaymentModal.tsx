@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
 import type { CreatePaymentData } from '../../services/api'
-import { Select, ListBox, Calendar } from '@heroui/react'
+import { Calendar } from '@heroui/react'
+import { Select, SelectItem } from '../ui/Select'
 import { parseDate } from '@internationalized/date'
 
 interface AddPaymentModalProps {
@@ -202,25 +203,17 @@ export function AddPaymentModal({
               )}
             </div>
             <Select
-              aria-label="Método de Pagamento"
+              ariaLabel="Método de Pagamento"
               placeholder="Selecione um método"
               selectedKey={paymentMethod}
               onSelectionChange={(key) => setPaymentMethod(key as string)}
               className="w-full"
             >
-              <Select.Trigger className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
-                <ListBox className="p-1">
-                  {PAYMENT_METHODS.map((m) => (
-                    <ListBox.Item key={m.key} id={m.key} textValue={m.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer">
-                      {m.label}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
+              {PAYMENT_METHODS.map((m) => (
+                <SelectItem key={m.key} id={m.key}>
+                  {m.label}
+                </SelectItem>
+              ))}
             </Select>
           </div>
 
@@ -230,24 +223,16 @@ export function AddPaymentModal({
               Status do Pagamento
             </label>
             <Select
-              aria-label="Status do Pagamento"
+              ariaLabel="Status do Pagamento"
               selectedKey={status}
               onSelectionChange={(key) => setStatus(key as string)}
               className="w-full"
             >
-              <Select.Trigger className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
-                <ListBox className="p-1">
-                  {PAYMENT_STATUSES.map((s) => (
-                    <ListBox.Item key={s.key} id={s.key} textValue={s.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer">
-                      {s.label}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
+              {PAYMENT_STATUSES.map((s) => (
+                <SelectItem key={s.key} id={s.key}>
+                  {s.label}
+                </SelectItem>
+              ))}
             </Select>
           </div>
 

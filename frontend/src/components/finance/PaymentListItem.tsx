@@ -37,7 +37,7 @@ export const PaymentListItem = memo(function PaymentListItem({
         </div>
       </div>
       <Button
-        className="w-8 h-8 min-w-8 p-0 rounded-full hover:bg-secondary/5 flex items-center justify-center cursor-pointer text-secondary/70 hover:text-secondary shrink-0 border-none bg-transparent"
+        className="w-8 h-8 min-w-8 p-0 rounded-lg hover:bg-secondary/5 flex items-center justify-center cursor-pointer text-secondary/70 hover:text-secondary shrink-0 border-none bg-transparent"
         onClick={handleActionClick}
         aria-label={`Comentar sobre o pagamento de ${name}`}
       >
@@ -57,7 +57,7 @@ export function PaymentListItemSkeleton() {
           <div className="h-2.5 bg-secondary/10 rounded w-28" />
         </div>
       </div>
-      <div className="w-8 h-8 rounded-full bg-secondary/10 shrink-0" />
+      <div className="w-8 h-8 rounded-lg bg-secondary/10 shrink-0" />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
 import type { CreateProjectExpenseData } from '../../services/api'
-import { Select, ListBox } from '@heroui/react'
+import { Select, SelectItem } from '../ui/Select'
 
 interface AddExpenseModalProps {
   isOpen: boolean
@@ -119,24 +119,16 @@ export function AddExpenseModal({
               Categoria
             </label>
             <Select
-              aria-label="Categoria"
+              ariaLabel="Categoria"
               selectedKey={category}
               onSelectionChange={(key) => setCategory(key as string)}
               className="w-full"
             >
-              <Select.Trigger className="bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm font-medium w-full flex items-center justify-between">
-                <Select.Value />
-                <Select.Indicator />
-              </Select.Trigger>
-              <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-lg z-[120]">
-                <ListBox className="p-1">
-                  {EXPENSE_CATEGORIES.map((c) => (
-                    <ListBox.Item key={c.key} id={c.key} textValue={c.label} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer">
-                      {c.label}
-                    </ListBox.Item>
-                  ))}
-                </ListBox>
-              </Select.Popover>
+              {EXPENSE_CATEGORIES.map((c) => (
+                <SelectItem key={c.key} id={c.key}>
+                  {c.label}
+                </SelectItem>
+              ))}
             </Select>
           </div>
 

@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Plus, LayoutHeaderCells, ChartColumnStacked, LayoutRows3, LayoutHeaderCellsLarge } from '@gravity-ui/icons'
-import { Select, ListBox, Button } from '@heroui/react'
+import { Select, SelectItem } from '../../components/ui/Select'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask, fetchProjects } from '../../services/api'
 import type { TaskCardData as Task } from '../../services/api'
@@ -12,6 +12,7 @@ import { useTimer } from '../../components/ui/TimerTracker'
 import { CreateTaskModal, type CreateTaskPayload } from '../../components/tasks/CreateTaskModal'
 import { EditTaskModal } from '../../components/tasks/EditTaskModal'
 import { toast } from '../../components/ui/Toast'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/tarefas')({
   component: Tarefas
@@ -135,10 +136,10 @@ function Tarefas() {
   }
 
   return (
-    <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 max-h-[calc(100vh-100px)] h-fit scrollbar-none">
+    <div className="flex flex-col bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 max-h-[calc(100vh-100px)] h-fit scrollbar-none gap-8">
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between mb-6 shrink-0">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-8">
           <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
             Tarefas
@@ -150,9 +151,9 @@ function Tarefas() {
                 key={key}
                 onClick={() => setView(key)}
                 className={`${view === key
-                  ? 'bg-primary/50 text-secondary hover:bg-primary'
-                  : 'bg-secondary text-white hover:bg-secondary/80'
-                  } font-bold rounded-full px-5 h-10 border-none text-[14px] transition-colors flex items-center gap-2 cursor-pointer`}
+                  ? 'bg-primary text-secondary hover:bg-primary/50 border border-primary'
+                  : 'bg-primary/50 text-secondary hover:bg-primary border border-primary'
+                  } font-semibold rounded-full px-5 h-10  text-[14px] transition-colors flex items-center gap-2 cursor-pointer`}
               >
                 <Icon className="size-4" />
                 {label}
@@ -163,31 +164,22 @@ function Tarefas() {
 
         <div className="flex items-center gap-4">
           <Select
-            aria-label="Filtrar por Projeto"
+            ariaLabel="Filtrar por Projeto"
             selectedKey={selectedProjectId}
             onSelectionChange={(key) => setSelectedProjectId(key as string)}
-            className="shrink-0 rounded-full"
+            variant="zinc"
           >
-            <Select.Trigger className="bg-zinc-200 hover:bg-zinc-300 rounded-full shadow-none h-10 text-secondary text-[14px] font-bold w-fit flex items-center justify-between transition-colors border-none outline-none data-[hover=true]:bg-zinc-300">
-              <Select.Value />
-              <Select.Indicator />
-            </Select.Trigger>
-            <Select.Popover className="bg-white border border-zinc-200 rounded-xl z-[120]">
-              <ListBox className="p-1 max-h-[300px] overflow-y-auto scrollbar-none">
-                <ListBox.Item id="ALL" textValue="Todos os Projetos" className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                  Todos os Projetos
-                </ListBox.Item>
-                {projects.map((p: any) => (
-                  <ListBox.Item key={p.id} id={p.id} textValue={p.name} className="px-3 py-1.5 text-sm rounded-lg hover:bg-zinc-100 cursor-pointer text-secondary">
-                    {p.name}
-                  </ListBox.Item>
-                ))}
-              </ListBox>
-            </Select.Popover>
+            <SelectItem id="ALL">
+              Todos os Projetos
+            </SelectItem>
+            {projects.map((p: any) => (
+              <SelectItem key={p.id} id={p.id}>
+                {p.name}
+              </SelectItem>
+            ))}
           </Select>
 
           <Button
-            className="bg-primary/50 hover:bg-primary text-secondary font-bold rounded-full border-none text-[14px] transition-colors flex items-center gap-2 px-5 h-10 cursor-pointer"
             onClick={() => handleAddTaskClick()}
           >
             <Plus className="size-4" />

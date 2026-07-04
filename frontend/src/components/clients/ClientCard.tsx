@@ -14,7 +14,7 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
   return (
     <Card
       onClick={() => navigate({ to: '/clientes/$clientId', params: { clientId: client.id } })}
-      className="relative overflow-hidden flex flex-row items-center justify-between gap-3 p-4 bg-zinc-100 hover:bg-zinc-200 rounded-[16px] border-none shadow-none duration-300 ease-in-out transition-colors group text-zinc-800 cursor-pointer"
+      className="relative overflow-hidden flex flex-row items-center justify-between gap-3 p-4 bg-zinc-100 hover:bg-zinc-200 rounded-[16px] border border-zinc-200 shadow-none duration-300 ease-in-out transition-colors group text-zinc-800 cursor-pointer"
     >
       <div className="flex flex-1 items-center gap-2 min-w-0">
         <Avatar className="size-8 shrink-0">
