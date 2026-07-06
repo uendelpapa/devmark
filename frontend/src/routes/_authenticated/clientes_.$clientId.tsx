@@ -109,6 +109,7 @@ function ClientDetailsPage() {
           >
             <ChevronLeft className='size-4' />
           </Button>
+
           <div className="flex flex-col">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-secondary leading-none">
@@ -237,9 +238,9 @@ function ClientDetailsPage() {
                 key={project.id}
                 to="/projetos/$projectId"
                 params={{ projectId: project.id }}
-                className="bg-zinc-100 rounded-[24px] p-6 hover:border-backpage transition-all duration-300 group flex flex-col gap-4 cursor-pointer relative overflow-hidden"
+                className="bg-zinc-100 border border-zinc-200 rounded-[24px] p-6 transition-all duration-300 group flex flex-col gap-4 cursor-pointer relative overflow-hidden"
               >
-                <div className="absolute top-0 left-0 w-1 h-full bg-primary/0 group-hover:bg-backpage transition-colors" />
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-primary/0 group-hover:bg-backpage transition-colors" />
                 <div className="flex items-start justify-between gap-2">
                   <h4 className="font-bold text-zinc-800 transition-colors line-clamp-2 text-base leading-snug">{project.name}</h4>
                 </div>

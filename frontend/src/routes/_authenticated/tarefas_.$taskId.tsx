@@ -1,15 +1,16 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Button, Checkbox, ProgressBar, Select, ListBox, DatePicker, DateField, TimeField, Calendar, Label } from '@heroui/react'
+import { Checkbox, ProgressBar, Select, ListBox, DatePicker, DateField, TimeField, Calendar, Label } from '@heroui/react'
 import type { TimeValue } from '@heroui/react'
-import { Clock, Briefcase, Calendar as CalendarIcon, TrashBin, FloppyDisk, ChevronLeft } from '@gravity-ui/icons'
+import { Clock, Briefcase, Calendar as CalendarIcon, TrashBin, ChevronLeft } from '@gravity-ui/icons'
 import { fetchTaskDetails, updateTask, deleteTask, fetchTasks, fetchProjects } from '../../services/api'
 import type { Task, TaskCardData } from '../../services/api'
 import { toast } from '../../components/ui/Toast'
 import { useTimer } from '../../components/ui/TimerTracker'
 import { getLocalTimeZone, parseAbsoluteToLocal } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/tarefas_/$taskId')({
   component: TaskDetailsPage
@@ -55,15 +56,14 @@ function TaskDetailsPage() {
 
   // States
   const [description, setDescription] = useState('')
-  const [isEditingDesc, setIsEditingDesc] = useState(false)
   const [subtaskInput, setSubtaskInput] = useState('')
-  
+
   const [title, setTitle] = useState('')
   const [projectId, setProjectId] = useState('')
   const [estimatedHours, setEstimatedHours] = useState<number>(0)
   const [dueDate, setDueDate] = useState<DateValue | null>(null)
   const [tags, setTags] = useState<string[]>([])
-  
+
   const [isProjectOpen, setIsProjectOpen] = useState(false)
   const [isTagSuggestionsOpen, setIsTagSuggestionsOpen] = useState(false)
   const [tagInput, setTagInput] = useState('')
@@ -79,7 +79,7 @@ function TaskDetailsPage() {
       setProjectId(task.project_id || '')
       setEstimatedHours(task.estimated_hours || 0)
       setTags(task.tags || [])
-      
+
       if (task.due_date) {
         setDueDate(parseAbsoluteToLocal(task.due_date))
       } else {
@@ -234,11 +234,6 @@ function TaskDetailsPage() {
     handleUpdateField('subtasks', updatedSubtasks)
   }
 
-  const handleSaveDescription = () => {
-    handleUpdateField('description', description.trim())
-    setIsEditingDesc(false)
-  }
-
   // Render Checks
   if (isLoading) {
     return (
@@ -274,43 +269,47 @@ function TaskDetailsPage() {
 
       {/* Header Bar */}
       <div className="flex items-center justify-between gap-4 shrink-0 flex-wrap">
-        <div className="flex items-center gap-4 flex-1">
+        <div className="flex items-center gap-6 flex-1">
           <Button
             onClick={() => window.history.back()}
             size='lg'
-            isIconOnly
-            className="size-10 shrink-0 text-secondary bg-zinc-100 hover:bg-zinc-200 transition-colors cursor-pointer rounded-full"
+            variant='onlyIcon'
           >
             <ChevronLeft className='size-5' />
           </Button>
+
           <div className="flex flex-col gap-1 w-full max-w-2xl">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-secondary/50 font-bold tracking-wider">{taskCode}</span>
+              <span className="text-xs text-secondary/50 font-semibold">{taskCode}</span>
               <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${currentStatusInfo.bg} ${currentStatusInfo.text}`}>
                 {currentStatusInfo.label}
               </span>
             </div>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              onBlur={handleTitleBlur}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.currentTarget.blur()
-                }
-              }}
-              className="text-2xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none w-full placeholder:text-secondary/30 focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 -ml-3 rounded-lg transition-all"
-              placeholder="Título da tarefa"
-            />
+            <div className="inline-grid items-center -ml-3 max-w-full">
+              <span className="col-start-1 row-start-1 invisible whitespace-pre overflow-hidden text-2xl font-bold tracking-tight px-3">
+                {title || 'Título da tarefa'}
+              </span>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onBlur={handleTitleBlur}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur()
+                  }
+                }}
+                className="col-start-1 row-start-1 w-full text-2xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-secondary/30 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
+                placeholder="Título da tarefa"
+              />
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <Button
-            isIconOnly
-            variant="ghost"
-            className="size-10 rounded-full hover:bg-zinc-100 text-secondary/50 hover:text-red-500 border-none cursor-pointer transition-colors"
+            variant='zinc'
+            className="size-10"
             onPress={() => {
               if (confirm('Tem certeza de que deseja excluir esta tarefa?')) {
                 deleteMutation.mutate()
@@ -327,55 +326,28 @@ function TaskDetailsPage() {
         <div className="lg:col-span-2 flex flex-col gap-6">
 
           {/* Description Section */}
-          <div className="bg-zinc-100 rounded-[20px] p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6">
+            <div className="flex items-center justify-between mb-2">
               <h3 className="font-bold text-secondary text-base">Descrição da Tarefa</h3>
-              {!isEditingDesc ? (
-                <button
-                  onClick={() => setIsEditingDesc(true)}
-                  className="text-xs font-semibold text-secondary hover:text-secondary/80 bg-zinc-200 hover:bg-zinc-300 px-3 py-1.5 rounded-full border-none cursor-pointer transition-colors"
-                >
-                  Editar descrição
-                </button>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleSaveDescription}
-                    className="text-xs font-bold text-secondary bg-primary/50 hover:bg-primary px-3 py-1.5 rounded-full border-none cursor-pointer flex items-center gap-1 transition-colors"
-                  >
-                    <FloppyDisk className="size-3" />
-                    Salvar
-                  </button>
-                  <button
-                    onClick={() => {
-                      setDescription(task.description || '')
-                      setIsEditingDesc(false)
-                    }}
-                    className="text-xs font-semibold text-secondary bg-zinc-200 hover:bg-zinc-300 px-3 py-1.5 rounded-full border-none cursor-pointer transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              )}
             </div>
 
-            {isEditingDesc ? (
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Insira a descrição da tarefa..."
-                rows={4}
-                className="w-full bg-white rounded-xl px-4 py-3 text-secondary text-sm outline-none resize-none focus:ring-2 focus:ring-primary/50 transition-all border border-zinc-200"
-              />
-            ) : (
-              <p className="text-secondary/80 text-[15px] whitespace-pre-wrap leading-relaxed">
-                {task.description || 'Sem descrição fornecida para esta tarefa.'}
-              </p>
-            )}
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onBlur={() => {
+                const trimmed = description.trim()
+                if (trimmed !== (task?.description || '')) {
+                  handleUpdateField('description', trimmed)
+                }
+              }}
+              placeholder="Sem descrição fornecida para esta tarefa. Adicione uma descrição."
+              rows={Math.max(3, description.split('\n').length)}
+              className="w-full bg-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-[15px] leading-relaxed outline-none focus:bg-white focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none border border-transparent"
+            />
           </div>
 
           {/* Subtasks Section */}
-          <div className="bg-zinc-100 rounded-[20px] p-6 flex flex-col gap-6">
+          <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-6">
             {totalSubtasks > 0 && (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
@@ -459,7 +431,7 @@ function TaskDetailsPage() {
 
         {/* Sidebar Info Panel */}
         <div className="flex flex-col gap-4">
-          <div className="bg-zinc-100 rounded-[20px] p-6 flex flex-col gap-5">
+          <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-5">
             <h3 className="font-bold text-secondary text-base border-b border-zinc-200 pb-3">Detalhes</h3>
 
             {/* Status Option */}
@@ -615,7 +587,7 @@ function TaskDetailsPage() {
             <div className="flex flex-col gap-2 mt-2">
               <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Prazo</span>
               <DatePicker
-                className="w-full"
+                className="w-full h-10"
                 value={dueDate}
                 onChange={handleDateChange}
                 granularity="minute"
@@ -624,7 +596,7 @@ function TaskDetailsPage() {
               >
                 {({ state }) => (
                   <>
-                    <DateField.Group className="bg-white border border-zinc-200 rounded-xl p-0 m-0 w-full cursor-pointer hover:border-zinc-300 transition-colors shadow-sm">
+                    <DateField.Group className="bg-white border border-zinc-200 rounded-full w-full cursor-pointer hover:border-zinc-300 transition-colors shadow-sm">
                       <DatePicker.Trigger className="bg-transparent border-none shadow-none px-4 py-2.5 cursor-pointer outline-none w-full text-left flex items-center justify-between group">
                         <div className="flex items-center gap-3">
                           <div className="size-8 rounded-lg bg-zinc-100 flex items-center justify-center text-secondary shrink-0 group-hover:bg-zinc-200 transition-colors">

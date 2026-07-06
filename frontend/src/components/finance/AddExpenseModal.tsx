@@ -93,7 +93,7 @@ export function AddExpenseModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex: Assinatura Vercel Pro, Licença Figma"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-medium"
             />
           </div>
 
@@ -109,7 +109,7 @@ export function AddExpenseModal({
               value={value}
               onChange={(e) => setValue(e.target.value)}
               placeholder="0,00"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
             />
           </div>
 
@@ -161,11 +161,10 @@ export function AddExpenseModal({
           <button
             onClick={handleSubmit}
             disabled={isPending || !title.trim() || !value || !category}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${
-              !title.trim() || !value || !category
-                ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
-            }`}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${!title.trim() || !value || !category
+              ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+              : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
+              }`}
           >
             <Plus className="size-4" />
             Adicionar Gasto

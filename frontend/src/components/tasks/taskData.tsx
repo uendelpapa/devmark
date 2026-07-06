@@ -1,11 +1,11 @@
-import { Clock, Code } from '@gravity-ui/icons'
+import { Clock } from '@gravity-ui/icons'
 import type { TaskCardData as Task } from '../../services/api'
 
 export type { Task }
 
 export function getUrgencyInfo(dueDateStr: string) {
   const due = new Date(dueDateStr)
-  const now = new Date('2026-11-08') // Using a fixed reference for demo, ideally Date.now()
+  const now = new Date(Date.now()) // Using a fixed reference for demo, ideally Date.now()
 
   const diffTime = due.getTime() - now.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))

@@ -4,7 +4,7 @@ import { Xmark, ArrowUpRightFromSquare, Ellipsis, Plus, TrashBin, Flag, Briefcas
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchTasks } from '../../services/api'
 import type { Task } from '../../services/api'
-import { Checkbox, Select, ListBox, DatePicker, DateField, TimeField, Calendar, Label } from '@heroui/react'
+import { DatePicker, DateField, TimeField, Checkbox, Calendar, Label } from '@heroui/react'
 import type { TimeValue } from '@heroui/react'
 import { getLocalTimeZone } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'

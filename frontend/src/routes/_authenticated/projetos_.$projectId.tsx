@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState, useMemo } from 'react'
-import { Avatar, Button } from '@heroui/react'
-import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen, Check } from '@gravity-ui/icons'
+import { useState, useMemo, useEffect } from 'react'
+import { Avatar } from '@heroui/react'
+import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen, Check, Pencil, Xmark } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   fetchProjectDetails,
@@ -10,10 +10,13 @@ import {
   createProjectExpense,
   deleteProjectExpense,
   updateTaskStatus,
+  updateProject,
   deleteTask
 } from '../../services/api'
 import { AddPaymentModal } from '../../components/finance/AddPaymentModal'
 import { AddExpenseModal } from '../../components/finance/AddExpenseModal'
+import { Select, SelectItem } from '../../components/ui/Select'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/projetos_/$projectId')({
   component: ProjectDetailsPage
@@ -133,6 +136,15 @@ function ProjectDetailsPage() {
   const navigate = useNavigate()
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+
+  const [editDescription, setEditDescription] = useState('')
+
+  const [isEditingDates, setIsEditingDates] = useState(false)
+  const [editStartDate, setEditStartDate] = useState('')
+  const [editDeliveryDate, setEditDeliveryDate] = useState('')
+
+  const [editName, setEditName] = useState('')
 
   const queryClient = useQueryClient()
 
@@ -141,6 +153,13 @@ function ProjectDetailsPage() {
     queryFn: () => fetchProjectDetails(projectId),
     enabled: !!projectId
   })
+
+  useEffect(() => {
+    if (project) {
+      if (project.name) setEditName(project.name)
+      if (project.description !== undefined) setEditDescription(project.description || '')
+    }
+  }, [project])
 
   // Mutations
   const { mutate: handleCreatePayment, isPending: isCreatingPayment, error: paymentError } = useMutation({
@@ -214,6 +233,17 @@ function ProjectDetailsPage() {
     }
   })
 
+  const { mutate: handleUpdateProject, isPending: isUpdatingProject } = useMutation({
+    mutationFn: (data: any) => updateProject(projectId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-items'] })
+      setIsEditModalOpen(false)
+    }
+  })
+
   const formatCurrency = (val: any) => {
     const num = parseFloat(val)
     if (isNaN(num)) return 'R$ 0,00'
@@ -265,19 +295,19 @@ function ProjectDetailsPage() {
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'PLANNING':
-        return { label: 'Planejamento', bg: 'bg-blue-200 text-zinc-900' }
+        return { label: 'Planejamento', bg: 'bg-blue-200 border border-blue-400 text-zinc-900' }
       case 'IN_PROGRESS':
-        return { label: 'Em Andamento', bg: 'bg-amber-200 text-zinc-900' }
+        return { label: 'Em Andamento', bg: 'bg-amber-200 border border-amber-400 text-zinc-900' }
       case 'WAITING_CLIENT':
-        return { label: 'Aguardando Cliente', bg: 'bg-purple-200 text-zinc-900' }
+        return { label: 'Aguardando Cliente', bg: 'bg-purple-200 border border-purple-400 text-zinc-900' }
       case 'REVIEW':
-        return { label: 'Revisão', bg: 'bg-indigo-200 text-zinc-900' }
+        return { label: 'Revisão', bg: 'bg-indigo-200 border border-indigo-400 text-zinc-900' }
       case 'COMPLETED':
-        return { label: 'Concluído', bg: 'bg-emerald-200 text-zinc-900' }
+        return { label: 'Concluído', bg: 'bg-emerald-200 border border-emerald-400 text-zinc-900' }
       case 'CANCELED':
-        return { label: 'Cancelado', bg: 'bg-rose-200 text-zinc-900' }
+        return { label: 'Cancelado', bg: 'bg-rose-200 border border-rose-400 text-zinc-900' }
       default:
-        return { label: status, bg: 'bg-zinc-200 text-zinc-900' }
+        return { label: status, bg: 'bg-zinc-200 border border-zinc-400 text-zinc-900' }
     }
   }
 
@@ -317,7 +347,7 @@ function ProjectDetailsPage() {
   // Calculate duration stats
   const totalWorkedHours = project?.tasks.reduce((acc: number, t: any) => acc + (t.worked_hours || 0), 0) || 0
 
-  const startDate = new Date(project?.created_at || Date.now())
+  const startDate = new Date(project?.start_date || project?.created_at || Date.now())
   const endDate = project?.expected_delivery_date ? new Date(project.expected_delivery_date) : new Date()
   const diffTime = Math.max(0, endDate.getTime() - startDate.getTime())
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -333,17 +363,42 @@ function ProjectDetailsPage() {
         <Button
           onClick={() => window.history.back()}
           size='lg'
-          className="size-9 text-secondary bg-primary/50 transition-colors cursor-pointer"
+          variant='onlyIcon'
         >
           <ChevronLeft className='size-4' />
         </Button>
 
-        <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
-          {isLoading ? 'Carregando...' : project?.name}
-        </h1>
+        <div className="flex-1 min-w-0">
+          {isLoading ? (
+            <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">Carregando...</h1>
+          ) : (
+            <div className="inline-grid items-center -ml-3 max-w-full">
+              <span className="col-start-1 row-start-1 invisible whitespace-pre overflow-hidden text-3xl font-bold tracking-tight px-3">
+                {editName || 'Nome do projeto'}
+              </span>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onBlur={() => {
+                  if (editName.trim() && editName.trim() !== project?.name) {
+                    handleUpdateProject({ name: editName.trim() })
+                  } else {
+                    setEditName(project?.name || '')
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur()
+                }}
+                className="col-start-1 row-start-1 w-full text-3xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-secondary/50 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
+                placeholder="Nome do projeto"
+              />
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="bg-zinc-100 text-secondary font-medium px-2 py-1 rounded-full text-xs flex items-center gap-1.5">
+          <span className="bg-zinc-100 border border-zinc-200 text-secondary font-medium px-2 py-1 rounded-full text-xs flex items-center gap-1.5">
             <Briefcase className="size-3.5" />
             {isLoading ? '...' : project?.client.name}
           </span>
@@ -353,38 +408,96 @@ function ProjectDetailsPage() {
             </span>
           )}
           {!isLoading && project?.area && (
-            <span className="bg-zinc-100 text-secondary font-medium px-2 py-1 rounded-full text-xs">
+            <span className="flex gap-1 bg-zinc-100 border border-zinc-200 text-secondary font-medium px-2 py-1 rounded-full text-xs">
               {project.area === 'DEVELOPER' ? 'Desenvolvimento' : 'Marketing'}
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className=" flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none text-secondary/50 hover:text-secondary"
+                title="Editar categoria (área) do projeto"
+              >
+                <Pencil className="size-3" />
+              </button>
             </span>
           )}
         </div>
+
+
       </div>
 
       {/* ── Sobre o projeto + Duração ─────────────────────────────────── */}
-      <div className="flex items-end justify-between gap-6">
+      <div className="flex items-start justify-between gap-6">
         <div className="flex-1 flex flex-col gap-1">
-          <h3 className="font-medium text-secondary text-lg">Sobre o projeto</h3>
-          <p className="text-secondary leading-relaxed">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium text-secondary text-lg">Sobre o projeto</h3>
+          </div>
+
+          <div className="mt-1">
             {isLoading ? (
               <span className="block h-12 bg-zinc-100 animate-pulse rounded-xl w-full" />
             ) : (
-              project?.description || 'Nenhuma descrição detalhada foi fornecida para este projeto. Adicione uma descrição para manter a equipe.'
+              <textarea
+                value={editDescription}
+                onChange={e => setEditDescription(e.target.value)}
+                onBlur={() => {
+                  const trimmed = editDescription.trim()
+                  if (trimmed !== (project?.description || '')) {
+                    handleUpdateProject({ description: trimmed })
+                  }
+                }}
+                className="w-full bg-transparent border border-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-sm leading-relaxed outline-none focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none"
+                rows={Math.max(3, editDescription.split('\n').length)}
+                placeholder="Nenhuma descrição detalhada foi fornecida para este projeto. Adicione uma descrição para manter a equipe informada."
+              />
             )}
-          </p>
+          </div>
         </div>
 
-        <div className='flex items-center gap-2'>
-          <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
-            <Clock className="size-4" />
-            <div className="flex flex-col text-sm">
-              <span className="font-medium">Duração atual: {diffDays} dias</span>
+        <div className='flex flex-col items-end gap-2 mt-2'>
+          <div className="shrink-0 bg-primary/50 border border-primary rounded-2xl px-3 py-2 flex flex-col gap-2 text-secondary relative group">
+            <div className="flex items-center gap-2">
+              <Clock className="size-4 mt-0.5" />
+              {isEditingDates ? (
+                <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium">Início:</span>
+                    <input type="date" value={editStartDate} onChange={e => setEditStartDate(e.target.value)} className="bg-white/50 border-none rounded px-2 py-0.5 text-xs outline-none" />
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium">Entrega:</span>
+                    <input type="date" value={editDeliveryDate} onChange={e => setEditDeliveryDate(e.target.value)} className="bg-white/50 border-none rounded px-2 py-0.5 text-xs outline-none" />
+                  </div>
+                  <div className="flex gap-1 mt-1 justify-end">
+                    <button onClick={() => setIsEditingDates(false)} className="px-2 py-1 rounded text-[10px] font-semibold bg-zinc-100/50 hover:bg-zinc-100 text-secondary border-none cursor-pointer transition-colors">Cancelar</button>
+                    <button onClick={() => {
+                      handleUpdateProject({
+                        start_date: editStartDate || null,
+                        expected_delivery_date: editDeliveryDate || null
+                      })
+                      setIsEditingDates(false)
+                    }} disabled={isUpdatingProject} className="px-2 py-1 rounded text-[10px] font-semibold bg-white text-secondary border-none cursor-pointer hover:bg-zinc-50 transition-colors">Salvar</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col text-sm pr-4">
+                  <span className="font-medium">Início: {formatDate(project?.start_date || project?.created_at || '')}</span>
+                  <span className="font-medium">Entrega: {project?.expected_delivery_date ? formatDate(project?.expected_delivery_date) : 'Sem prazo'}</span>
+                  <button onClick={() => {
+                    setEditStartDate(project?.start_date ? project.start_date.split('T')[0] : (project?.created_at ? project.created_at.split('T')[0] : ''))
+                    setEditDeliveryDate(project?.expected_delivery_date ? project.expected_delivery_date.split('T')[0] : '')
+                    setIsEditingDates(true)
+                  }} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-secondary/50 hover:text-secondary bg-transparent border-none cursor-pointer p-0.5">
+                    <Pencil className="size-3" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="shrink-0 bg-primary/50 rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
+          <div className="shrink-0 bg-primary/50 border border-primary rounded-2xl px-3 py-2 flex items-center gap-2 text-secondary">
             <ClockArrowRotateLeft className="size-4" />
             <div className="flex flex-col text-sm">
-              <span className="font-medium">Total trabalhado: {totalWorkedHours}h</span>
+              <span className="font-medium">Duração: {diffDays} dias</span>
+              <span className="font-medium">Trabalhado: {totalWorkedHours}h</span>
             </div>
           </div>
         </div>
@@ -395,7 +508,7 @@ function ProjectDetailsPage() {
       {/* ── Quadro de Tarefas + Pie Chart ─────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
         {/* Task Board */}
-        <div className="lg:col-span-2 bg-zinc-100 rounded-2xl p-4 flex flex-col gap-2">
+        <div className="lg:col-span-2 bg-zinc-100 border border-zinc-200 rounded-2xl p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="font-medium text-zinc-800">Quadros de tarefas</span>
             <span className="text-xs font-semibold text-primary-light bg-secondary px-2 py-1 rounded-full">
@@ -413,7 +526,7 @@ function ProjectDetailsPage() {
                 return (
                   <div
                     key={task.id}
-                    className="flex items-center justify-between px-4 py-3 w-full min-w-0 bg-primary/50 hover:bg-primary/70 transition-colors rounded-xl cursor-pointer group"
+                    className="flex items-center justify-between px-4 py-3 w-full min-w-0 bg-primary/50 border border-primary hover:bg-primary/70 transition-colors rounded-xl cursor-pointer group"
                     onClick={() => navigate({ to: '/tarefas/$taskId', params: { taskId: task.id } })}
                   >
                     <div className="flex flex-col gap-1 min-w-0 pr-4 flex-1">
@@ -491,7 +604,7 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Activity Rings Chart */}
-        <div className="bg-zinc-100 rounded-2xl p-4 flex items-center justify-center">
+        <div className="bg-zinc-100 border border-zinc-200 rounded-2xl p-4 flex items-center justify-center">
           <TaskRingsChart data={pieData} size={250} />
         </div>
       </div>
@@ -510,7 +623,7 @@ function ProjectDetailsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-primary/50 p-6 rounded-3xl flex flex-col gap-4">
+        <div className="bg-primary/50 border border-primary p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-secondary font-semibold">Orçamento Total</span>
             <CircleDollar className="size-4 text-secondary" />
@@ -518,7 +631,7 @@ function ProjectDetailsPage() {
           <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.project_value)}</span>
         </div>
 
-        <div className="bg-zinc-100 p-6 rounded-3xl flex flex-col gap-4">
+        <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-secondary font-semibold">Faturado</span>
             <CircleDollar className="size-4 text-secondary" />
@@ -526,7 +639,7 @@ function ProjectDetailsPage() {
           <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.amount_received)}</span>
         </div>
 
-        <div className="bg-zinc-100 p-6 rounded-3xl flex flex-col gap-4">
+        <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-secondary font-semibold">A Receber</span>
             <CircleDollar className="size-4 text-secondary" />
@@ -534,7 +647,7 @@ function ProjectDetailsPage() {
           <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.amount_pending)}</span>
         </div>
 
-        <div className="bg-zinc-100 p-6 rounded-3xl flex flex-col gap-4">
+        <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <span className="text-secondary font-semibold">Despesas</span>
             <CircleDollar className="size-4 text-secondary" />
@@ -547,13 +660,12 @@ function ProjectDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
 
         {/* Histórico de Parcelas */}
-        <div className="bg-zinc-100 rounded-2xl p-4 flex flex-col gap-2">
+        <div className="bg-zinc-100 border border-zinc-200 rounded-2xl p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-secondary text-sm">Histórico de parcelas</span>
+            <span className="font-semibold text-zinc-800 text-sm">Histórico de parcelas</span>
             <Button
               size='sm'
               onClick={() => setIsPaymentModalOpen(true)}
-              className="flex items-center gap-1.5 bg-primary/50 hover:bg-primary text-secondary font-medium text-xs rounded-full px-4 py-2 cursor-pointer border-none transition-colors"
             >
               <Plus className="size-3" />
               Cadastrar Parcela
@@ -616,13 +728,12 @@ function ProjectDetailsPage() {
         </div>
 
         {/* Registro de Despesas */}
-        <div className="bg-zinc-100 rounded-2xl p-4 flex flex-col gap-2">
+        <div className="bg-zinc-100 border border-zinc-200 rounded-2xl p-4 flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-secondary text-sm">Registro de despesas</span>
+            <span className="font-semibold text-zinc-800 text-sm">Registro de despesas</span>
             <Button
               size='sm'
               onClick={() => setIsExpenseModalOpen(true)}
-              className="flex items-center gap-1.5 bg-primary/50 hover:bg-primary text-secondary font-medium text-xs rounded-full px-4 py-2 cursor-pointer border-none transition-colors"
             >
               <Plus className="size-3" />
               Lançar Gasto
@@ -746,6 +857,111 @@ function ProjectDetailsPage() {
         isPending={isCreatingExpense}
         error={getErrorMessage(expenseError)}
       />
+
+      {project && (
+        <EditProjectModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSubmit={(data) => handleUpdateProject(data)}
+          project={project}
+          isPending={isUpdatingProject}
+        />
+      )}
     </div>
   )
 }
+
+// ─── Edit Project Modal ─────────────────────────────────────────────────────
+
+interface EditProjectModalProps {
+  isOpen: boolean
+  onClose: () => void
+  onSubmit: (data: any) => void
+  project: any
+  isPending?: boolean
+}
+
+const labelClass = "text-secondary/60 text-xs font-bold uppercase tracking-wider"
+
+function EditProjectModal({ isOpen, onClose, onSubmit, project, isPending = false }: EditProjectModalProps) {
+  const [area, setArea] = useState(project.area || 'DEVELOPER')
+
+  useEffect(() => {
+    if (isOpen && project) {
+      setArea(project.area || 'DEVELOPER')
+    }
+  }, [isOpen, project])
+
+  if (!isOpen) return null
+
+  const handleSubmit = () => {
+    const data: any = {
+      area,
+    }
+    onSubmit(data)
+  }
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[100]"
+        onClick={onClose}
+      />
+
+      {/* Modal Panel */}
+      <div className="fixed right-0 top-0 h-full w-[400px] max-w-[100vw] bg-white z-[101] flex flex-col shadow-2xl animate-slide-in-right overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4">
+          <h2 className="text-lg font-bold text-secondary">Editar Projeto</h2>
+          <button
+            onClick={onClose}
+            className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
+          >
+            <Xmark className="size-4 text-secondary/60" />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-5 scrollbar-none">
+          {/* Categoria / Área */}
+          <div className="flex flex-col gap-1.5">
+            <label className={labelClass}>Categoria</label>
+            <Select
+              selectedKey={area}
+              onSelectionChange={(key) => setArea(key as string)}
+              ariaLabel="Selecionar categoria"
+              variant="outline"
+              triggerClassName="w-full rounded-full"
+            >
+              <SelectItem id="DEVELOPER" textValue="Desenvolvimento">
+                Desenvolvimento
+              </SelectItem>
+              <SelectItem id="MARKETING" textValue="Marketing">
+                Marketing
+              </SelectItem>
+            </Select>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-zinc-100 flex items-center gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-secondary bg-zinc-100 hover:bg-zinc-200 transition-colors cursor-pointer border-none"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={isPending}
+            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-secondary bg-primary/50 hover:bg-primary transition-colors cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? 'Salvando...' : 'Salvar Alterações'}
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+

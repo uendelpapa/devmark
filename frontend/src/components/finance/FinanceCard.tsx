@@ -32,7 +32,7 @@ export const FinanceCard = memo(function FinanceCard({
           ) : (
             <>
               <span className={`font-semibold ${indicator === 'down' ? 'text-rose-500' : 'text-emerald-700'}`}>
-                {diffValue}
+                {diffValue}{" "}
               </span>
               referente ao mês anterior
             </>

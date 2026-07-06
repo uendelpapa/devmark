@@ -27,6 +27,7 @@ export interface Project {
   amount_pending: number
   estimated_hours?: number
   worked_hours?: number
+  start_date?: string
   expected_delivery_date?: string
   created_at: string
   updated_at: string

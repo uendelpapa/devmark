@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { Gear, Check, Lock, ShieldCheck } from '@gravity-ui/icons'
+import { Check, Lock } from '@gravity-ui/icons'
 import { useAuthStore } from '../../lib/auth'
 import { useMutation } from '@tanstack/react-query'
 import { updateProfile } from '../../services/api'

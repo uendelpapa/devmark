@@ -1,5 +1,5 @@
 import { Avatar } from '@heroui/react'
-import { Magnifier, Envelope, Bell } from '@gravity-ui/icons'
+import { Magnifier } from '@gravity-ui/icons'
 import { Input } from '../ui/Input'
 import { useQuery } from '@tanstack/react-query'
 import { fetchProjects, fetchClients, fetchTasks } from '../../services/api'

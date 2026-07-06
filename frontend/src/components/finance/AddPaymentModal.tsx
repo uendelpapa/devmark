@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
 import type { CreatePaymentData } from '../../services/api'
-import { Calendar } from '@heroui/react'
 import { Select, SelectItem } from '../ui/Select'
-import { parseDate } from '@internationalized/date'
 
 interface AddPaymentModalProps {
   isOpen: boolean
@@ -42,15 +40,6 @@ export function AddPaymentModal({
   const [paymentMethod, setPaymentMethod] = useState('')
   const [status, setStatus] = useState('PENDING')
   const [notes, setNotes] = useState('')
-
-  const getCalendarValue = (dateStr: string) => {
-    if (!dateStr) return null
-    try {
-      return parseDate(dateStr.substring(0, 10))
-    } catch (e) {
-      return null
-    }
-  }
 
   useEffect(() => {
     if (!isOpen) {
@@ -115,7 +104,7 @@ export function AddPaymentModal({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0,00"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
             />
           </div>
 
@@ -124,27 +113,12 @@ export function AddPaymentModal({
             <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
               Data de Vencimento
             </label>
-            <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 flex justify-center">
-              <Calendar 
-                aria-label="Data de Vencimento"
-                value={getCalendarValue(dueDate)}
-                onChange={(date) => setDueDate(date ? date.toString() : '')}
-              >
-                <Calendar.Header>
-                  <Calendar.Heading />
-                  <Calendar.NavButton slot="previous" />
-                  <Calendar.NavButton slot="next" />
-                </Calendar.Header>
-                <Calendar.Grid>
-                  <Calendar.GridHeader>
-                    {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
-                  </Calendar.GridHeader>
-                  <Calendar.GridBody>
-                    {(date) => <Calendar.Cell date={date} />}
-                  </Calendar.GridBody>
-                </Calendar.Grid>
-              </Calendar>
-            </div>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
+            />
           </div>
 
           {/* Data de Pagamento */}
@@ -163,27 +137,12 @@ export function AddPaymentModal({
                 </button>
               )}
             </div>
-            <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-3 flex justify-center">
-              <Calendar 
-                aria-label="Data de Pagamento"
-                value={getCalendarValue(paymentDate)}
-                onChange={(date) => setPaymentDate(date ? date.toString() : '')}
-              >
-                <Calendar.Header>
-                  <Calendar.Heading />
-                  <Calendar.NavButton slot="previous" />
-                  <Calendar.NavButton slot="next" />
-                </Calendar.Header>
-                <Calendar.Grid>
-                  <Calendar.GridHeader>
-                    {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
-                  </Calendar.GridHeader>
-                  <Calendar.GridBody>
-                    {(date) => <Calendar.Cell date={date} />}
-                  </Calendar.GridBody>
-                </Calendar.Grid>
-              </Calendar>
-            </div>
+            <input
+              type="date"
+              value={paymentDate}
+              onChange={(e) => setPaymentDate(e.target.value)}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
+            />
           </div>
 
           {/* Método de Pagamento */}
@@ -265,11 +224,10 @@ export function AddPaymentModal({
           <button
             onClick={handleSubmit}
             disabled={isPending || !amount || !dueDate}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${
-              !amount || !dueDate
-                ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
-            }`}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${!amount || !dueDate
+              ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
+              : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
+              }`}
           >
             <Plus className="size-4" />
             Adicionar Pagamento

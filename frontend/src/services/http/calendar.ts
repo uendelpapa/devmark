@@ -41,15 +41,41 @@ export async function fetchCalendarItems(params?: {
 
   const items: CalendarItem[] = []
 
-  // Projects → calendar items (using expected_delivery_date)
+  // Projects → calendar items (Start and End markers)
   const projects = projectsRes.data?.data || projectsRes.data || []
   for (const p of projects) {
-    if (p.expected_delivery_date) {
+    const startDateStr = p.start_date || p.created_at
+    const endDateStr = p.expected_delivery_date
+
+    // 1. Início do Projeto
+    if (startDateStr) {
+      const startObj = new Date(startDateStr)
+      if (startDateStr.endsWith('T00:00:00.000Z')) {
+        startObj.setMinutes(startObj.getMinutes() + startObj.getTimezoneOffset())
+      }
       items.push({
-        id: p.id,
-        title: p.name,
+        id: `start-${p.id}`,
+        title: `Início: ${p.name}`,
         type: 'project',
-        start: new Date(p.expected_delivery_date),
+        start: startObj,
+        status: p.status,
+        priority: p.priority,
+        projectName: p.client?.name,
+        color: COLORS.project,
+      })
+    }
+
+    // 2. Entrega do Projeto
+    if (endDateStr) {
+      const endObj = new Date(endDateStr)
+      if (endDateStr.endsWith('T00:00:00.000Z')) {
+        endObj.setMinutes(endObj.getMinutes() + endObj.getTimezoneOffset())
+      }
+      items.push({
+        id: `end-${p.id}`,
+        title: `Entrega: ${p.name}`,
+        type: 'project',
+        start: endObj,
         status: p.status,
         priority: p.priority,
         projectName: p.client?.name,

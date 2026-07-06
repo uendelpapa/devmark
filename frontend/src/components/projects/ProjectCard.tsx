@@ -87,7 +87,7 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <div
       onClick={() => onPress?.(id)}
-      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all cursor-pointer duration-300 ease-in-out ${isCompleted ? 'bg-primary/50 hover:bg-primary' : 'bg-zinc-100 hover:bg-zinc-200'
+      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all cursor-pointer duration-300 ease-in-out ${isCompleted ? 'bg-primary/50 hover:bg-primary' : 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-200'
         }`}
     >
       {/* Header: Title + Menu */}
