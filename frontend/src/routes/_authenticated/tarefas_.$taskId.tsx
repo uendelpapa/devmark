@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Checkbox, ProgressBar, Select, ListBox, DatePicker, DateField, TimeField, Calendar, Label } from '@heroui/react'
 import type { TimeValue } from '@heroui/react'
-import { Clock, Briefcase, Calendar as CalendarIcon, TrashBin, ChevronLeft } from '@gravity-ui/icons'
+import { Briefcase, Calendar as CalendarIcon, TrashBin, ChevronLeft, ChevronDown } from '@gravity-ui/icons'
 import { fetchTaskDetails, updateTask, deleteTask, fetchTasks, fetchProjects } from '../../services/api'
 import type { Task, TaskCardData } from '../../services/api'
 import { toast } from '../../components/ui/Toast'
@@ -434,18 +434,18 @@ function TaskDetailsPage() {
           <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-5">
             <h3 className="font-bold text-secondary text-base border-b border-zinc-200 pb-3">Detalhes</h3>
 
-            {/* Status Option */}
-            <div className="flex flex-col gap-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Status</span>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-y-4 gap-x-2">
+              {/* Status Option */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Status</span>
               <Select
                 aria-label="Alterar Status"
                 selectedKey={task.status}
                 onSelectionChange={(key) => handleStatusChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-white border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm font-semibold w-full flex items-center justify-between hover:border-zinc-300 transition-colors shadow-sm">
+                <Select.Trigger className="bg-transparent border-none p-0 text-secondary text-sm font-bold w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors">
                   <Select.Value />
-                  <Select.Indicator />
+                  <Select.Indicator className="text-zinc-400 group-hover:text-zinc-600 transition-colors" />
                 </Select.Trigger>
                 <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-xl z-[120]">
                   <ListBox className="p-1">
@@ -457,20 +457,18 @@ function TaskDetailsPage() {
                   </ListBox>
                 </Select.Popover>
               </Select>
-            </div>
 
-            {/* Priority Option */}
-            <div className="flex flex-col gap-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Prioridade</span>
+              {/* Priority Option */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Prioridade</span>
               <Select
                 aria-label="Alterar Prioridade"
                 selectedKey={task.priority}
                 onSelectionChange={(key) => handlePriorityChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-white border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm font-semibold w-full flex items-center justify-between hover:border-zinc-300 transition-colors shadow-sm">
+                <Select.Trigger className="bg-transparent border-none p-0 text-secondary text-sm font-bold w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors">
                   <Select.Value />
-                  <Select.Indicator />
+                  <Select.Indicator className="text-zinc-400 group-hover:text-zinc-600 transition-colors" />
                 </Select.Trigger>
                 <Select.Popover className="bg-white border border-zinc-200 rounded-xl shadow-xl z-[120]">
                   <ListBox className="p-1">
@@ -482,27 +480,21 @@ function TaskDetailsPage() {
                   </ListBox>
                 </Select.Popover>
               </Select>
-            </div>
 
-            {/* Project */}
-            <div className="flex flex-col gap-2 mt-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Projeto</span>
-              <div className="relative" ref={projectRef}>
+              {/* Project */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Projeto</span>
+              <div className="relative w-full" ref={projectRef}>
                 <button
                   onClick={() => setIsProjectOpen(!isProjectOpen)}
-                  className="w-full text-left bg-white border border-zinc-200 rounded-xl px-4 py-3 hover:border-zinc-300 transition-colors flex items-center justify-between cursor-pointer text-secondary group shadow-sm"
+                  className="w-full text-left bg-transparent border-none p-0 hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors flex items-center justify-between cursor-pointer text-secondary group text-sm font-bold"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0 group-hover:bg-primary/30 transition-colors">
-                      <Briefcase className="size-4 text-secondary" />
-                    </div>
-                    <span className="text-sm font-bold truncate">
-                      {projectId ? projects.find(p => p.id === projectId)?.name || 'Desconhecido' : 'Selecionar Projeto'}
-                    </span>
-                  </div>
+                  <span className="truncate">
+                    {projectId ? projects.find(p => p.id === projectId)?.name || 'Desconhecido' : 'Selecionar Projeto'}
+                  </span>
+                  <ChevronDown className="size-4 text-zinc-400 group-hover:text-zinc-600 transition-colors shrink-0" />
                 </button>
                 {isProjectOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-full bg-white border border-zinc-200 rounded-xl shadow-xl z-[120] py-1 max-h-60 overflow-y-auto">
+                  <div className="absolute left-0 top-full mt-1 w-full bg-white border border-zinc-200 rounded-xl shadow-xl z-[120] py-1 max-h-60 overflow-y-auto">
                     {projects.map((p) => (
                       <button
                         key={p.id}
@@ -517,28 +509,26 @@ function TaskDetailsPage() {
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Tags */}
-            <div className="flex flex-col gap-2 mt-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Tags</span>
-              <div className="flex flex-wrap items-center gap-2 bg-white border border-zinc-200 rounded-xl px-3 py-2 min-h-[46px] shadow-sm">
+              {/* Tags */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider self-start pt-2">Tags</span>
+              <div className="flex flex-wrap items-center gap-1.5 w-full min-h-[32px] px-2 py-1 hover:bg-zinc-200/50 rounded-lg transition-colors">
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1.5 bg-secondary text-white px-2.5 py-1 rounded-xl text-xs font-semibold"
+                    className="inline-flex items-center gap-1 bg-secondary text-white px-2 py-0.5 rounded text-[11px] font-semibold"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="size-4 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer bg-transparent border-none text-white/70 hover:text-white text-xs leading-none"
+                      className="size-3.5 flex items-center justify-center rounded-full hover:bg-white/20 transition-colors cursor-pointer bg-transparent border-none text-white/70 hover:text-white text-[10px] leading-none"
                     >
                       ×
                     </button>
                   </span>
                 ))}
-                <div className="relative flex-1 min-w-[80px]" ref={tagsRef}>
+                <div className="relative flex-1 min-w-[60px]" ref={tagsRef}>
                   <input
                     type="text"
                     value={tagInput}
@@ -550,11 +540,11 @@ function TaskDetailsPage() {
                       }
                     }}
                     onFocus={() => setIsTagSuggestionsOpen(true)}
-                    placeholder={tags.length === 0 ? "Adicionar tags..." : "+ tag"}
-                    className="bg-transparent border-none outline-none text-secondary text-sm w-full placeholder:text-zinc-400 py-1"
+                    placeholder={tags.length === 0 ? "Adicionar..." : "+"}
+                    className="bg-transparent border-none outline-none text-secondary text-sm w-full placeholder:text-zinc-400 py-0.5 font-bold"
                   />
                   {isTagSuggestionsOpen && filteredSuggestions.length > 0 && (
-                    <div className="absolute left-0 top-full mt-2 w-48 bg-white border border-zinc-200 rounded-xl z-[120] py-1 max-h-40 overflow-y-auto shadow-xl">
+                    <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-zinc-200 rounded-xl z-[120] py-1 h-40 overflow-y-auto shadow-xl">
                       <div className="px-3 py-1.5 text-[10px] text-zinc-400 uppercase font-bold tracking-wider">
                         Sugestões
                       </div>
@@ -581,13 +571,11 @@ function TaskDetailsPage() {
                   )}
                 </div>
               </div>
-            </div>
 
-            {/* Due date */}
-            <div className="flex flex-col gap-2 mt-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Prazo</span>
+              {/* Due date */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Prazo</span>
               <DatePicker
-                className="w-full h-10"
+                className="w-full"
                 value={dueDate}
                 onChange={handleDateChange}
                 granularity="minute"
@@ -596,20 +584,16 @@ function TaskDetailsPage() {
               >
                 {({ state }) => (
                   <>
-                    <DateField.Group className="bg-white border border-zinc-200 rounded-full w-full cursor-pointer hover:border-zinc-300 transition-colors shadow-sm">
-                      <DatePicker.Trigger className="bg-transparent border-none shadow-none px-4 py-2.5 cursor-pointer outline-none w-full text-left flex items-center justify-between group">
-                        <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-lg bg-zinc-100 flex items-center justify-center text-secondary shrink-0 group-hover:bg-zinc-200 transition-colors">
-                            <CalendarIcon className="size-4" />
-                          </div>
-                          {dueDate ? (
-                            <span className="text-sm font-bold text-secondary">
-                              {dueDate.toDate(getLocalTimeZone()).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                          ) : (
-                            <span className="text-sm font-bold text-secondary/40">Definir prazo</span>
-                          )}
-                        </div>
+                    <DateField.Group className="bg-transparent border-none p-0 m-0 w-full cursor-pointer">
+                      <DatePicker.Trigger className="bg-transparent border-none shadow-none hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 cursor-pointer outline-none w-full text-left flex items-center justify-between text-secondary text-sm font-bold group transition-colors">
+                        {dueDate ? (
+                          <span>
+                            {dueDate.toDate(getLocalTimeZone()).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        ) : (
+                          <span className="text-secondary/40 font-normal">Definir prazo</span>
+                        )}
+                        <CalendarIcon className="size-4 text-zinc-400 group-hover:text-zinc-600 transition-colors shrink-0" />
                       </DatePicker.Trigger>
                     </DateField.Group>
                     <DatePicker.Popover placement="bottom end" className="flex flex-col gap-3 bg-white p-4 rounded-xl shadow-xl border border-zinc-200 z-[150] min-w-[280px]">
@@ -652,30 +636,21 @@ function TaskDetailsPage() {
                   </>
                 )}
               </DatePicker>
-            </div>
 
-            {/* Estimated vs Worked hours */}
-            <div className="flex flex-col gap-2 mt-2">
-              <span className="text-secondary/60 text-xs font-bold uppercase tracking-wider">Horas: Estimado / Gasto</span>
-              <div className="flex items-center justify-between bg-white border border-zinc-200 rounded-xl px-4 py-2.5 shadow-sm">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-secondary shrink-0">
-                    <Clock className="size-4" />
-                  </div>
-                  <div className="flex items-center text-sm font-bold text-secondary w-full">
-                    <input
-                      type="number"
-                      value={estimatedHours || ''}
-                      onChange={(e) => setEstimatedHours(parseInt(e.target.value) || 0)}
-                      onBlur={handleHoursBlur}
-                      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-                      className="w-12 bg-transparent border-b border-transparent hover:border-zinc-300 focus:border-secondary outline-none text-center transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      placeholder="0"
-                    />
-                    <span className="text-secondary/50 mx-2">h  /</span>
-                    <span>{task.worked_hours || 0}h</span>
-                  </div>
-                </div>
+              {/* Estimated vs Worked hours */}
+              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Horas</span>
+              <div className="flex items-center text-sm font-bold text-secondary hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors w-full">
+                <input
+                  type="number"
+                  value={estimatedHours || ''}
+                  onChange={(e) => setEstimatedHours(parseInt(e.target.value) || 0)}
+                  onBlur={handleHoursBlur}
+                  onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
+                  className="w-10 bg-transparent border-none outline-none text-left font-bold text-sm text-secondary p-0"
+                  placeholder="0"
+                />
+                <span className="text-secondary/50 mx-1">h  /</span>
+                <span className="text-secondary">{task.worked_hours || 0}h</span>
               </div>
             </div>
           </div>
