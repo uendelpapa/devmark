@@ -26,7 +26,7 @@ export const FinanceCard = memo(function FinanceCard({
         {indicator === 'down' && <CircleChevronDown className="text-rose-500" width={16} height={16} />}
         {indicator === 'up' && <CircleChevronUp className="text-emerald-700" width={16} height={16} />}
         {indicator === 'info' && <CircleInfo className="text-secondary" width={16} height={16} />}
-        <span className="text-sm tracking-tight leading-none">
+        <span className="text-sm text-secondary tracking-tight leading-none">
           {indicator === 'info' ? (
             'Sem alterações'
           ) : (

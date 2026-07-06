@@ -32,7 +32,7 @@ export const StatCard = memo(function StatCard({
   }, [onAction, title])
 
   return (
-    <Card className={`${isPrimary ? 'bg-primary/50 border-primary' : 'bg-zinc-100 border-zinc-200'} border shadow-none rounded-[24px] p-6 text-secondary relative`}>
+    <Card className={`${isPrimary ? 'bg-primary/50 border-primary text-secondary' : 'bg-zinc-100 border-zinc-200 text-zinc-700'} border shadow-none rounded-[24px] p-6  relative`}>
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center">
           <h4 className="font-semibold">{title}</h4>
@@ -51,7 +51,7 @@ export const StatCard = memo(function StatCard({
         <div className="flex items-center gap-1">
           {indicator === 'down' && <CircleChevronDown className="text-rose-500" width={16} height={16} />}
           {indicator === 'up' && <CircleChevronUp className="text-emerald-700" width={16} height={16} />}
-          {indicator === 'info' && <CircleInfo className="text-secondary" width={16} height={16} />}
+          {indicator === 'info' && <CircleInfo className="text-zinc-700" width={16} height={16} />}
           <span className="text-sm tracking-tight leading-none">
             {indicator === 'info' ? (
               'sem alterações'

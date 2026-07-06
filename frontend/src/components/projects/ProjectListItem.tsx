@@ -22,7 +22,7 @@ export const ProjectListItem = memo(function ProjectListItem({
   }, [onAction, id])
 
   return (
-    <div className="flex items-center justify-between py-1 border-b border-secondary/5 last:border-0 w-full min-w-0">
+    <div className="flex items-center justify-between py-1 border-b border-zinc-200 last:border-0 w-full min-w-0">
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <Avatar className="size-9 shrink-0">
           <Avatar.Image
@@ -32,7 +32,7 @@ export const ProjectListItem = memo(function ProjectListItem({
           <Avatar.Fallback>{name.substring(0, 2).toUpperCase()}</Avatar.Fallback>
         </Avatar>
         <div className="min-w-0 flex-1 -space-y-1">
-          <p className="font-bold text-[14px] text-secondary truncate">{name}</p>
+          <p className="font-bold text-[14px] text-zinc-700 truncate">{name}</p>
           <p className="text-[12px] font-medium text-zinc-600 truncate">Entregar {date}</p>
         </div>
       </div>

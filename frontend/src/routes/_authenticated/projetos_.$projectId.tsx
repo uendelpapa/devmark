@@ -370,7 +370,7 @@ function ProjectDetailsPage() {
 
         <div className="flex-1 min-w-0">
           {isLoading ? (
-            <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">Carregando...</h1>
+            <h1 className="text-3xl font-medium tracking-tight text-zinc-700 leading-none">Carregando...</h1>
           ) : (
             <div className="inline-grid items-center -ml-3 max-w-full">
               <span className="col-start-1 row-start-1 invisible whitespace-pre overflow-hidden text-3xl font-bold tracking-tight px-3">
@@ -390,7 +390,7 @@ function ProjectDetailsPage() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') e.currentTarget.blur()
                 }}
-                className="col-start-1 row-start-1 w-full text-3xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-secondary/50 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
+                className="col-start-1 row-start-1 w-full text-3xl font-bold tracking-tight text-zinc-700 leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-zinc-500 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
                 placeholder="Nome do projeto"
               />
             </div>
@@ -433,7 +433,7 @@ function ProjectDetailsPage() {
 
           <div className="mt-1">
             {isLoading ? (
-              <span className="block h-12 bg-zinc-100 animate-pulse rounded-xl w-full" />
+              <span className="block h-12 bg-zinc-100 animate-pulse rounded-xl w-[600px]" />
             ) : (
               <textarea
                 value={editDescription}
@@ -444,7 +444,7 @@ function ProjectDetailsPage() {
                     handleUpdateProject({ description: trimmed })
                   }
                 }}
-                className="w-full bg-transparent border border-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-sm leading-relaxed outline-none focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none"
+                className="max-w-[80%] w-full bg-transparent border border-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-sm leading-relaxed outline-none focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none"
                 rows={Math.max(3, editDescription.split('\n').length)}
                 placeholder="Nenhuma descrição detalhada foi fornecida para este projeto. Adicione uma descrição para manter a equipe informada."
               />
@@ -633,26 +633,26 @@ function ProjectDetailsPage() {
 
         <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <span className="text-secondary font-semibold">Faturado</span>
-            <CircleDollar className="size-4 text-secondary" />
+            <span className="text-zinc-800 font-semibold">Faturado</span>
+            <CircleDollar className="size-4 text-zinc-800" />
           </div>
-          <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.amount_received)}</span>
+          <span className="text-3xl font-medium text-zinc-800">{formatCurrency(project?.amount_received)}</span>
         </div>
 
         <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <span className="text-secondary font-semibold">A Receber</span>
-            <CircleDollar className="size-4 text-secondary" />
+            <span className="text-zinc-800 font-semibold">A Receber</span>
+            <CircleDollar className="size-4 text-zinc-800" />
           </div>
-          <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.amount_pending)}</span>
+          <span className="text-3xl font-medium text-zinc-800">{formatCurrency(project?.amount_pending)}</span>
         </div>
 
         <div className="bg-zinc-100 border border-zinc-200 p-6 rounded-3xl flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <span className="text-secondary font-semibold">Despesas</span>
-            <CircleDollar className="size-4 text-secondary" />
+            <span className="text-zinc-800 font-semibold">Despesas</span>
+            <CircleDollar className="size-4 text-zinc-800" />
           </div>
-          <span className="text-3xl font-medium text-secondary">{formatCurrency(totalExpenses)}</span>
+          <span className="text-3xl font-medium text-zinc-800">{formatCurrency(totalExpenses)}</span>
         </div>
       </div>
 

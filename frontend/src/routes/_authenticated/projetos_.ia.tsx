@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Button } from '@heroui/react'
-import { ChevronLeft, Sparkles, Microphone, ArrowRight, Paperclip, Check, Xmark, Sliders } from '@gravity-ui/icons'
+import { ChevronLeft, Sparkles, Microphone, ArrowRight, Paperclip, Check, Xmark, Sliders, ChevronRight } from '@gravity-ui/icons'
 import { useState, useRef, useEffect } from 'react'
 import { api } from '../../lib/axios'
+import { Button } from '#/components/ui/Button'
 
 export const Route = createFileRoute('/_authenticated/projetos_/ia')({
   component: ProjetoIA
@@ -160,8 +160,8 @@ function ProjetoIA() {
         <div className="flex items-center gap-3">
           <Button
             size="sm"
-            className="size-8 min-w-8 bg-primary/30 hover:bg-primary/50 text-secondary border-none rounded-full p-0 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
             onPress={() => navigate({ to: '/projetos' })}
+            variant='onlyIcon'
           >
             <ChevronLeft width={16} height={16} />
           </Button>
@@ -173,7 +173,6 @@ function ProjetoIA() {
         <div className="flex items-center gap-3">
           {projectData && (
             <Button
-              className="bg-zinc-100 hover:bg-zinc-200 text-secondary font-medium rounded-full px-5 py-2 border-none text-[13px] cursor-pointer transition-colors"
               onPress={() => setShowSummary(!showSummary)}
             >
               <Sliders width={16} height={16} className="mr-2" />
@@ -181,8 +180,8 @@ function ProjetoIA() {
             </Button>
           )}
           <Button
-            className="bg-[#a9e278]/30 hover:bg-[#a9e278] text-[#334621] font-semibold rounded-full px-5 py-2 border-none text-[13px] cursor-pointer transition-colors"
             onPress={() => navigate({ to: '/projetos/novo' })}
+            size='sm'
           >
             Criar Manualmente
           </Button>
@@ -193,7 +192,7 @@ function ProjetoIA() {
       <div className={`flex-1 flex flex-col min-h-0 ${messages.length === 0 ? 'items-center justify-center pb-20' : 'justify-end'} max-w-3xl mx-auto w-full relative scrollbar-none`}>
 
         {messages.length === 0 && (
-          <div className="w-full flex flex-col items-center gap-2">
+          <div className="w-full flex flex-col items-center gap-1">
             <img className="w-24 h-24" src="/logo.svg" alt="" />
             <h2 className="text-[28px] font-medium text-secondary/40 tracking-tight">
               Crie o Projeto em segundos
@@ -299,11 +298,13 @@ function ProjetoIA() {
                 <Microphone width={16} height={16} />
               </button>
               <Button
-                className="bg-[#a9e278] hover:bg-[#97d066] text-[#334621] size-8 min-w-8 rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-sm shrink-0 p-0"
                 onPress={() => handleSend()}
                 isDisabled={isLoading || (!input.trim() && !attachedFile) || isComplete}
+                variant="primary"
+                className={"size-8"}
+                size='sm'
               >
-                <ArrowRight width={14} height={14} strokeWidth={2.5} />
+                <ChevronRight width={14} height={14} strokeWidth={2.5} />
               </Button>
             </div>
           </div>

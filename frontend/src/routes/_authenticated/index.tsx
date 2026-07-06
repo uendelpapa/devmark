@@ -218,7 +218,7 @@ function Home() {
         <div className="col-span-6 flex flex-col gap-2">
           {/* Finanças Card */}
           <Card className="p-0 bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px]">
-            <CardContent className="space-y-4 p-0 text-secondary">
+            <CardContent className="space-y-4 p-0 text-zinc-700">
               <h3 className="font-semibold px-6 pt-6">Finanças</h3>
               <div className="flex gap-2 overflow-x-auto px-6 pb-6 scrollbar-none">
                 {isLoading
@@ -237,7 +237,7 @@ function Home() {
           </Card>
 
           {/* Nível de trabalho Card */}
-          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary flex flex-col justify-between">
+          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700 flex flex-col justify-between">
             <CardContent className="p-0">
               <h3 className="font-semibold">Nível de trabalho</h3>
               {/* Custom Styled Bar Chart */}
@@ -422,7 +422,7 @@ function Home() {
 
         {/* Middle Column: Projetos List */}
         <div className="col-span-3">
-          <Card className="h-[542px] bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary">
+          <Card className="h-[542px] bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700">
             <CardContent className="p-0 flex flex-col w-full h-full">
               <div className="flex items-center justify-between mb-4 shrink-0">
                 <h3 className="font-semibold">Projetos</h3>
@@ -460,7 +460,7 @@ function Home() {
           </div>
 
           {/* Pagamentos Pendentes Card */}
-          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-secondary h-[352px]">
+          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700 h-[352px]">
             <CardContent className="p-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold leading-tight">Pagamentos pendentes</h3>

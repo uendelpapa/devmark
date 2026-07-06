@@ -240,7 +240,7 @@ function TaskDetailsPage() {
       <div className="bg-white rounded-[24px] p-6 h-[calc(100vh-100px)] flex items-center justify-center">
         <div className="flex flex-col items-center gap-2">
           <div className="animate-spin size-8 border-4 border-primary border-t-transparent rounded-full" />
-          <span className="text-secondary/60 text-sm font-medium">Carregando detalhes da tarefa...</span>
+          <span className="text-zinc-700 text-sm font-medium">Carregando detalhes da tarefa...</span>
         </div>
       </div>
     )
@@ -280,7 +280,7 @@ function TaskDetailsPage() {
 
           <div className="flex flex-col gap-1 w-full max-w-2xl">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-secondary/50 font-semibold">{taskCode}</span>
+              <span className="text-xs text-zinc-500 font-semibold">{taskCode}</span>
               <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${currentStatusInfo.bg} ${currentStatusInfo.text}`}>
                 {currentStatusInfo.label}
               </span>
@@ -299,7 +299,7 @@ function TaskDetailsPage() {
                     e.currentTarget.blur()
                   }
                 }}
-                className="col-start-1 row-start-1 w-full text-2xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-secondary/30 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
+                className="col-start-1 row-start-1 w-fit text-2xl font-bold tracking-tight text-secondary leading-normal bg-transparent border border-transparent hover:border-zinc-200 outline-none placeholder:text-secondary/30 focus:bg-zinc-50 focus:border-zinc-300 px-3 rounded-lg transition-all"
                 placeholder="Título da tarefa"
               />
             </div>
@@ -309,7 +309,7 @@ function TaskDetailsPage() {
         <div className="flex items-center gap-2">
           <Button
             variant='zinc'
-            className="size-10"
+            className="size-10 hover:bg-rose-200! hover:text-rose-800"
             onPress={() => {
               if (confirm('Tem certeza de que deseja excluir esta tarefa?')) {
                 deleteMutation.mutate()
@@ -328,7 +328,7 @@ function TaskDetailsPage() {
           {/* Description Section */}
           <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-bold text-secondary text-base">Descrição da Tarefa</h3>
+              <h3 className="font-bold text-zinc-700 text-base">Descrição da Tarefa</h3>
             </div>
 
             <textarea
@@ -342,17 +342,17 @@ function TaskDetailsPage() {
               }}
               placeholder="Sem descrição fornecida para esta tarefa. Adicione uma descrição."
               rows={Math.max(3, description.split('\n').length)}
-              className="w-full bg-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-[15px] leading-relaxed outline-none focus:bg-white focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none border border-transparent"
+              className="w-full bg-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-zinc-700 text-[15px] leading-relaxed outline-none focus:bg-white focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none border border-transparent"
             />
           </div>
 
           {/* Subtasks Section */}
-          <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-6">
+          <div className="bg-zinc-100 h-full border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-6">
             {totalSubtasks > 0 && (
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-secondary font-bold text-base">Progresso</span>
-                  <span className="text-secondary font-semibold text-sm">{completedSubtasks} de {totalSubtasks} ({subtasksPercent}%)</span>
+                  <span className="text-zinc-700 font-bold text-base">Progresso</span>
+                  <span className="text-zinc-700 font-semibold text-sm">{completedSubtasks} de {totalSubtasks} ({subtasksPercent}%)</span>
                 </div>
                 <ProgressBar value={subtasksPercent} className="w-full">
                   <ProgressBar.Track className="bg-zinc-200">
@@ -363,7 +363,7 @@ function TaskDetailsPage() {
             )}
 
             <div className="flex flex-col gap-4">
-              <h3 className="font-bold text-secondary text-base">Checklist</h3>
+              <h3 className="font-bold text-zinc-700 text-base">Checklist</h3>
               {task.subtasks && task.subtasks.length > 0 ? (
                 <div className="flex flex-col gap-2.5">
                   {task.subtasks.map((sub: any, idx: number) => (
@@ -379,7 +379,7 @@ function TaskDetailsPage() {
                           </Checkbox.Control>
                         </Checkbox.Content>
                       </Checkbox>
-                      <span className={`text-[15px] flex-1 ${sub.completed ? 'text-secondary/50 line-through' : 'text-secondary font-medium'}`}>
+                      <span className={`text-[15px] flex-1 ${sub.completed ? 'text-zinc-700 line-through' : 'text-secondary font-medium'}`}>
                         {sub.text}
                       </span>
                       <button
@@ -398,7 +398,7 @@ function TaskDetailsPage() {
               )}
 
               {/* Add New Subtask Input */}
-              <div className="flex items-center gap-3 bg-white border border-zinc-200 rounded-[16px] px-4 py-3 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50 transition-all mt-2 shadow-sm">
+              <div className="flex items-center gap-3 bg-white border border-zinc-300 rounded-[16px] px-4 py-3 focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/50 transition-all mt-2">
                 <input
                   type="text"
                   value={subtaskInput}
@@ -432,18 +432,18 @@ function TaskDetailsPage() {
         {/* Sidebar Info Panel */}
         <div className="flex flex-col gap-4">
           <div className="bg-zinc-100 border border-zinc-200 rounded-[20px] p-6 flex flex-col gap-5">
-            <h3 className="font-bold text-secondary text-base border-b border-zinc-200 pb-3">Detalhes</h3>
+            <h3 className="font-bold text-zinc-700 text-base border-b border-zinc-200 pb-3">Detalhes</h3>
 
             <div className="grid grid-cols-[100px_1fr] items-center gap-y-4 gap-x-2">
               {/* Status Option */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Status</span>
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider">Status</span>
               <Select
                 aria-label="Alterar Status"
                 selectedKey={task.status}
                 onSelectionChange={(key) => handleStatusChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-transparent border-none p-0 text-secondary text-sm font-bold w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors">
+                <Select.Trigger className="bg-white text-zinc-700 text-sm font-bold shadow-none border border-zinc-200 w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-50 rounded-xl px-2 py-2.5 transition-colors">
                   <Select.Value />
                   <Select.Indicator className="text-zinc-400 group-hover:text-zinc-600 transition-colors" />
                 </Select.Trigger>
@@ -459,14 +459,14 @@ function TaskDetailsPage() {
               </Select>
 
               {/* Priority Option */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Prioridade</span>
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider">Prioridade</span>
               <Select
                 aria-label="Alterar Prioridade"
                 selectedKey={task.priority}
                 onSelectionChange={(key) => handlePriorityChange(key as string)}
                 className="w-full"
               >
-                <Select.Trigger className="bg-transparent border-none p-0 text-secondary text-sm font-bold w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors">
+                <Select.Trigger className="bg-white text-zinc-700 text-sm font-bold shadow-none border border-zinc-200 w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-50 rounded-xl px-2 py-2.5 transition-colors">
                   <Select.Value />
                   <Select.Indicator className="text-zinc-400 group-hover:text-zinc-600 transition-colors" />
                 </Select.Trigger>
@@ -482,11 +482,11 @@ function TaskDetailsPage() {
               </Select>
 
               {/* Project */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Projeto</span>
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider">Projeto</span>
               <div className="relative w-full" ref={projectRef}>
                 <button
                   onClick={() => setIsProjectOpen(!isProjectOpen)}
-                  className="w-full text-left bg-transparent border-none p-0 hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors flex items-center justify-between cursor-pointer text-secondary group text-sm font-bold"
+                  className="bg-white text-zinc-700 text-sm font-bold shadow-none border border-zinc-200 w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-50 rounded-xl px-2 py-2.5 transition-colors"
                 >
                   <span className="truncate">
                     {projectId ? projects.find(p => p.id === projectId)?.name || 'Desconhecido' : 'Selecionar Projeto'}
@@ -511,8 +511,8 @@ function TaskDetailsPage() {
               </div>
 
               {/* Tags */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider self-start pt-2">Tags</span>
-              <div className="flex flex-wrap items-center gap-1.5 w-full min-h-[32px] px-2 py-1 hover:bg-zinc-200/50 rounded-lg transition-colors">
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider self-start pt-2">Tags</span>
+              <div className="flex flex-wrap items-center gap-1.5 w-full min-h-[32px]  hover:bg-zinc-200/50 rounded-lg transition-colors">
                 {tags.map((tag) => (
                   <span
                     key={tag}
@@ -541,10 +541,10 @@ function TaskDetailsPage() {
                     }}
                     onFocus={() => setIsTagSuggestionsOpen(true)}
                     placeholder={tags.length === 0 ? "Adicionar..." : "+"}
-                    className="bg-transparent border-none outline-none text-secondary text-sm w-full placeholder:text-zinc-400 py-0.5 font-bold"
+                    className="bg-white text-zinc-700 text-sm font-bold shadow-none border border-zinc-200 w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-50 rounded-xl px-2 py-2.5 transition-colors"
                   />
                   {isTagSuggestionsOpen && filteredSuggestions.length > 0 && (
-                    <div className="absolute left-0 top-full mt-1 w-48 bg-white border border-zinc-200 rounded-xl z-[120] py-1 h-40 overflow-y-auto shadow-xl">
+                    <div className="absolute left-0 top-full  w-48 bg-white border border-zinc-200 rounded-xl z-[120] py-1 h-40 overflow-y-auto shadow-xl">
                       <div className="px-3 py-1.5 text-[10px] text-zinc-400 uppercase font-bold tracking-wider">
                         Sugestões
                       </div>
@@ -573,7 +573,7 @@ function TaskDetailsPage() {
               </div>
 
               {/* Due date */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Prazo</span>
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider">Prazo</span>
               <DatePicker
                 className="w-full"
                 value={dueDate}
@@ -584,8 +584,8 @@ function TaskDetailsPage() {
               >
                 {({ state }) => (
                   <>
-                    <DateField.Group className="bg-transparent border-none p-0 m-0 w-full cursor-pointer">
-                      <DatePicker.Trigger className="bg-transparent border-none shadow-none hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 cursor-pointer outline-none w-full text-left flex items-center justify-between text-secondary text-sm font-bold group transition-colors">
+                    <DateField.Group className="bg-transparent border-none p-0 m-0 w-full cursor-pointer h-11 shadow-none">
+                      <DatePicker.Trigger className="bg-white text-zinc-700 text-sm font-bold shadow-none border border-zinc-200 w-full flex items-center justify-between cursor-pointer group hover:bg-zinc-50 rounded-xl px-2 py-2.5 h-full transition-colors">
                         {dueDate ? (
                           <span>
                             {dueDate.toDate(getLocalTimeZone()).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -638,8 +638,8 @@ function TaskDetailsPage() {
               </DatePicker>
 
               {/* Estimated vs Worked hours */}
-              <span className="text-secondary/50 text-xs font-bold uppercase tracking-wider">Horas</span>
-              <div className="flex items-center text-sm font-bold text-secondary hover:bg-zinc-200/50 rounded-lg px-2 py-1.5 transition-colors w-full">
+              <span className="text-zinc-600 text-xs font-bold uppercase tracking-wider">Horas</span>
+              <div className="flex items-center text-sm font-bold text-secondary rounded-lg px-2 py-1.5 transition-colors w-full">
                 <input
                   type="number"
                   value={estimatedHours || ''}
