@@ -107,12 +107,28 @@ Instruções da conversa:
         }
       }
 
-      const text = response?.text;
+      let text = response?.text;
       if (!text) {
         throw new Error('Nenhuma resposta retornada pelo modelo.');
       }
 
-      return JSON.parse(text);
+      // Limpeza de possíveis formatações markdown geradas pelo modelo
+      text = text.replace(/^```json\n?/, '').replace(/```$/, '').trim();
+
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(text);
+      } catch (e) {
+        // Fallback: tenta extrair apenas o objeto JSON no meio do texto
+        const match = text.match(/\{[\s\S]*\}/);
+        if (match) {
+          parsedResponse = JSON.parse(match[0]);
+        } else {
+          throw new Error('A IA não retornou um formato JSON válido.');
+        }
+      }
+
+      return parsedResponse;
     } catch (error: any) {
       console.error('Erro na chamada da IA:', error);
       if (error.status === 429) {

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ChevronLeft, Sparkles, Microphone, ArrowRight, Paperclip, Check, Xmark, Sliders, ChevronRight } from '@gravity-ui/icons'
+import { ChevronLeft, Sparkles, Microphone, Paperclip, Check, Xmark, Sliders, ChevronRight, ChevronDown } from '@gravity-ui/icons'
 import { useState, useRef, useEffect } from 'react'
 import { api } from '../../lib/axios'
 import { Button } from '#/components/ui/Button'
@@ -7,6 +7,14 @@ import { Button } from '#/components/ui/Button'
 export const Route = createFileRoute('/_authenticated/projetos_/ia')({
   component: ProjetoIA
 })
+
+const MODEL_LABELS: Record<string, string> = {
+  'gemini-2.5-flash': 'Gemini Flash',
+  'gemini-1.5-pro': 'Gemini Pro',
+  'gemma-4-31b-it': 'Gemma-4',
+  'openai/gpt-oss-20b:free': 'GPT-OSS 20B (OpenRouter)',
+  'nvidia/nemotron-3-ultra-550b-a55b:free': 'Nemotron 3 (OpenRouter)',
+}
 
 function ProjetoIA() {
   const navigate = useNavigate()
@@ -24,6 +32,72 @@ function ProjetoIA() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const [isListening, setIsListening] = useState(false)
+  const recognitionRef = useRef<any>(null)
+
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition()
+      recognition.continuous = true
+      recognition.interimResults = true
+      recognition.lang = 'pt-BR'
+
+      recognition.onstart = () => {
+        setIsListening(true)
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+      }
+
+      recognition.onerror = (event: any) => {
+        console.error('Erro no reconhecimento de voz:', event.error)
+        setIsListening(false)
+      }
+
+      recognition.onresult = (event: any) => {
+        let transcript = ''
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            transcript += event.results[i][0].transcript
+          }
+        }
+        if (transcript) {
+          setInput(prev => {
+            const trimmed = prev.trim()
+            return trimmed ? `${trimmed} ${transcript}` : transcript
+          })
+        }
+      }
+
+      recognitionRef.current = recognition
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
+      }
+    }
+  }, [])
+
+  const toggleSpeechRecognition = () => {
+    if (!recognitionRef.current) {
+      alert('Seu navegador não suporta reconhecimento de voz. Recomendamos o Google Chrome ou Microsoft Edge.')
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop()
+    } else {
+      try {
+        recognitionRef.current.start()
+      } catch (err) {
+        console.error('Erro ao iniciar reconhecimento:', err)
+      }
+    }
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -246,7 +320,7 @@ function ProjetoIA() {
         )}
 
         {/* Caixa de Input (Prompt) */}
-        <div className="w-full bg-[#f4f4f5] rounded-2xl flex flex-col pt-4 pb-3 px-4 shadow-sm border border-transparent focus-within:border-zinc-300 transition-colors shrink-0">
+        <div className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl flex flex-col pt-4 pb-2 px-4 shadow-lg focus-within:border-zinc-300 transition-colors shrink-0">
           {attachedFile && (
             <div className="flex items-center gap-2 mb-2 bg-white w-fit px-3 py-1.5 rounded-lg border border-zinc-200">
               <Paperclip className="w-4 h-4 text-secondary/60" />
@@ -258,7 +332,7 @@ function ProjetoIA() {
           )}
 
           <textarea
-            className="w-full bg-transparent outline-none resize-none text-[15px] text-secondary placeholder:text-secondary/50 min-h-[50px] max-h-[150px] overflow-y-auto"
+            className="w-full bg-transparent outline-none resize-none text-[15px] text-secondary placeholder:text-secondary/50 max-h-[150px] overflow-y-auto"
             placeholder={isComplete ? "Projeto pronto para ser criado!" : "Digite [ / ] para comando ou descreva seu projeto..."}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -266,7 +340,7 @@ function ProjetoIA() {
             disabled={isLoading || isComplete}
           />
 
-          <div className="flex items-center justify-between border-t border-zinc-200/80 pt-3 mt-1">
+          <div className="flex items-center justify-between border-t border-zinc-200 pt-2">
             <div className="flex items-center gap-3 text-secondary/70">
               <input
                 type="file"
@@ -284,16 +358,21 @@ function ProjetoIA() {
                 <Paperclip width={15} height={15} />
               </button>
 
-              <div className="flex items-center text-xs font-medium transition-colors text-zinc-600" title="Selecionar modelo de IA">
-                <span className="font-bold text-zinc-600">@</span>
+              <div className="relative flex w-fit items-center text-xs font-medium transition-colors text-zinc-600 pr-2" title="Selecionar modelo de IA">
+                <span className="font-bold text-zinc-600 mr-1">@</span>
+                <span className="pr-4 pointer-events-none select-none text-zinc-700">
+                  {MODEL_LABELS[selectedModel] || selectedModel}
+                </span>
+                <ChevronDown className="absolute right-1.5 w-3 h-3 text-zinc-400 pointer-events-none" />
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="w-fit bg-transparent text-zinc-600 cursor-pointer outline-none font-medium"
+                  className="absolute inset-0 w-full h-full bg-transparent opacity-0 cursor-pointer"
                   disabled={isLoading || isComplete}
                 >
                   <option value="gemini-2.5-flash">Gemini Flash</option>
                   <option value="gemini-1.5-pro">Gemini Pro</option>
+                  <option value="gemma-4-31b-it">Gemma-4</option>
                   <option value="openai/gpt-oss-20b:free">GPT-OSS 20B (OpenRouter)</option>
                   <option value="nvidia/nemotron-3-ultra-550b-a55b:free">Nemotron 3 (OpenRouter)</option>
                 </select>
@@ -301,7 +380,17 @@ function ProjetoIA() {
             </div>
 
             <div className="flex items-center gap-3">
-              <button className="text-secondary/60 hover:text-secondary transition-colors p-1 cursor-pointer" disabled={isLoading || isComplete}>
+              <button
+                className={`transition-all p-1.5 cursor-pointer rounded-full ${
+                  isListening
+                    ? 'text-red-500 bg-red-50 animate-pulse scale-110 shadow-sm border border-red-200'
+                    : 'text-secondary/60 hover:text-secondary hover:bg-zinc-100'
+                }`}
+                disabled={isLoading || isComplete}
+                onClick={toggleSpeechRecognition}
+                title={isListening ? "Parar gravação" : "Gravar áudio"}
+                type="button"
+              >
                 <Microphone width={16} height={16} />
               </button>
               <Button
