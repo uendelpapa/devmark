@@ -1,15 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Plus, LayoutHeaderCells, ChartColumnStacked, LayoutRows3, LayoutHeaderCellsLarge } from '@gravity-ui/icons'
+import { Plus, ChartColumnStacked, LayoutRows3, LayoutHeaderCellsLarge } from '@gravity-ui/icons'
 import { Select, SelectItem } from '../../components/ui/Select'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { fetchTasks, updateTaskStatus, createTask, updateTask, deleteTask, fetchProjects } from '../../services/api'
 import type { TaskCardData as Task } from '../../services/api'
-import { KanbanView } from '../../components/tasks/KanbanView'
-import { ListView } from '../../components/tasks/ListView'
-import { TableView } from '../../components/tasks/TableView'
+import { KanbanView, KanbanViewSkeleton } from '../../components/tasks/KanbanView'
+import { ListView, ListViewSkeleton } from '../../components/tasks/ListView'
+import { TableView, TableViewSkeleton } from '../../components/tasks/TableView'
 import { useTimer } from '../../components/ui/TimerTracker'
-import { CreateTaskModal, type CreateTaskPayload } from '../../components/tasks/CreateTaskModal'
+import { CreateTaskModal } from '../../components/tasks/CreateTaskModal'
+import type { CreateTaskPayload } from '../../components/tasks/CreateTaskModal'
 import { EditTaskModal } from '../../components/tasks/EditTaskModal'
 import { toast } from '../../components/ui/Toast'
 import { Button } from '#/components/ui/Button'
@@ -20,7 +21,7 @@ export const Route = createFileRoute('/_authenticated/tarefas')({
 
 type ViewMode = 'kanban' | 'list' | 'table'
 
-const viewButtons: { key: ViewMode; label: string; icon: typeof LayoutHeaderCells }[] = [
+const viewButtons: { key: ViewMode; label: string; icon: typeof ChartColumnStacked }[] = [
   { key: 'kanban', label: 'Kanban', icon: ChartColumnStacked },
   { key: 'list', label: 'List', icon: LayoutRows3 },
   { key: 'table', label: 'Table', icon: LayoutHeaderCellsLarge }
@@ -47,7 +48,7 @@ function Tarefas() {
     queryFn: fetchProjects
   })
 
-  const { data: tasks = [] } = useQuery({
+  const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['tasks', selectedProjectId],
     queryFn: () => fetchTasks(selectedProjectId === 'ALL' ? undefined : selectedProjectId)
   })
@@ -190,34 +191,46 @@ function Tarefas() {
 
       {/* Task Views */}
       {view === 'kanban' && (
-        <KanbanView
-          pendingTasks={pendingTasks}
-          inProgressTasks={inProgressTasks}
-          reviewTasks={reviewTasks}
-          completedTasks={completedTasks}
-          onTaskStatusChange={handleTaskStatusChange}
-          onTaskClick={(task) => setEditingTask(task)}
-          onAddTask={(status) => handleAddTaskClick(status)}
-        />
+        isLoading ? (
+          <KanbanViewSkeleton />
+        ) : (
+          <KanbanView
+            pendingTasks={pendingTasks}
+            inProgressTasks={inProgressTasks}
+            reviewTasks={reviewTasks}
+            completedTasks={completedTasks}
+            onTaskStatusChange={handleTaskStatusChange}
+            onTaskClick={(task) => setEditingTask(task)}
+            onAddTask={(status) => handleAddTaskClick(status)}
+          />
+        )
       )}
       {view === 'list' && (
-        <ListView
-          pendingTasks={pendingTasks}
-          inProgressTasks={inProgressTasks}
-          reviewTasks={reviewTasks}
-          completedTasks={completedTasks}
-          onTaskStatusChange={handleTaskStatusChange}
-          onTaskClick={(task) => setEditingTask(task)}
-        />
+        isLoading ? (
+          <ListViewSkeleton />
+        ) : (
+          <ListView
+            pendingTasks={pendingTasks}
+            inProgressTasks={inProgressTasks}
+            reviewTasks={reviewTasks}
+            completedTasks={completedTasks}
+            onTaskStatusChange={handleTaskStatusChange}
+            onTaskClick={(task) => setEditingTask(task)}
+          />
+        )
       )}
       {view === 'table' && (
-        <TableView
-          tasks={tasks}
-          onTaskStatusChange={handleTaskStatusChange}
-          onTaskReorder={handleTaskReorder}
-          onTaskClick={(task) => setEditingTask(task)}
-          onTaskDelete={(taskId) => mutateDelete(taskId)}
-        />
+        isLoading ? (
+          <TableViewSkeleton />
+        ) : (
+          <TableView
+            tasks={tasks}
+            onTaskStatusChange={handleTaskStatusChange}
+            onTaskReorder={handleTaskReorder}
+            onTaskClick={(task) => setEditingTask(task)}
+            onTaskDelete={(taskId) => mutateDelete(taskId)}
+          />
+        )
       )}
 
       {/* Create Task Modal */}

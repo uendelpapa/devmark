@@ -9,7 +9,7 @@ export class AiService {
     this.ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   }
 
-  async chatWithAI(messages: any[], contextClients: any[], model: string = 'gemini-2.5-flash') {
+  async chatWithAI(messages: any[], contextClients: any[], model: string = 'gemini-2.5-flash', currentDate?: string) {
     try {
       const responseSchema: Schema = {
         type: Type.OBJECT,
@@ -58,6 +58,9 @@ Seu objetivo é ajudar o usuário a criar um novo projeto extraindo os dados nec
 
 Contexto dos clientes do usuário:
 ${JSON.stringify(contextClients, null, 2)}
+
+Data de referência (hoje): ${currentDate || new Date().toISOString().split('T')[0]}
+Use esta data para calcular datas relativas especificadas pelo usuário (por exemplo, "hoje", "amanhã", "fim de semana", "próximo mês", "daqui a duas semanas", etc.). Por exemplo, se hoje é 2026-07-06, "amanhã" é 2026-07-07 e o "próximo mês" inicia em 2026-08-01.
 
 Você PRECISA preencher:
 - client_id (descubra pelo nome do cliente fornecido pelo usuário e mapêie para o ID do contexto)
@@ -119,7 +122,7 @@ Instruções da conversa:
     }
   }
 
-  async chatWithOpenRouter(messages: any[], contextClients: any[], model: string = 'openai/gpt-oss-20b:free') {
+  async chatWithOpenRouter(messages: any[], contextClients: any[], model: string = 'openai/gpt-oss-20b:free', currentDate?: string) {
     try {
       const systemInstruction = `
 Você é um assistente de IA especialista em gerenciamento de projetos para a plataforma Devmark.
@@ -127,6 +130,9 @@ Seu objetivo é ajudar o usuário a criar um novo projeto extraindo os dados nec
 
 Contexto dos clientes do usuário:
 ${JSON.stringify(contextClients, null, 2)}
+
+Data de referência (hoje): ${currentDate || new Date().toISOString().split('T')[0]}
+Use esta data para calcular datas relativas especificadas pelo usuário (por exemplo, "hoje", "amanhã", "fim de semana", "próximo mês", "daqui a duas semanas", etc.). Por exemplo, se hoje é 2026-07-06, "amanhã" é 2026-07-07 e o "próximo mês" inicia em 2026-08-01.
 
 Você PRECISA preencher:
 - client_id (descubra pelo nome do cliente fornecido pelo usuário e mapêie para o ID do contexto)

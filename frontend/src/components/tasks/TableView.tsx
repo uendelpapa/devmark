@@ -262,3 +262,100 @@ export function TableView({ tasks, onTaskStatusChange, onTaskReorder, onTaskClic
     </div>
   )
 }
+
+export function TableViewSkeleton() {
+  return (
+    <div className="flex flex-col overflow-hidden shrink-0 animate-pulse">
+      <div className="bg-backpage rounded-[20px] overflow-hidden">
+        <Table className="bg-backpage border-collapse">
+          <Table.ScrollContainer>
+            <Table.Content aria-label="Tabela de tarefas" className="w-full min-w-[900px]">
+              <Table.Header className="bg-transparent border-none">
+                <Table.Column className="pr-0 bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2 border-none w-16">
+                  <div className="size-5 bg-secondary/10 rounded" />
+                </Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2">ID</Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2">Projeto</Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2">Cliente</Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2">Tags</Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-left px-4 py-2">Data de entrega</Table.Column>
+                <Table.Column className="bg-transparent text-zinc-400/50 font-medium text-xs text-right px-4 py-2">Ações</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {Array.from({ length: 6 }).map((_, index) => {
+                  const isFirst = index === 0
+                  const isLast = index === 5
+                  const roundedClass = `${isFirst ? 'rounded-t-lg' : ''} ${isLast ? 'rounded-b-lg' : ''}`.trim()
+                  return (
+                    <Table.Row key={index} className={roundedClass}>
+                      <Table.Cell className="pr-0 px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1">
+                            <div className="w-4 h-4 bg-secondary/10 rounded" />
+                          </div>
+                          <div className="size-5 bg-secondary/10 rounded" />
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="h-4 bg-secondary/10 rounded w-12" />
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="h-4 bg-secondary/10 rounded w-40" />
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="size-8 rounded-full bg-secondary/10 object-cover" />
+                          <div className="flex flex-col gap-1">
+                            <div className="h-3 bg-secondary/10 rounded w-20" />
+                            <div className="h-2.5 bg-secondary/10 rounded w-28" />
+                          </div>
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="h-6 bg-secondary/10 rounded-full w-16" />
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="h-4 bg-secondary/10 rounded w-20" />
+                      </Table.Cell>
+                      <Table.Cell className="px-4 py-3">
+                        <div className="flex items-center gap-2 justify-end">
+                          <div className="size-8 rounded-full bg-secondary/10" />
+                          <div className="size-8 rounded-full bg-secondary/10" />
+                          <div className="size-8 rounded-full bg-secondary/10" />
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  )
+                })}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
+          <Table.Footer>
+            <div className="flex items-center justify-between px-4 bg-backpage border-t border-zinc-200/50 w-full py-2">
+              <div className="h-4 bg-secondary/10 rounded w-32" />
+              <div className="flex items-center gap-1">
+                <button
+                  disabled
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-secondary/30 border-none bg-transparent cursor-not-allowed"
+                >
+                  <ChevronLeft className="size-3" />
+                  Prev
+                </button>
+                <div className="size-8 rounded-lg text-xs font-medium bg-secondary/10 animate-pulse" />
+                <div className="size-8 rounded-lg text-xs font-medium bg-transparent" />
+                <button
+                  disabled
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-secondary/30 border-none bg-transparent cursor-not-allowed"
+                >
+                  Next
+                  <ChevronRight className="size-3" />
+                </button>
+              </div>
+            </div>
+          </Table.Footer>
+        </Table>
+      </div>
+    </div>
+  )
+}
+

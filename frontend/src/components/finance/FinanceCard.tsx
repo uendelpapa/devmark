@@ -24,14 +24,14 @@ export const FinanceCard = memo(function FinanceCard({
       <span className="text-3xl font-bold text-secondary">{value}</span>
       <div className="flex items-center gap-1">
         {indicator === 'down' && <CircleChevronDown className="text-rose-500" width={16} height={16} />}
-        {indicator === 'up' && <CircleChevronUp className="text-emerald-700" width={16} height={16} />}
+        {indicator === 'up' && <CircleChevronUp className="text-[#259E00]" width={16} height={16} />}
         {indicator === 'info' && <CircleInfo className="text-secondary" width={16} height={16} />}
         <span className="text-sm text-secondary tracking-tight leading-none">
           {indicator === 'info' ? (
             'Sem alterações'
           ) : (
             <>
-              <span className={`font-semibold ${indicator === 'down' ? 'text-rose-500' : 'text-emerald-700'}`}>
+              <span className={`font-semibold ${indicator === 'down' ? 'text-rose-500' : 'text-[#259E00]'}`}>
                 {diffValue}{" "}
               </span>
               referente ao mês anterior

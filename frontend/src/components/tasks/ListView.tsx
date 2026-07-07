@@ -120,3 +120,59 @@ export function ListView({ pendingTasks, inProgressTasks, reviewTasks, completed
     </div>
   )
 }
+
+export function ListViewSkeleton() {
+  const sectionPlaceholders = [
+    { title: 'To do', cardCount: 2 },
+    { title: 'Fazendo', cardCount: 1 },
+    { title: 'Revisão', cardCount: 2 },
+    { title: 'Feito', cardCount: 3 }
+  ]
+
+  return (
+    <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pr-2 space-y-6 animate-pulse">
+      {sectionPlaceholders.map((sec, idx) => (
+        <div key={idx} className="flex flex-col rounded-[24px] overflow-hidden bg-zinc-200/50 p-2 gap-2">
+          {/* Header Skeleton */}
+          <div className="bg-backpage p-2 flex items-center justify-between rounded-2xl">
+            <div className="flex items-center gap-2">
+              <div className="size-6 rounded-full bg-secondary/10 flex items-center justify-center text-secondary/30">
+                <ChevronDown className="size-4" />
+              </div>
+              <span className="font-bold text-secondary/40 text-[16px]">{sec.title}</span>
+              <div className="bg-white/50 h-5 w-16 rounded-full" />
+            </div>
+            <div className="size-8 bg-secondary/10 rounded-full flex items-center justify-center text-secondary/30">
+              <Plus className="size-4" />
+            </div>
+          </div>
+
+          {/* List Items Skeleton */}
+          <div className="flex flex-col gap-0.5">
+            {Array.from({ length: sec.cardCount }).map((_, itemIdx) => {
+              const total = sec.cardCount
+              const roundedClass = total === 1 && itemIdx === 0 ? "rounded-2xl" : itemIdx === 0 ? 'rounded-t-2xl' : itemIdx === total - 1 ? 'rounded-b-2xl' : ''
+              return (
+                <div key={itemIdx} className={`flex items-center justify-between p-5 bg-white ${roundedClass}`}>
+                  <div className="flex items-center gap-4">
+                    <div className="size-5 rounded bg-secondary/10" />
+                    <div className="h-5 bg-secondary/10 rounded w-48" />
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1.5 text-secondary/30">
+                      <Calendar className="size-4" />
+                      <div className="h-4 bg-secondary/10 rounded w-28" />
+                    </div>
+                    <div className="h-6 bg-secondary/10 rounded-full w-16" />
+                    <div className="size-5 bg-secondary/10 rounded" />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+

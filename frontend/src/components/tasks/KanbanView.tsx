@@ -164,3 +164,61 @@ export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, complet
     </DndContext>
   )
 }
+
+export function KanbanViewSkeleton() {
+  const columnPlaceholders = [
+    { title: 'To do', headerBg: 'bg-zinc-300/20', flagColor: 'text-zinc-400/30', cardCount: 3 },
+    { title: 'Fazendo', headerBg: 'bg-amber-200/20', flagColor: 'text-amber-500/30', cardCount: 1 },
+    { title: 'Revisão', headerBg: 'bg-blue-200/20', flagColor: 'text-blue-400/30', cardCount: 2 },
+    { title: 'Feito', headerBg: 'bg-secondary/20', flagColor: 'text-primary/30', cardCount: 4 }
+  ]
+
+  return (
+    <div className="grid grid-cols-4 gap-6 flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pb-4 animate-pulse">
+      {columnPlaceholders.map((col, idx) => (
+        <div
+          key={idx}
+          className="flex flex-col w-full h-fit shrink-0 rounded-[24px] p-2 gap-1 bg-zinc-100/50 border border-zinc-200/50"
+        >
+          {/* Column Header Skeleton */}
+          <div className="bg-backpage border border-secondary/5 w-full rounded-[16px] p-2 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <div className={`${col.headerBg} size-6 flex items-center justify-center rounded-3xl`}>
+                <Flag className={`${col.flagColor} size-4`} />
+              </div>
+              <span className="font-bold text-secondary/40 text-lg">{col.title}</span>
+              <div className="bg-secondary/5 h-5 w-16 rounded-full" />
+            </div>
+            <div className="size-8 bg-secondary/5 rounded-full" />
+          </div>
+
+          {/* Cards Skeleton */}
+          <div className="flex flex-col gap-3 flex-1 overflow-visible">
+            {Array.from({ length: col.cardCount }).map((_, cIdx) => (
+              <div
+                key={cIdx}
+                className="w-full h-[164px] justify-between bg-white rounded-[16px] p-4 border border-zinc-100 flex flex-col shadow-sm"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex flex-col gap-2 min-w-0 flex-1">
+                    <div className="h-5 bg-secondary/10 rounded w-3/4" />
+                    <div className="h-3.5 bg-secondary/10 rounded w-5/6" />
+                  </div>
+                  <div className="size-5 bg-secondary/10 rounded ml-2" />
+                </div>
+                <div>
+                  <div className="h-5 bg-secondary/10 rounded-full w-20" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="size-4 bg-secondary/10 rounded-full" />
+                  <div className="h-3.5 bg-secondary/10 rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+

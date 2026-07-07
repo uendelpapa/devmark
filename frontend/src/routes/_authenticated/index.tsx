@@ -422,7 +422,7 @@ function Home() {
 
         {/* Middle Column: Projetos List */}
         <div className="col-span-3">
-          <Card className="h-[542px] bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700">
+          <Card className="h-[540px] bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700">
             <CardContent className="p-0 flex flex-col w-full h-full">
               <div className="flex items-center justify-between mb-4 shrink-0">
                 <h3 className="font-semibold">Projetos</h3>
@@ -460,7 +460,7 @@ function Home() {
           </div>
 
           {/* Pagamentos Pendentes Card */}
-          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700 h-[352px]">
+          <Card className="bg-zinc-100 border border-zinc-200 shadow-none rounded-[24px] p-6 text-zinc-700 h-[345px]">
             <CardContent className="p-0">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold leading-tight">Pagamentos pendentes</h3>

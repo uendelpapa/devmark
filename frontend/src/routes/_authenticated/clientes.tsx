@@ -55,7 +55,7 @@ function Clientes() {
   })
 
   return (
-    <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-4">
+    <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-8">
       {/* Top Header & Actions */}
       <div className="flex justify-between items-center shrink-0">
         <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
@@ -114,7 +114,7 @@ function Clientes() {
           {searchQuery ? 'Nenhum cliente encontrado para essa busca.' : 'Nenhum cliente encontrado.'}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 overflow-y-auto scrollbar-none pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto scrollbar-none pb-4">
           {filteredClients.map((client) => (
             <ClientCard
               key={client.id}

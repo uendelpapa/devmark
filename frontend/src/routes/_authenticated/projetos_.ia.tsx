@@ -95,9 +95,16 @@ function ProjetoIA() {
     });
 
     try {
+      const today = new Date()
+      const year = today.getFullYear()
+      const month = String(today.getMonth() + 1).padStart(2, '0')
+      const day = String(today.getDate()).padStart(2, '0')
+      const localDate = `${year}-${month}-${day}`
+
       const response = await api.post('/ai/chat', {
         messages: messagesForApi,
-        model: selectedModel
+        model: selectedModel,
+        currentDate: localDate
       })
       const aiData = response.data
 
@@ -154,7 +161,7 @@ function ProjetoIA() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 overflow-hidden min-w-0 flex-1 scrollbar-none flex flex-col relative h-full max-h-[calc(100vh-100px)]">
+    <div className="bg-white rounded-3xl p-8 overflow-hidden min-w-0 flex-1 scrollbar-none flex flex-col relative h-full max-h-[calc(100vh-100px)]">
       {/* Cabeçalho da página */}
       <div className="flex items-center justify-between mb-8 w-full shrink-0 z-10">
         <div className="flex items-center gap-3">
@@ -181,7 +188,7 @@ function ProjetoIA() {
           )}
           <Button
             onPress={() => navigate({ to: '/projetos/novo' })}
-            size='sm'
+            size='lg'
           >
             Criar Manualmente
           </Button>

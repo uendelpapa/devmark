@@ -30,8 +30,8 @@ export const PaymentListItem = memo(function PaymentListItem({
           <Avatar.Fallback>{name.substring(0, 2).toUpperCase()}</Avatar.Fallback>
         </Avatar>
         <div className="min-w-0">
-          <p className="font-bold text-[13px] leading-none text-secondary truncate">{name}</p>
-          <p className="text-[11px] opacity-70 font-semibold leading-none mt-1 text-secondary text-ellipsis overflow-hidden whitespace-nowrap max-w-[110px]">
+          <p className="font-bold text-[13px] leading-none text-zinc-700 truncate">{name}</p>
+          <p className="text-[11px] opacity-70 font-semibold leading-none mt-1 text-zinc-700 text-ellipsis overflow-hidden whitespace-nowrap max-w-[110px]">
             {email}
           </p>
         </div>

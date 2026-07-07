@@ -17,7 +17,7 @@ export class AiController {
 
   @Post('chat')
   @ApiOperation({ summary: 'Chat com a IA para criar projeto' })
-  async chat(@Body() body: { messages: any[], model?: string }, @Req() req: Request) {
+  async chat(@Body() body: { messages: any[], model?: string, currentDate?: string }, @Req() req: Request) {
     const userId = (req as any).user.id;
     // Buscar clientes do usuário para dar contexto
     const clientsResult = await this.clientsService.findAll({ limit: 100 }, userId);
@@ -27,10 +27,10 @@ export class AiController {
     
     // Modelos do OpenRouter sempre tem '/' no nome (ex: nvidia/nemotron...)
     if (model.includes('/')) {
-      return this.aiService.chatWithOpenRouter(body.messages, contextClients, model);
+      return this.aiService.chatWithOpenRouter(body.messages, contextClients, model, body.currentDate);
     } else {
       // Modelos nativos do Gemini
-      return this.aiService.chatWithAI(body.messages, contextClients, model);
+      return this.aiService.chatWithAI(body.messages, contextClients, model, body.currentDate);
     }
   }
 }
