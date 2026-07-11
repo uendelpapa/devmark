@@ -5,6 +5,7 @@ import { fetchClient, updateClient } from '../../services/api'
 import { useState } from 'react'
 import { EditClientModal } from '../../components/clients/EditClientModal'
 import { Button } from '#/components/ui/Button'
+import { IconPlus } from '@heroui/react'
 
 export const Route = createFileRoute('/_authenticated/clientes_/$clientId')({
   component: ClientDetailsPage
@@ -226,10 +227,19 @@ function ClientDetailsPage() {
         <h3 className="text-xl font-bold text-secondary tracking-tight">Projetos do Cliente</h3>
 
         {client.projects.length === 0 ? (
-          <div className="bg-zinc-50 border border-zinc-200 border-dashed rounded-[24px] p-12 flex flex-col items-center justify-center text-center">
-            <Layers className="size-10 text-zinc-300 mb-4" />
-            <span className="text-zinc-600 font-semibold text-lg">Nenhum projeto encontrado</span>
-            <span className="text-zinc-400 text-sm mt-1 max-w-sm">Este cliente ainda não tem projetos associados. Inicie um novo projeto para começar.</span>
+          <div className="bg-zinc-50 border border-zinc-200 border-dashed rounded-[24px] p-12 flex flex-col items-center justify-center text-center gap-4">
+            <Layers className="size-10 text-zinc-300" />
+            <div className='flex flex-col items-center justify-center gap-2'>
+              <span className="text-zinc-600 font-semibold text-lg">Nenhum projeto encontrado</span>
+              <span className="text-zinc-400 text-sm mt-1 max-w-sm">Este cliente ainda não tem projetos associados. Inicie um novo projeto para começar.</span>
+            </div>
+            <Button
+              variant='zinc'
+              onPress={() => navigate({ to: '/projetos/novo', search: { clientId } })}
+            >
+              <IconPlus />
+              Criar Novo Projeto
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Select, SelectItem } from '../../components/ui/Select'
 import { Input } from '../../components/ui/Input'
-import { fetchClients, updateClient } from '../../services/api'
+import { fetchClients, updateClient, deleteClient } from '../../services/api'
 import { ClientCard } from '../../components/clients/ClientCard'
 import { EditClientModal } from '../../components/clients/EditClientModal'
 import { Button } from '#/components/ui/Button'
@@ -27,6 +27,16 @@ function Clientes() {
 
   const { mutate: handleUpdateClient, isPending: isUpdatingClient, error: updateError } = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => updateClient(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      setIsEditModalOpen(false)
+      setEditingClient(null)
+    }
+  })
+
+  const { mutate: handleDeleteClient, isPending: isDeletingClient, error: deleteError } = useMutation({
+    mutationFn: (id: string) => deleteClient(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
@@ -135,9 +145,10 @@ function Clientes() {
           setEditingClient(null)
         }}
         onSubmit={(id, data) => handleUpdateClient({ id, data })}
+        onDelete={(id) => handleDeleteClient(id)}
         client={editingClient}
-        isPending={isUpdatingClient}
-        error={getErrorMessage(updateError)}
+        isPending={isUpdatingClient || isDeletingClient}
+        error={getErrorMessage(updateError || deleteError)}
       />
     </div>
   )

@@ -14,9 +14,9 @@ export async function startTimeEntry(data: { project_id: string; task_id: string
   return response.data
 }
 
-export async function stopTimeEntry(id: string, description?: string): Promise<TimeEntry> {
+export async function stopTimeEntry(id: string, description?: string, endTime?: string): Promise<TimeEntry> {
   const response = await api.patch(`/time-entries/${id}`, {
-    end_time: new Date().toISOString(),
+    end_time: endTime || new Date().toISOString(),
     description
   })
   return response.data

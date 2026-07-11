@@ -39,9 +39,20 @@ export async function registerUser(data: RegisterData): Promise<AuthResponse> {
   return response.data
 }
 
+let activeRefreshPromise: Promise<AuthResponse> | null = null
+
 export async function refreshToken(): Promise<AuthResponse> {
-  const response = await api.post('/auth/refresh')
-  return response.data
+  if (activeRefreshPromise) {
+    return activeRefreshPromise
+  }
+
+  activeRefreshPromise = api.post('/auth/refresh').then((res) => res.data)
+
+  try {
+    return await activeRefreshPromise
+  } finally {
+    activeRefreshPromise = null
+  }
 }
 
 export async function logoutUser(): Promise<void> {

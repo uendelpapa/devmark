@@ -41,7 +41,33 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   const [activeTimeEntryId, setActiveTimeEntryId] = useState<string | null>(null)
   const [activeStartTime, setActiveStartTime] = useState<string | null>(null)
 
+  // Track the total paused time in seconds for this tracking session
+  const [totalPausedSeconds, setTotalPausedSeconds] = useState(0)
+  // Track the timestamp (Date.now()) of when the pause was started
+  const [pausedAt, setPausedAt] = useState<number | null>(null)
+  
+  // Guard initial load to prevent localStorage clearing race conditions on mount
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const queryClient = useQueryClient()
+
+  // Save/sync timer state to localStorage whenever it changes, but only after initial load has finished
+  useEffect(() => {
+    if (!isLoaded) return
+
+    if (activeTimeEntryId) {
+      localStorage.setItem('timer_state', JSON.stringify({
+        activeTaskId,
+        activeTimeEntryId,
+        activeStartTime,
+        totalPausedSeconds,
+        pausedAt,
+        isRunning
+      }))
+    } else {
+      localStorage.removeItem('timer_state')
+    }
+  }, [activeTaskId, activeTimeEntryId, activeStartTime, totalPausedSeconds, pausedAt, isRunning, isLoaded])
 
   // On mount, check if there's a running timer in the database
   useEffect(() => {
@@ -49,60 +75,116 @@ export function TimerProvider({ children }: { children: ReactNode }) {
       .then((entries) => {
         const running = entries.find((e) => !e.end_time)
         if (running) {
+          // Found running entry in the database. Let's see if we have matching local storage state
+          const savedStateStr = localStorage.getItem('timer_state')
+          let savedState = null
+          if (savedStateStr) {
+            try {
+              savedState = JSON.parse(savedStateStr)
+            } catch {}
+          }
+
           setActiveTaskId(running.task_id)
           setActiveTimeEntryId(running.id)
           setActiveStartTime(running.start_time)
-          setIsRunning(true)
 
-          const start = new Date(running.start_time).getTime()
-          const now = Date.now()
-          const diffSeconds = Math.max(Math.floor((now - start) / 1000), 0)
+          if (savedState && savedState.activeTimeEntryId === running.id) {
+            // Restore from saved local storage state
+            const restoredIsRunning = savedState.isRunning
+            const restoredTotalPaused = savedState.totalPausedSeconds || 0
+            const restoredPausedAt = savedState.pausedAt || null
 
-          setHours(Math.floor(diffSeconds / 3600))
-          setMinutes(Math.floor((diffSeconds % 3600) / 60))
-          setSeconds(diffSeconds % 60)
+            setIsRunning(restoredIsRunning)
+            setTotalPausedSeconds(restoredTotalPaused)
+            setPausedAt(restoredPausedAt)
+
+            const start = new Date(running.start_time).getTime()
+            let elapsed = 0
+
+            if (restoredIsRunning) {
+              const now = Date.now()
+              elapsed = Math.max(Math.floor((now - start) / 1000) - restoredTotalPaused, 0)
+            } else {
+              const pauseTime = restoredPausedAt || Date.now()
+              elapsed = Math.max(Math.floor((pauseTime - start) / 1000) - restoredTotalPaused, 0)
+            }
+
+            setHours(Math.floor(elapsed / 3600))
+            setMinutes(Math.floor((elapsed % 3600) / 60))
+            setSeconds(elapsed % 60)
+          } else {
+            // No local storage or mismatch: assume running normally
+            setIsRunning(true)
+            setTotalPausedSeconds(0)
+            setPausedAt(null)
+
+            const start = new Date(running.start_time).getTime()
+            const now = Date.now()
+            const diffSeconds = Math.max(Math.floor((now - start) / 1000), 0)
+
+            setHours(Math.floor(diffSeconds / 3600))
+            setMinutes(Math.floor((diffSeconds % 3600) / 60))
+            setSeconds(diffSeconds % 60)
+          }
+        } else {
+          // No active database entry, clean up local storage
+          localStorage.removeItem('timer_state')
+          setIsRunning(false)
+          setActiveTaskId(null)
+          setActiveTimeEntryId(null)
+          setActiveStartTime(null)
+          setTotalPausedSeconds(0)
+          setPausedAt(null)
+          setHours(0)
+          setMinutes(0)
+          setSeconds(0)
         }
       })
       .catch((err) => console.error('Error fetching running timer:', err))
+      .finally(() => setIsLoaded(true))
   }, [])
 
-  // Keep local clock synced with actual start time to prevent drift or suspend issues
+  // Keep local clock synced — accounts for server start_time and accumulated pause
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
     if (isRunning && activeStartTime) {
       interval = setInterval(() => {
         const start = new Date(activeStartTime).getTime()
         const now = Date.now()
-        const diffSeconds = Math.max(Math.floor((now - start) / 1000), 0)
+        // Subtract totalPausedSeconds from absolute elapsed time to get actual active work time
+        const totalElapsed = Math.max(
+          Math.floor((now - start) / 1000) - totalPausedSeconds,
+          0
+        )
 
-        setHours(Math.floor(diffSeconds / 3600))
-        setMinutes(Math.floor((diffSeconds % 3600) / 60))
-        setSeconds(diffSeconds % 60)
+        setHours(Math.floor(totalElapsed / 3600))
+        setMinutes(Math.floor((totalElapsed % 3600) / 60))
+        setSeconds(totalElapsed % 60)
       }, 1000)
     }
     return () => {
       if (interval) clearInterval(interval)
     }
-  }, [isRunning, activeStartTime])
+  }, [isRunning, activeStartTime, totalPausedSeconds])
 
   const toggleTimer = async (explicitTaskId?: string) => {
     if (isRunning) {
-      // Stop/pause timer
-      if (activeTimeEntryId) {
-        try {
-          await stopTimeEntry(activeTimeEntryId)
-          queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-          queryClient.invalidateQueries({ queryKey: ['tasks'] })
-          queryClient.invalidateQueries({ queryKey: ['projectDetails'] })
-        } catch (err) {
-          console.error('Error stopping timer:', err)
-        }
-      }
+      // ─── PAUSE ───
       setIsRunning(false)
-      setActiveTimeEntryId(null)
-      setActiveStartTime(null)
+      setPausedAt(Date.now())
     } else {
-      // Start timer
+      // ─── RESUME / START ───
+      if (activeTimeEntryId && activeStartTime) {
+        // Resuming a paused timer
+        const currentPausedAt = pausedAt || Date.now()
+        const secondsInThisPause = Math.max(Math.floor((Date.now() - currentPausedAt) / 1000), 0)
+        setTotalPausedSeconds((prev) => prev + secondsInThisPause)
+        setPausedAt(null)
+        setIsRunning(true)
+        return
+      }
+
+      // Starting a brand new timer
       const idToUse = explicitTaskId || activeTaskId
       if (!idToUse) {
         toast.warning('Selecione uma tarefa antes de iniciar o timer.')
@@ -128,6 +210,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
         setActiveTimeEntryId(entry.id)
         setActiveStartTime(entry.start_time)
+        setTotalPausedSeconds(0)
+        setPausedAt(null)
         setIsRunning(true)
       } catch (err) {
         console.error('Error starting timer:', err)
@@ -148,24 +232,45 @@ export function TimerProvider({ children }: { children: ReactNode }) {
   }
 
   const resetTimer = async () => {
-    if (activeTimeEntryId) {
+    // ─── STOP: finalize the time entry on the server ───
+    if (activeTimeEntryId && activeStartTime) {
       try {
-        await stopTimeEntry(activeTimeEntryId)
+        // Compute total active elapsed seconds
+        const currentPausedAt = pausedAt || Date.now()
+        const currentPausedSeconds = isRunning ? 0 : Math.max(Math.floor((Date.now() - currentPausedAt) / 1000), 0)
+        const finalTotalPaused = totalPausedSeconds + currentPausedSeconds
+
+        const start = new Date(activeStartTime).getTime()
+        const now = Date.now()
+        const actualElapsedSeconds = Math.max(
+          Math.floor((now - start) / 1000) - finalTotalPaused,
+          0
+        )
+
+        // Calculate a virtual endTime based on originalStartTime + actual elapsed time
+        const virtualEndTime = new Date(start + actualElapsedSeconds * 1000).toISOString()
+
+        // Call backend with the virtual end time so it saves the correct duration
+        await stopTimeEntry(activeTimeEntryId, undefined, virtualEndTime)
+
         queryClient.invalidateQueries({ queryKey: ['dashboard'] })
         queryClient.invalidateQueries({ queryKey: ['tasks'] })
         queryClient.invalidateQueries({ queryKey: ['projectDetails'] })
       } catch (err) {
-        console.error('Error resetting timer:', err)
+        console.error('Error stopping timer:', err)
       }
     }
+
+    localStorage.removeItem('timer_state')
     setIsRunning(false)
     setActiveTimeEntryId(null)
     setActiveStartTime(null)
+    setTotalPausedSeconds(0)
+    setPausedAt(null)
     setHours(0)
     setMinutes(0)
     setSeconds(0)
   }
-
 
   return (
     <TimerContext.Provider value={{ hours, minutes, seconds, isRunning, activeTaskId, setActiveTaskId, toggleTimer, startTimer, pauseTimer, resetTimer }}>

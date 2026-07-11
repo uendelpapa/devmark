@@ -174,7 +174,7 @@ export interface ClientDetails extends Client {
 
 export interface TaskCardData extends Task {
   taskId: string
-  dueDate: string
+  dueDate: string | null
   description: string
   client: { name: string; email: string; avatar?: string }
 }

@@ -101,10 +101,10 @@ function SortableRow({ task, isFirst, isLast, onStatusChange, onClick, onDelete 
       </Table.Cell>
       <Table.Cell className="px-4 py-3">
         <div className="flex items-center gap-2">
-          <UrgencyChip dueDate={task.dueDate} />
+          {task.dueDate ? <UrgencyChip dueDate={task.dueDate} /> : <span className="text-[12px] text-zinc-400">—</span>}
         </div>
       </Table.Cell>
-      <Table.Cell className="text-[13px] font-medium text-secondary px-4 py-3">{task.dueDate}</Table.Cell>
+      <Table.Cell className="text-[13px] font-medium text-secondary px-4 py-3">{task.dueDate || '—'}</Table.Cell>
       <Table.Cell className="px-4 py-3">
         <div className="flex items-center gap-2 justify-end">
           <Link to="/tarefas/$taskId" params={{ taskId: task.id }} className="size-8 rounded-full bg-zinc-200 flex items-center justify-center text-secondary hover:bg-zinc-300 transition-colors border-none cursor-pointer">

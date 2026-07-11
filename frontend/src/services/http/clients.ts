@@ -26,3 +26,7 @@ export async function updateClient(
   const response = await api.patch(`/clients/${id}`, clientData)
   return response.data
 }
+
+export async function deleteClient(id: string): Promise<void> {
+  await api.delete(`/clients/${id}`)
+}

@@ -40,12 +40,16 @@ function TaskItem({ task, index, total, onStatusChange, onClick }: TaskItemProps
         <span className={`font-bold text-[16px] text-secondary ${isDone ? 'line-through' : ''}`}>{task.title}</span>
       </div>
       <div className="flex items-center gap-5">
-        <div className="flex items-center gap-1.5 text-secondary/60">
-          <Calendar className="size-4" />
-          <span className="text-[13px] font-semibold">Due Date {task.dueDate}</span>
-        </div>
+        {task.dueDate && (
+          <>
+            <div className="flex items-center gap-1.5 text-secondary/60">
+              <Calendar className="size-4" />
+              <span className="text-[13px] font-semibold">Due Date {task.dueDate}</span>
+            </div>
 
-        <UrgencyChip dueDate={task.dueDate} />
+            <UrgencyChip dueDate={task.dueDate} />
+          </>
+        )}
 
         <button className="text-secondary/30 hover:text-secondary transition-colors ml-2">
           <Ellipsis className="size-4" />

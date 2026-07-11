@@ -13,6 +13,7 @@ import { TagsModule } from './tags/tags.module';
 import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AiModule } from './ai/ai.module';
+import { LogsModule } from './logs/logs.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AiModule } from './ai/ai.module';
     TimeEntriesModule,
     DashboardModule,
     AiModule,
+    LogsModule,
   ],
 })
 export class AppModule {}

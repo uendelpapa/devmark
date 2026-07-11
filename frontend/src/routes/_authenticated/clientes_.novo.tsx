@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { createClient } from '../../services/api'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/_authenticated/clientes_/novo')({
   component: NovoCliente
@@ -30,6 +31,7 @@ const errorClass = 'text-[12px] text-red-500 mt-1 block'
 
 function NovoCliente() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
 
@@ -43,6 +45,15 @@ function NovoCliente() {
       phone: '',
       preferred_communication: 'WHATSAPP',
       preferred_payment_method: 'PIX'
+    }
+  })
+
+  const { mutate: mutateCreate, isPending } = useMutation({
+    mutationFn: (data: ClientFormValues) => createClient({ ...data, status: 'ACTIVE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      navigate({ to: '/clientes' })
     }
   })
 
@@ -70,16 +81,8 @@ function NovoCliente() {
     }
   }
 
-  const onSubmit = async (data: ClientFormValues) => {
-    try {
-      await createClient({
-        ...data,
-        status: 'ACTIVE'
-      })
-      navigate({ to: '/clientes' })
-    } catch (err) {
-      console.error('Failed to create client:', err)
-    }
+  const onSubmit = (data: ClientFormValues) => {
+    mutateCreate(data)
   }
 
   // Step titles
@@ -111,8 +114,8 @@ function NovoCliente() {
         {stepTitles[currentStep]}
       </h2>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1">
+      {/* Form — prevent native submit to avoid premature creation */}
+      <form onSubmit={(e) => e.preventDefault()} className="flex flex-col flex-1">
         <div className="flex-1 max-w-3xl">
           {/* Step 1: Personal Info */}
           {currentStep === 1 && (
@@ -356,12 +359,14 @@ function NovoCliente() {
             </Button>
           ) : (
             <Button
-              type="submit"
+              type="button"
               className="bg-secondary hover:bg-primary hover:text-secondary text-white font-medium rounded-full px-6 py-2 border-none text-[13px] cursor-pointer transition-all duration-200 flex items-center gap-1.5"
               size="lg"
+              isDisabled={isPending}
+              onPress={() => handleSubmit(onSubmit)()}
             >
               <Plus />
-              Criar Cliente
+              {isPending ? 'Criando...' : 'Criar Cliente'}
             </Button>
           )}
         </div>

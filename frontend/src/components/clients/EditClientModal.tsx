@@ -7,6 +7,7 @@ interface EditClientModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (id: string, data: any) => void
+  onDelete?: (id: string) => void
   client: Client | null
   isPending?: boolean
   error?: string | null
@@ -38,6 +39,7 @@ export function EditClientModal({
   isOpen,
   onClose,
   onSubmit,
+  onDelete,
   client,
   isPending = false,
   error = null,
@@ -229,7 +231,7 @@ export function EditClientModal({
         )}
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-zinc-200 shrink-0">
+        <div className="px-5 py-4 border-t border-zinc-200 shrink-0 flex flex-col gap-2">
           <button
             onClick={handleSubmit}
             disabled={isPending || !name || !email}
@@ -242,6 +244,20 @@ export function EditClientModal({
             <Check className="size-4" />
             Salvar Alterações
           </button>
+
+          {onDelete && (
+            <button
+              onClick={() => {
+                if (confirm('Tem certeza que deseja excluir este cliente?')) {
+                  onDelete(client.id)
+                }
+              }}
+              disabled={isPending}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm bg-red-50 text-red-600 hover:bg-red-100 transition-all cursor-pointer border-none active:scale-[0.98]"
+            >
+              Excluir Cliente
+            </button>
+          )}
         </div>
       </div>
 

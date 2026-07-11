@@ -13,7 +13,7 @@ export async function fetchTasks(projectId?: string | any): Promise<TaskCardData
     title: t.title,
     description: t.description || '',
     status: t.status,
-    dueDate: t.due_date ? formatDate(t.due_date) : formatDate(t.created_at),
+    dueDate: t.due_date ? formatDate(t.due_date) : null,
     client: { 
       name: t.project?.client?.name || 'Projeto Oculto', 
       email: t.project?.client?.email || '' 

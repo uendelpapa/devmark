@@ -108,8 +108,15 @@ export class AuthController {
     (res as any).clearCookie('refresh_token', {
       httpOnly: true,
       secure: this.isProduction,
-      sameSite: 'strict',
+      sameSite: this.isProduction ? 'none' : 'lax',
       path: '/api/auth',
+    });
+
+    (res as any).clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: this.isProduction ? 'none' : 'lax',
+      path: '/',
     });
 
     return { message: 'Logout realizado com sucesso' };
@@ -136,10 +143,17 @@ export class AuthController {
   // ─── Cookie Helper ─────────────────────────────────────────────────────────
 
   private setRefreshCookie(res: Response, token: string) {
+    (res as any).clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: this.isProduction,
+      sameSite: this.isProduction ? 'none' : 'lax',
+      path: '/',
+    });
+
     (res as any).cookie('refresh_token', token, {
       httpOnly: true,
       secure: this.isProduction,
-      sameSite: 'strict',
+      sameSite: this.isProduction ? 'none' : 'lax',
       path: '/api/auth',
       maxAge: this.refreshTtlMs,
     });

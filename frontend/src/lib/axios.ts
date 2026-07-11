@@ -199,7 +199,58 @@ api.interceptors.response.use(
       errorMessage = error.message;
     }
 
-    toast.error(errorMessage);
+    // ─── Auto error logging ──────────────────────────────────────────────────
+    const isLogEndpoint = originalRequest?.url?.includes('/logs');
+    if (!isLogEndpoint) {
+      try {
+        let requestDataParsed = null;
+        if (originalRequest?.data) {
+          if (typeof originalRequest.data === 'string') {
+            try {
+              requestDataParsed = JSON.parse(originalRequest.data);
+            } catch {
+              requestDataParsed = originalRequest.data;
+            }
+          } else {
+            requestDataParsed = originalRequest.data;
+          }
+        }
+
+        const logPayload = {
+          message: `HTTP Error: ${originalRequest?.method?.toUpperCase()} ${originalRequest?.url} -> Status ${error.response?.status || 'Network Error'}`,
+          stack: error.stack || new Error().stack,
+          url: window.location.href,
+          user_agent: navigator.userAgent,
+          level: 'ERROR',
+          metadata: {
+            errorMessage,
+            status: error.response?.status,
+            requestData: requestDataParsed,
+            responseData: error.response?.data,
+          }
+        };
+
+        const token = useAuthStore.getState().accessToken;
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        axios.post(
+          `${api.defaults.baseURL}/logs`,
+          logPayload,
+          { headers }
+        ).catch(() => {});
+      } catch (logErr) {
+        console.error('Failed to log error:', logErr);
+      }
+    }
+
+    if (!isAuthEndpoint) {
+      toast.error(errorMessage);
+    }
     return Promise.reject(new ApiError(errorMessage, error.response?.status, error));
   }
 );

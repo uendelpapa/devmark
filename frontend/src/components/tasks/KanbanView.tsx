@@ -19,7 +19,7 @@ interface TaskCardProps {
 }
 
 function TaskCard({ task, onClick, wasDragging }: TaskCardProps) {
-  const urgencyInfo = getUrgencyInfo(task.dueDate)
+  const urgencyInfo = task.dueDate ? getUrgencyInfo(task.dueDate) : null
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
@@ -57,19 +57,23 @@ function TaskCard({ task, onClick, wasDragging }: TaskCardProps) {
         </button>
       </div>
 
-      <div className="flex items-center">
-        <span className={`${urgencyInfo.className} border-none px-2 py-0.5 rounded-full inline-flex items-center justify-center text-xs`}>
-          <span className="flex items-center gap-1.5 text-xs font-medium">
-            <Clock className="size-3" />
-            {urgencyInfo.label.toLowerCase()}
+      {urgencyInfo && (
+        <div className="flex items-center">
+          <span className={`${urgencyInfo.className} border-none px-2 py-0.5 rounded-full inline-flex items-center justify-center text-xs`}>
+            <span className="flex items-center gap-1.5 text-xs font-medium">
+              <Clock className="size-3" />
+              {urgencyInfo.label.toLowerCase()}
+            </span>
           </span>
-        </span>
-      </div>
+        </div>
+      )}
 
-      <div className="flex items-center gap-1.5 text-secondary/60">
-        <Calendar className="size-4" />
-        <span className="text-[12px] font-semibold">Entregar {task.dueDate}</span>
-      </div>
+      {task.dueDate && (
+        <div className="flex items-center gap-1.5 text-secondary/60">
+          <Calendar className="size-4" />
+          <span className="text-[12px] font-semibold">Entregar {task.dueDate}</span>
+        </div>
+      )}
     </div>
   )
 }

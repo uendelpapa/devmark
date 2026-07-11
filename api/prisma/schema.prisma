@@ -89,6 +89,12 @@ enum AssetType {
   OTHER
 }
 
+enum LogLevel {
+  ERROR
+  WARN
+  INFO
+}
+
 // ─── Models ──────────────────────────────────────────────────────────────────
 
 model Client {
@@ -131,7 +137,7 @@ model Project {
   amount_received        Decimal       @default(0) @db.Decimal(12, 2)
   amount_pending         Decimal       @default(0) @db.Decimal(12, 2)
   estimated_hours        Int?
-  worked_hours           Int           @default(0)
+  worked_hours           Float         @default(0)
   start_date             DateTime?     @db.Date
   expected_delivery_date DateTime?     @db.Date
   delivery_date          DateTime?     @db.Date
@@ -161,7 +167,7 @@ model Task {
   status          TaskStatus    @default(PENDING)
   priority        Priority      @default(MEDIUM)
   estimated_hours Int?
-  worked_hours    Int           @default(0)
+  worked_hours    Float         @default(0)
   expected_value  Decimal?      @db.Decimal(12, 2)
   received_value  Decimal?      @db.Decimal(12, 2)
   started_at      DateTime?
@@ -322,6 +328,7 @@ model User {
   projects       Project[]
   tasks          Task[]
   events         Event[]
+  error_logs     ErrorLog[]
 
   @@map("users")
 }
@@ -339,4 +346,25 @@ model RefreshToken {
   @@index([user_id])
   @@index([token_hash])
   @@map("refresh_tokens")
+}
+
+// ─── Logs ─────────────────────────────────────────────────────────────────────
+
+model ErrorLog {
+  id          String    @id @default(uuid()) @db.Uuid
+  user_id     String?   @db.Uuid
+  level       LogLevel  @default(ERROR)
+  message     String    @db.Text
+  stack       String?   @db.Text
+  url         String?   @db.VarChar(500)
+  user_agent  String?   @db.VarChar(500)
+  metadata    Json?
+  created_at  DateTime  @default(now())
+
+  user        User?     @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@index([level])
+  @@map("error_logs")
 }

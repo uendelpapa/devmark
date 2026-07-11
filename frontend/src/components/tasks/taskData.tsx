@@ -3,9 +3,13 @@ import type { TaskCardData as Task } from '../../services/api'
 
 export type { Task }
 
-export function getUrgencyInfo(dueDateStr: string) {
+export function getUrgencyInfo(dueDateStr: string | null) {
+  if (!dueDateStr) {
+    return { label: 'Sem prazo', className: 'bg-zinc-400/80 text-white' }
+  }
+
   const due = new Date(dueDateStr)
-  const now = new Date(Date.now()) // Using a fixed reference for demo, ideally Date.now()
+  const now = new Date(Date.now())
 
   const diffTime = due.getTime() - now.getTime()
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
@@ -16,7 +20,9 @@ export function getUrgencyInfo(dueDateStr: string) {
   return { label: 'Normal', className: 'bg-[#4E7A36]/90 text-white' }
 }
 
-export function UrgencyChip({ dueDate }: { dueDate: string }) {
+export function UrgencyChip({ dueDate }: { dueDate: string | null }) {
+  if (!dueDate) return null
+
   const urgencyInfo = getUrgencyInfo(dueDate)
 
   return (
@@ -28,4 +34,3 @@ export function UrgencyChip({ dueDate }: { dueDate: string }) {
     </span>
   )
 }
-

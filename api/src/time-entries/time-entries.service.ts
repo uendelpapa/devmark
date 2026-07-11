@@ -68,21 +68,21 @@ export class TimeEntriesService {
       },
     });
 
-    // Converter minutos para horas arredondadas para atualizar worked_hours
-    const hoursToAdd = Math.ceil(durationMinutes / 60);
+    // Converter minutos para horas decimais para atualizar worked_hours
+    const hoursToAdd = parseFloat((durationMinutes / 60).toFixed(2));
 
     // Atualiza worked_hours da tarefa e do projeto
     if (hoursToAdd > 0) {
       const task = await this.prisma.task.findUnique({ where: { id: entry.task_id }});
       await this.prisma.task.update({
         where: { id: entry.task_id },
-        data: { worked_hours: (task?.worked_hours || 0) + hoursToAdd },
+        data: { worked_hours: parseFloat((((task?.worked_hours as number) || 0) + hoursToAdd).toFixed(2)) },
       });
 
       const project = await this.prisma.project.findUnique({ where: { id: entry.project_id }});
       await this.prisma.project.update({
         where: { id: entry.project_id },
-        data: { worked_hours: (project?.worked_hours || 0) + hoursToAdd },
+        data: { worked_hours: parseFloat((((project?.worked_hours as number) || 0) + hoursToAdd).toFixed(2)) },
       });
     }
 

@@ -27,8 +27,10 @@ export class AuthService {
   // ─── Register ────────────────────────────────────────────────────────────────
 
   async register(dto: RegisterDto) {
+    const accessKey = dto.accessKey.trim();
+
     const inviteCode = await this.prisma.inviteCode.findUnique({
-      where: { code: dto.accessKey },
+      where: { code: accessKey },
     });
 
     if (!inviteCode || inviteCode.used_at) {

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useMemo, useEffect } from 'react'
-import { Avatar } from '@heroui/react'
+import { Avatar, IconPlus } from '@heroui/react'
 import { Layers, Briefcase, TrashBin, Clock, CommentDot, Plus, CircleDollar, ChevronLeft, ClockArrowRotateLeft, EnvelopeOpen, Check, Pencil, Xmark } from '@gravity-ui/icons'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -599,6 +599,13 @@ function ProjectDetailsPage() {
             <div className="flex-1 flex flex-col items-center justify-center py-10 gap-3">
               <Layers className="size-8 text-secondary/25" />
               <p className="text-secondary/50 text-sm font-medium text-center">O projeto ainda não possui tarefas.<br />Crie tarefas no painel principal.</p>
+              <Button
+                variant='zinc'
+                onPress={() => navigate({ to: '/tarefas' })}
+              >
+                <IconPlus />
+                Adicionar Tarefas
+              </Button>
             </div>
           )}
         </div>
