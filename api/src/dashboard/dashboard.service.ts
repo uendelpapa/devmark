@@ -38,7 +38,7 @@ export class DashboardService {
       ).length,
     };
 
-    // 2. Agregar dados financeiros (relacionados diretamente aos projetos)
+    // 2. Agregar dados financeiros (relacionados a projetos e serviços avulsos)
     const projectsFinance = await this.prisma.project.aggregate({
       where: { user_id: userId },
       _sum: {
@@ -47,8 +47,20 @@ export class DashboardService {
       },
     });
 
-    const total_paid = Number(projectsFinance._sum.amount_received || 0);
-    const total_pending = Number(projectsFinance._sum.amount_pending || 0);
+    const servicesFinance = await this.prisma.service.aggregate({
+      where: { user_id: userId },
+      _sum: {
+        amount_received: true,
+        amount_pending: true,
+      },
+    });
+
+    const total_paid =
+      Number(projectsFinance._sum.amount_received || 0) +
+      Number(servicesFinance._sum.amount_received || 0);
+    const total_pending =
+      Number(projectsFinance._sum.amount_pending || 0) +
+      Number(servicesFinance._sum.amount_pending || 0);
 
     const projectExpenses = await this.prisma.projectExpense.aggregate({
       where: { project: { user_id: userId } },
@@ -70,7 +82,7 @@ export class DashboardService {
       total_expenses,
     };
 
-    // Agregar dados financeiros do mês anterior
+    // Agregar dados financeiros do mês anterior (projetos + serviços avulsos)
     const prevPaidPayments = await this.prisma.payment.aggregate({
       where: {
         project: { user_id: userId },
@@ -80,6 +92,16 @@ export class DashboardService {
       _sum: { amount: true }
     });
     const prev_total_paid = Number(prevPaidPayments._sum.amount || 0);
+
+    const prevPaidServices = await this.prisma.service.aggregate({
+      where: {
+        user_id: userId,
+        status: 'COMPLETED',
+        finished_at: { lte: endOfPreviousMonth }
+      },
+      _sum: { amount_received: true }
+    });
+    const prev_services_paid = Number(prevPaidServices._sum.amount_received || 0);
 
     const prevPendingPayments = await this.prisma.payment.aggregate({
       where: {
@@ -97,6 +119,22 @@ export class DashboardService {
     });
     const prev_total_pending = Number(prevPendingPayments._sum.amount || 0);
 
+    const prevPendingServices = await this.prisma.service.aggregate({
+      where: {
+        user_id: userId,
+        due_date: { lte: endOfPreviousMonth },
+        OR: [
+          { status: { in: ['PENDING', 'IN_PROGRESS', 'REVIEW'] } },
+          {
+            status: 'COMPLETED',
+            finished_at: { gt: endOfPreviousMonth }
+          }
+        ]
+      },
+      _sum: { amount_pending: true }
+    });
+    const prev_services_pending = Number(prevPendingServices._sum.amount_pending || 0);
+
     const prevProjectExpensesAgg = await this.prisma.projectExpense.aggregate({
       where: { project: { user_id: userId }, created_at: { lte: endOfPreviousMonth } },
       _sum: { value: true }
@@ -110,8 +148,8 @@ export class DashboardService {
       Number(prevTaskExpensesAgg._sum.value || 0);
 
     const prev_finance_summary = {
-      total_paid: prev_total_paid,
-      total_pending: prev_total_pending,
+      total_paid: prev_total_paid + prev_services_paid,
+      total_pending: prev_total_pending + prev_services_pending,
       total_expenses: prev_total_expenses,
     };
 
@@ -128,7 +166,7 @@ export class DashboardService {
       },
     });
 
-    // 4. Listar pagamentos pendentes
+    // 4. Listar pagamentos pendentes (projetos + serviços avulsos)
     const pendingPaymentsRaw = await this.prisma.payment.findMany({
       where: { project: { user_id: userId }, status: { in: ['PENDING', 'OVERDUE'] } },
       orderBy: { due_date: 'asc' },
@@ -141,13 +179,36 @@ export class DashboardService {
       },
     });
 
-    const pending_payments = pendingPaymentsRaw.map((p) => ({
-      payment_id: p.id,
-      amount: Number(p.amount),
-      due_date: p.due_date,
-      client_name: p.project.client.name,
-      client_email: p.project.client.email,
-    }));
+    const pendingServicesRaw = await this.prisma.service.findMany({
+      where: {
+        user_id: userId,
+        status: { in: ['PENDING', 'IN_PROGRESS', 'REVIEW'] },
+        amount_pending: { gt: 0 },
+      },
+      orderBy: { due_date: 'asc' },
+      include: {
+        client: { select: { name: true, email: true } },
+      },
+    });
+
+    const pending_payments = [
+      ...pendingPaymentsRaw.map((p) => ({
+        payment_id: p.id,
+        amount: Number(p.amount),
+        due_date: p.due_date,
+        client_name: p.project.client.name,
+        client_email: p.project.client.email,
+        is_service: false,
+      })),
+      ...pendingServicesRaw.map((s) => ({
+        payment_id: s.id,
+        amount: Number(s.amount_pending),
+        due_date: s.due_date || s.created_at,
+        client_name: s.client.name,
+        client_email: s.client.email,
+        is_service: true,
+      })),
+    ].sort((a, b) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime());
 
     // 5. Calcular nível de trabalho semanal (horas por dia de segunda a domingo)
     const currentDay = now.getDay();

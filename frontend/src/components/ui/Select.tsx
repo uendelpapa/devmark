@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 
 type Key = string | number
 
-export type SelectVariant = 'zinc' | 'outline'
+export type SelectVariant = 'zinc' | 'outline' | 'primary'
 
 export interface SelectProps {
     children: ReactNode
@@ -29,7 +29,14 @@ export function Select({
 }: SelectProps) {
     const variantClasses = {
         zinc: 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 rounded-full pl-4 shadow-none text-lg text-zinc-700 font-medium w-fit ',
-        outline: ''
+        outline: '',
+        primary: 'bg-primary/50 hover:bg-primary border border-primary rounded-full pl-4 shadow-none text-lg text-secondary font-medium w-fit cursor-pointer '
+    }
+
+    const iconColors = {
+        zinc: 'text-zinc-700',
+        outline: 'text-zinc-500',
+        primary: 'text-secondary'
     }
 
     return (
@@ -41,7 +48,7 @@ export function Select({
             placeholder={placeholder}
         >
             <HeroSelect.Trigger className={`${variantClasses[variant]} flex items-center gap-1 ${triggerClassName}`}>
-                <Funnel className="size-4 text-zinc-700" />
+                <Funnel className={`size-4 ${iconColors[variant]}`} />
                 <HeroSelect.Value className="text-base font-medium" />
                 <HeroSelect.Indicator />
             </HeroSelect.Trigger>

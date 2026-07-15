@@ -114,7 +114,7 @@ function Clientes() {
 
       {/* Clients Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 flex-1 min-h-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 flex-1 min-h-0">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="animate-pulse bg-zinc-100 rounded-[24px] h-[88px] w-full" />
           ))}
@@ -124,7 +124,7 @@ function Clientes() {
           {searchQuery ? 'Nenhum cliente encontrado para essa busca.' : 'Nenhum cliente encontrado.'}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto scrollbar-none pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 overflow-y-auto scrollbar-none pb-4">
           {filteredClients.map((client) => (
             <ClientCard
               key={client.id}

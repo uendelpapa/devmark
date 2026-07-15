@@ -68,6 +68,15 @@ export class ClientsService {
               },
             },
           },
+          services: {
+            where: {
+              OR: [
+                { status: { in: ['PENDING', 'IN_PROGRESS', 'REVIEW'] } },
+                { amount_pending: { gt: 0 } },
+              ],
+            },
+            select: { id: true },
+          },
         },
       }),
       this.prisma.client.count({ where }),
@@ -75,10 +84,10 @@ export class ClientsService {
 
     // RF-05: Calcular dinamicamente se tem pagamentos pendentes
     let result = clients.map((client) => {
-      const hasPending = client.projects.some(
-        (p) => p.payments.length > 0,
-      );
-      const { projects, ...clientData } = client;
+      const hasPending =
+        client.projects.some((p) => p.payments.length > 0) ||
+        client.services.length > 0;
+      const { projects, services, ...clientData } = client;
       return { ...clientData, hasPendingPayment: hasPending };
     });
 
@@ -111,6 +120,23 @@ export class ClientsService {
             status: true,
             project_value: true,
             amount_received: true,
+          },
+        },
+        services: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            status: true,
+            value: true,
+            amount_received: true,
+            amount_pending: true,
+            due_date: true,
+            finished_at: true,
+            created_at: true,
+          },
+          orderBy: {
+            created_at: 'desc',
           },
         },
       },
@@ -153,15 +179,18 @@ export class ClientsService {
   async remove(id: string, userId: string) {
     const client = await this.findOne(id, userId);
 
-    // RN-03: Não pode excluir cliente com projetos ativos
+    // RN-03: Não pode excluir cliente com projetos ou serviços ativos
     const activeStatuses = ['IN_PROGRESS', 'PLANNING', 'WAITING_CLIENT', 'REVIEW'];
     const hasActiveProjects = (client as any).projects?.some(
       (p: any) => activeStatuses.includes(p.status),
     );
+    const hasActiveServices = (client as any).services?.some(
+      (s: any) => activeStatuses.includes(s.status),
+    );
 
-    if (hasActiveProjects) {
+    if (hasActiveProjects || hasActiveServices) {
       throw new BadRequestException(
-        'Não é possível excluir um cliente com projetos ativos',
+        'Não é possível excluir um cliente com projetos ou serviços ativos',
       );
     }
 

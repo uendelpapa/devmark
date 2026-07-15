@@ -14,6 +14,8 @@ import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AiModule } from './ai/ai.module';
 import { LogsModule } from './logs/logs.module';
+import { ServicesModule } from './services/services.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { LogsModule } from './logs/logs.module';
     DashboardModule,
     AiModule,
     LogsModule,
+    ServicesModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

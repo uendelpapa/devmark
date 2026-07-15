@@ -2,7 +2,7 @@ import { Avatar } from '@heroui/react'
 import { Magnifier } from '@gravity-ui/icons'
 import { Input } from '../ui/Input'
 import { useQuery } from '@tanstack/react-query'
-import { fetchProjects, fetchClients, fetchTasks } from '../../services/api'
+import { fetchProjects, fetchClients, fetchTasks, fetchServices } from '../../services/api'
 import { useNavigate, Link } from '@tanstack/react-router'
 import { useState, useRef, useEffect } from 'react'
 import { useAuthStore } from '../../lib/auth'
@@ -43,6 +43,12 @@ export function Header() {
     enabled: isOpen
   })
 
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: () => fetchServices(),
+    enabled: isOpen
+  })
+
   const query = searchQuery.trim().toLowerCase()
 
   const matchedProjects = query
@@ -67,7 +73,18 @@ export function Header() {
     )
     : []
 
-  const hasResults = matchedProjects.length > 0 || matchedClients.length > 0 || matchedTasks.length > 0
+  const matchedServices = query
+    ? services.filter(s =>
+      s.title.toLowerCase().includes(query) ||
+      (s.description && s.description.toLowerCase().includes(query))
+    )
+    : []
+
+  const hasResults =
+    matchedProjects.length > 0 ||
+    matchedClients.length > 0 ||
+    matchedTasks.length > 0 ||
+    matchedServices.length > 0
 
   return (
     <header className="bg-white rounded-[24px] px-6 py-6 flex items-center justify-between shadow-xs shrink-0 relative z-30">
@@ -78,7 +95,7 @@ export function Header() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          placeholder="Pesquisar projetos, clientes ou tarefas..."
+          placeholder="Pesquisar..."
           variant="zinc"
           icon={<Magnifier className="text-zinc-500 size-4" />}
           className="w-[370px]"
@@ -139,10 +156,36 @@ export function Header() {
                   </div>
                 )}
 
+                {/* Services Section */}
+                {matchedServices.length > 0 && (
+                  <div className="flex flex-col">
+                    {(matchedProjects.length > 0 || matchedClients.length > 0) && <div className="h-px bg-zinc-100 my-1 mx-4" />}
+                    <span className="px-4 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                      Serviços Avulsos
+                    </span>
+                    {matchedServices.slice(0, 4).map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => {
+                          navigate({ to: '/servicos' })
+                          setIsOpen(false)
+                          setSearchQuery('')
+                        }}
+                        className="w-full text-left px-4 py-2 hover:bg-zinc-50 flex flex-col gap-0.5 border-none bg-transparent cursor-pointer transition-colors"
+                      >
+                        <span className="text-sm font-semibold text-secondary truncate">{s.title}</span>
+                        {s.client?.name && (
+                          <span className="text-xs text-secondary/60 truncate">Cliente: {s.client.name}</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 {/* Tasks Section */}
                 {matchedTasks.length > 0 && (
                   <div className="flex flex-col">
-                    {(matchedProjects.length > 0 || matchedClients.length > 0) && <div className="h-px bg-zinc-100 my-1 mx-4" />}
+                    {(matchedProjects.length > 0 || matchedClients.length > 0 || matchedServices.length > 0) && <div className="h-px bg-zinc-100 my-1 mx-4" />}
                     <span className="px-4 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
                       Tarefas
                     </span>

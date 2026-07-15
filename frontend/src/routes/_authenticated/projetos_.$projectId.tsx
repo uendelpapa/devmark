@@ -17,6 +17,7 @@ import { AddPaymentModal } from '../../components/finance/AddPaymentModal'
 import { AddExpenseModal } from '../../components/finance/AddExpenseModal'
 import { Select, SelectItem } from '../../components/ui/Select'
 import { Button } from '#/components/ui/Button'
+import { Input } from '#/components/ui/Input'
 
 export const Route = createFileRoute('/_authenticated/projetos_/$projectId')({
   component: ProjectDetailsPage
@@ -145,6 +146,8 @@ function ProjectDetailsPage() {
   const [editDeliveryDate, setEditDeliveryDate] = useState('')
 
   const [editName, setEditName] = useState('')
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false)
+  const [newBudgetValue, setNewBudgetValue] = useState('')
 
   const queryClient = useQueryClient()
 
@@ -630,10 +633,22 @@ function ProjectDetailsPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-primary/50 border border-primary p-6 rounded-3xl flex flex-col gap-4">
+        <div className="bg-primary/50 border border-primary p-6 rounded-3xl flex flex-col gap-4 relative group">
           <div className="flex items-center justify-between">
             <span className="text-secondary font-semibold">Orçamento Total</span>
-            <CircleDollar className="size-4 text-secondary" />
+            <div className="flex justify-center relative items-center gap-1.5">
+              <button
+                onClick={() => {
+                  setNewBudgetValue(project?.project_value ? String(project.project_value) : '0')
+                  setIsBudgetModalOpen(true)
+                }}
+                className="absolute opacity-0 group-hover:opacity-100 size-6 rounded-full hover:bg-primary flex items-center justify-center text-secondary transition-all cursor-pointer border-none shrink-0 z-10"
+                title="Editar orçamento"
+              >
+                <Pencil className="size-3.5" />
+              </button>
+              <CircleDollar className="size-4 text-secondary group-hover:opacity-0 opacity-100 transition-opacity duration-300" />
+            </div>
           </div>
           <span className="text-3xl font-medium text-secondary">{formatCurrency(project?.project_value)}</span>
         </div>
@@ -874,6 +889,79 @@ function ProjectDetailsPage() {
           isPending={isUpdatingProject}
         />
       )}
+
+      {isBudgetModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[100] flex items-center justify-center p-4"
+          onClick={() => setIsBudgetModalOpen(false)}
+        >
+          <div
+            className="bg-white rounded-[24px] p-6 w-full max-w-sm shadow-xl flex flex-col gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-secondary">Editar Orçamento</h3>
+              <button
+                onClick={() => setIsBudgetModalOpen(false)}
+                className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
+              >
+                <Xmark className="size-4 text-secondary/60" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                Novo Orçamento (R$)
+              </label>
+              <div className="relative w-full">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary/50 text-sm font-semibold z-10">R$</span>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={newBudgetValue}
+                  onChange={(e) => setNewBudgetValue(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
+                  placeholder="0.00"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const val = parseFloat(newBudgetValue)
+                      if (!isNaN(val)) {
+                        handleUpdateProject({ project_value: val })
+                        setIsBudgetModalOpen(false)
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 mt-2">
+              <Button
+                onClick={() => setIsBudgetModalOpen(false)}
+                className="w-full"
+                variant='zinc'
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  const val = parseFloat(newBudgetValue)
+                  if (!isNaN(val)) {
+                    handleUpdateProject({ project_value: val })
+                    setIsBudgetModalOpen(false)
+                  }
+                }}
+                className="w-full"
+                isDisabled={!newBudgetValue || isNaN(parseFloat(newBudgetValue))}
+              >
+                Salvar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -909,18 +997,18 @@ function EditProjectModal({ isOpen, onClose, onSubmit, project, isPending = fals
   }
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[100]"
-        onClick={onClose}
-      />
-
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[100] flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       {/* Modal Panel */}
-      <div className="fixed right-0 top-0 h-full w-[400px] max-w-[100vw] bg-white z-[101] flex flex-col shadow-2xl animate-slide-in-right overflow-hidden">
+      <div
+        className="bg-white rounded-[24px] p-6 w-full max-w-sm shadow-xl flex flex-col gap-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="text-lg font-bold text-secondary">Editar Projeto</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-secondary">Editar Categoria</h2>
           <button
             onClick={onClose}
             className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
@@ -929,46 +1017,45 @@ function EditProjectModal({ isOpen, onClose, onSubmit, project, isPending = fals
           </button>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-5 scrollbar-none">
-          {/* Categoria / Área */}
-          <div className="flex flex-col gap-1.5">
-            <label className={labelClass}>Categoria</label>
-            <Select
-              selectedKey={area}
-              onSelectionChange={(key) => setArea(key as string)}
-              ariaLabel="Selecionar categoria"
-              variant="outline"
-              triggerClassName="w-full rounded-full"
-            >
-              <SelectItem id="DEVELOPER" textValue="Desenvolvimento">
-                Desenvolvimento
-              </SelectItem>
-              <SelectItem id="MARKETING" textValue="Marketing">
-                Marketing
-              </SelectItem>
-            </Select>
-          </div>
+        {/* Content */}
+        <div className="flex flex-col gap-1.5">
+          <label className={labelClass}>Categoria</label>
+          <Select
+            selectedKey={area}
+            onSelectionChange={(key) => setArea(key as string)}
+            ariaLabel="Selecionar categoria"
+            variant="zinc"
+            triggerClassName="w-full rounded-full"
+          >
+            <SelectItem id="DEVELOPER" textValue="Desenvolvimento">
+              Desenvolvimento
+            </SelectItem>
+            <SelectItem id="MARKETING" textValue="Marketing">
+              Marketing
+            </SelectItem>
+          </Select>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-zinc-100 flex items-center gap-3">
-          <button
+        <div className="px-0 pt-2 flex items-center gap-3">
+          <Button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-secondary bg-zinc-100 hover:bg-zinc-200 transition-colors cursor-pointer border-none"
+            variant='zinc'
+            className="w-full"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
-            disabled={isPending}
-            className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-secondary bg-primary/50 hover:bg-primary transition-colors cursor-pointer border-none disabled:opacity-50 disabled:cursor-not-allowed"
+            isDisabled={isPending}
+            variant='primary'
+            className="w-full"
           >
-            {isPending ? 'Salvando...' : 'Salvar Alterações'}
-          </button>
+            {isPending ? 'Salvando...' : 'Salvar'}
+          </Button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

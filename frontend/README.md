@@ -1,204 +1,115 @@
-Welcome to your new TanStack Start app! 
+# **Devmark - Frontend** 🎨
+*Interface do Usuário da Plataforma Devmark*
 
-# Getting Started
+Este é o frontend da plataforma **Devmark**, uma aplicação web responsiva do tipo SPA (Single Page Application) construída em React, TypeScript e Vite. Ela fornece uma interface moderna e intuitiva para o gerenciamento de clientes, projetos, tarefas, finanças e controle de horas (*time tracking*).
 
-To run this application:
+---
 
+### **Sumário**
+1. [Stack Tecnológica](#stack-tecnológica)
+2. [Configurações e Requisitos](#configurações-e-requisitos)
+3. [Scripts Disponíveis](#scripts-disponíveis)
+4. [Estrutura de Diretórios](#estrutura-de-diretórios)
+5. [Rotas e Roteamento](#rotas-e-roteamento)
+
+---
+
+### **Stack Tecnológica**
+
+O frontend utiliza ferramentas modernas que garantem alta performance, tipagem estática ponta a ponta e carregamento veloz:
+
+*   **React 18** & **TypeScript**: Construção de componentes dinâmicos e tipagem segura.
+*   **Vite**: Build tool extremamente rápido para o fluxo de desenvolvimento local e compilação de produção.
+*   **TanStack Router**: Roteamento baseado em arquivos com segurança de tipos em tempo de compilação.
+*   **TanStack Query (React Query)**: Gerenciamento de estado do servidor, cacheamento automático, revalidação em background e sincronização otimista.
+*   **HeroUI** (antigo NextUI) & **Tailwind CSS**: Estilização baseada em utilitários e componentes estilizados e acessíveis.
+*   **Gravity UI Icons**: Conjunto de ícones vetoriais.
+
+---
+
+### **Configurações e Requisitos**
+
+#### **Pré-requisitos**
+*   **Node.js** (v18 ou superior)
+*   **pnpm** (gerenciador de pacotes)
+
+#### **Variáveis de Ambiente**
+Crie um arquivo `.env` ou `.env.local` na raiz de `/frontend` para apontar o endereço da API backend:
+```env
+VITE_API_URL="http://localhost:3000"
+```
+
+---
+
+### **Scripts Disponíveis**
+
+Na pasta `/frontend`, você pode rodar os seguintes comandos:
+
+#### **Instalar dependências**
 ```bash
 pnpm install
-pnpm dev
 ```
 
-# Building For Production
-
-To build this application for production:
-
+#### **Ambiente de Desenvolvimento**
+Inicia o servidor de desenvolvimento do Vite com hot reload:
 ```bash
-pnpm build
+pnpm run dev
 ```
+*Acesse no navegador através do endereço exibido no console (por padrão `http://localhost:5173`).*
 
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
+#### **Compilar para Produção**
+Gera o bundle otimizado na pasta `dist/`:
 ```bash
-pnpm test
+pnpm run build
 ```
 
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
-
-## Linting & Formatting
-
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
+#### **Verificação e Linter**
+Roda testes de tipo, linter e formatação:
 ```bash
-pnpm lint
-pnpm format
-pnpm check
+pnpm lint     # Executa análise estática com ESLint
+pnpm format   # Formata os arquivos utilizando Prettier
 ```
 
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
+#### **Executar Testes**
+Executa a suíte de testes com Vitest:
+```bash
+pnpm run test
 ```
 
-Then anywhere in your JSX you can use it like so:
+---
 
-```tsx
-<Link to="/about">About</Link>
+### **Estrutura de Diretórios**
+
+A estrutura interna de código foi projetada para separação limpa de conceitos:
+
+```text
+frontend/
+├── public/                  # Arquivos estáticos (ícones, logos, etc.)
+├── src/
+│   ├── components/          # Componentes visuais reutilizáveis
+│   │   ├── ui/              # Componentes de base (Button, Select, Input)
+│   │   ├── layout/          # Estruturas de layout (Header, Sidebar)
+│   │   ├── finance/         # Componentes específicos de finanças e parcelas
+│   │   └── projects/        # Visualizações de projetos e tarefas
+│   │
+│   ├── routes/              # Rotas e páginas gerenciadas pelo TanStack Router
+│   │   ├── _authenticated/  # Rotas protegidas (Dashboard, Clientes, Projetos, etc.)
+│   │   ├── login.tsx        # Página de autenticação
+│   │   └── registrar.tsx    # Página de cadastro com código de convite
+│   │
+│   ├── services/            # Integração HTTP com a API (Axios / Fetch)
+│   ├── hooks/               # Custom Hooks e queries do TanStack Query
+│   ├── styles.css           # Estilos globais e tokens de cores CSS HSL
+│   ├── router.tsx           # Configuração de inicialização do Router
+│   └── routeTree.gen.ts     # Árvore de rotas gerada automaticamente pelo TanStack Router
 ```
 
-This will create a link that will navigate to the `/about` route.
+---
 
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
+### **Rotas e Roteamento**
 
-### Using A Layout
+Esta aplicação utiliza roteamento baseado em arquivos do **TanStack Router**. 
+Qualquer arquivo criado no diretório `src/routes` gera automaticamente uma rota correspondente.
 
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+*   O arquivo `src/routes/routeTree.gen.ts` é gerado dinamicamente durante a execução de `pnpm dev`. **Não edite este arquivo manualmente**.
+*   Rotas sob a pasta `_authenticated/` exigem autenticação do usuário. A validação de tokens é tratada no carregamento da rota raiz.

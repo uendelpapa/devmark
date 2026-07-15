@@ -7,7 +7,8 @@ import {
   ChartMixed,
   Sliders,
   CircleQuestion,
-  ArrowRightFromSquare
+  ArrowRightFromSquare,
+  Briefcase
 } from '@gravity-ui/icons'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { TimerTracker } from '../ui/TimerTracker'
@@ -26,7 +27,7 @@ interface MenuItemProps {
 
 function MenuItem({ icon: Icon, label, badge, href, onClick }: MenuItemProps) {
   const location = useLocation()
-  const targetPath = href || `/${label.toLowerCase()}`
+  const targetPath = href || `/${label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')}`
   const active = targetPath === '/' ? location.pathname === '/' : location.pathname.startsWith(targetPath)
 
   const isLogout = label === 'Logout'
@@ -118,6 +119,7 @@ export function Sidebar() {
             <MenuItem icon={Layers3Diagonal} label="Tarefas" badge={tasksBadge} />
             <MenuItem icon={Persons} label="Clientes" />
             <MenuItem icon={Folder} label="Projetos" />
+            <MenuItem icon={Briefcase} label="Serviços" />
             <MenuItem icon={Calendar} label="Calendario" />
             <MenuItem icon={ChartMixed} label="Análise" />
           </div>

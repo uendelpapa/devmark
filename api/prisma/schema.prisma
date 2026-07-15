@@ -120,6 +120,7 @@ model Client {
   user                    User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   projects Project[]
+  services Service[]
 
   @@map("clients")
 }
@@ -304,6 +305,27 @@ model TimeEntry {
   @@map("time_entries")
 }
 
+model Service {
+  id              String       @id @default(uuid()) @db.Uuid
+  client_id       String       @db.Uuid
+  user_id         String       @db.Uuid
+  title           String       @db.VarChar(255)
+  description     String?      @db.Text
+  status          TaskStatus   @default(PENDING)
+  value           Decimal      @default(0) @db.Decimal(12, 2)
+  amount_received Decimal      @default(0) @db.Decimal(12, 2)
+  amount_pending  Decimal      @default(0) @db.Decimal(12, 2)
+  due_date        DateTime?    @db.Date
+  finished_at     DateTime?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  client          Client       @relation(fields: [client_id], references: [id], onDelete: Restrict)
+  user            User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("services")
+}
+
 // ─── Auth Models ─────────────────────────────────────────────────────────────
 
 model InviteCode {
@@ -329,6 +351,7 @@ model User {
   tasks          Task[]
   events         Event[]
   error_logs     ErrorLog[]
+  services       Service[]
 
   @@map("users")
 }

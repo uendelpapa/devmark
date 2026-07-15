@@ -161,6 +161,35 @@ export interface ClientWithPaymentStatus extends Client {
   hasPendingPayment: boolean
 }
 
+export interface Service {
+  id: string
+  client_id: string
+  user_id: string
+  title: string
+  description?: string
+  status: 'PENDING' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED' | 'CANCELED'
+  value: number
+  amount_received: number
+  amount_pending: number
+  due_date?: string
+  finished_at?: string
+  created_at: string
+  updated_at: string
+  client?: { id: string; name: string; email: string }
+}
+
+export interface CreateServiceData {
+  client_id: string
+  title: string
+  description?: string
+  status?: Service['status']
+  value?: number
+  amount_received?: number
+  due_date?: string
+}
+
+export interface UpdateServiceData extends Partial<CreateServiceData> {}
+
 export interface ClientDetails extends Client {
   projects: {
     id: string
@@ -169,6 +198,7 @@ export interface ClientDetails extends Client {
     project_value: number
     amount_received: number
   }[]
+  services: Service[]
 }
 
 
@@ -235,3 +265,74 @@ export interface CalendarItem {
 }
 
 export type CalendarViewMode = 'day' | 'week' | 'month' | 'year'
+
+// --- Analytics Types ---
+
+export interface KpiItem {
+  value: number
+  diff: number
+  isPositive: boolean
+}
+
+export interface AnalyticsKpis {
+  revenue: KpiItem
+  conversion: KpiItem
+  activeProjects: KpiItem
+  hours: KpiItem
+}
+
+export interface QuickStats {
+  totalRecebido: number
+  totalDespesas: number
+  saldoLiquido: number
+}
+
+export interface CrmFunnelItem {
+  stage: string
+  count: number
+  percentage: number
+  color: string
+}
+
+export interface MonthlyAnalyticsItem {
+  month: string
+  receita: number
+  aReceber: number
+  despesas: number
+  demandasCriadas: number
+  demandasConcluidas: number
+}
+
+export interface CostDistributionItem {
+  category: 'AI' | 'SOFTWARE' | 'DOMAIN' | 'HOSTING' | 'DESIGN' | 'ADS' | 'FREELANCER' | 'OTHER'
+  value: number
+  percentage: number
+}
+
+export interface TopClientItem {
+  id: string
+  name: string
+  companyName: string
+  status: string
+  billed: number
+  projectsCount: number
+  percentage: number
+}
+
+export interface WorkedHoursItem {
+  id: string
+  name: string
+  hours: number
+}
+
+export interface AnalyticsData {
+  kpis: AnalyticsKpis
+  quickStats: QuickStats
+  monthlyData: MonthlyAnalyticsItem[]
+  crmFunnel: CrmFunnelItem[]
+  costDistribution: CostDistributionItem[]
+  topClients: TopClientItem[]
+  workedHoursByProject: WorkedHoursItem[]
+}
+
+
