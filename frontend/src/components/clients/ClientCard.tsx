@@ -2,6 +2,7 @@ import type { ClientWithPaymentStatus } from '../../services/api'
 import { Ellipsis, Clock, CircleInfo } from '@gravity-ui/icons'
 import { Card, Button, Avatar } from '@heroui/react'
 import { useNavigate } from '@tanstack/react-router'
+import { StatusBadge } from '../ui/StatusBadge'
 
 interface ClientCardProps {
   client: ClientWithPaymentStatus
@@ -38,19 +39,15 @@ export function ClientCard({ client, onEdit }: ClientCardProps) {
       <div className="flex items-center gap-2 shrink-0">
         {/* Payment Status Badge */}
         {client.hasPendingPayment ? (
-          <span className="bg-[#EAB308] text-white px-1.5 py-0.5 rounded-full w-fit items-center justify-center font-medium">
-            <span className="flex items-center text-nowrap gap-1.5 text-xs">
-              <Clock className="size-3 shrink-0" />
-              Pagamento pendente
-            </span>
-          </span>
+          <StatusBadge status="PENDING" label="Pagamento pendente">
+            <Clock className="size-3 shrink-0" />
+            Pagamento pendente
+          </StatusBadge>
         ) : (
-          <span className="bg-zinc-400 text-white px-2.5 py-0.5 rounded-full inline-flex items-center justify-center font-medium">
-            <span className="flex items-center text-nowrap gap-1.5 text-xs">
-              <CircleInfo className="size-3 shrink-0" />
-              Sem pendências
-            </span>
-          </span>
+          <StatusBadge status="PAID" label="Sem pendências">
+            <CircleInfo className="size-3 shrink-0" />
+            Sem pendências
+          </StatusBadge>
         )}
 
         {/* Action button using HeroUI Button */}

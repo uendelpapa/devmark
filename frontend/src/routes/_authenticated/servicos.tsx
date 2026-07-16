@@ -7,6 +7,7 @@ import type { Service, Client } from '../../services/types'
 import { useState } from 'react'
 import { Button } from '#/components/ui/Button'
 import { ServiceModal } from '../../components/services/ServiceModal'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 
 export const Route = createFileRoute('/_authenticated/servicos')({
   component: Servicos,
@@ -24,23 +25,6 @@ const formatCurrency = (val: any) => {
   const num = parseFloat(val)
   if (isNaN(num)) return 'R$ 0,00'
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num)
-}
-
-const getServiceStatusInfo = (status: string) => {
-  switch (status) {
-    case 'PENDING':
-      return { label: 'Pendente', bg: 'bg-zinc-200 text-zinc-800' }
-    case 'IN_PROGRESS':
-      return { label: 'Em Andamento', bg: 'bg-amber-200 text-amber-955' }
-    case 'REVIEW':
-      return { label: 'Em Revisão', bg: 'bg-purple-200 text-purple-955' }
-    case 'COMPLETED':
-      return { label: 'Concluído', bg: 'bg-primary/50 text-secondary' }
-    case 'CANCELED':
-      return { label: 'Cancelado', bg: 'bg-rose-200 text-rose-955' }
-    default:
-      return { label: status, bg: 'bg-zinc-100 text-zinc-600' }
-  }
 }
 
 function Servicos() {
@@ -189,9 +173,7 @@ function Servicos() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className={`text-xs font-semibold tracking-wider px-2.5 py-1 rounded-full w-fit ${getServiceStatusInfo(service.status).bg}`}>
-                  {getServiceStatusInfo(service.status).label}
-                </div>
+                <StatusBadge status={service.status} className="w-fit" />
                 {service.due_date && (
                   <span className="text-xs text-zinc-500 font-medium">
                     Prazo: {new Date(service.due_date).toLocaleDateString('pt-BR')}

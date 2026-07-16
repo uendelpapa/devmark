@@ -11,6 +11,7 @@ import { useTimer } from '../../components/ui/TimerTracker'
 import { getLocalTimeZone, parseAbsoluteToLocal } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'
 import { Button } from '#/components/ui/Button'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 
 export const Route = createFileRoute('/_authenticated/tarefas_/$taskId')({
   component: TaskDetailsPage
@@ -281,9 +282,7 @@ function TaskDetailsPage() {
           <div className="flex flex-col gap-1 w-full max-w-2xl">
             <div className="flex items-center gap-2">
               <span className="text-xs text-zinc-500 font-semibold">{taskCode}</span>
-              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${currentStatusInfo.bg} ${currentStatusInfo.text}`}>
-                {currentStatusInfo.label}
-              </span>
+              <StatusBadge status={task.status} label={currentStatusInfo.label} className="text-[11px] px-2 py-0.5" />
             </div>
             <div className="inline-grid items-center -ml-3 max-w-full">
               <span className="col-start-1 row-start-1 invisible whitespace-pre overflow-hidden text-2xl font-bold tracking-tight px-3">

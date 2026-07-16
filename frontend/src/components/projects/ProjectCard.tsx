@@ -1,6 +1,7 @@
 import { memo, useState, useRef, useEffect } from 'react'
 import { Avatar, Button } from '@heroui/react'
 import { Ellipsis, PencilToLine, Layers, TrashBin, Check } from '@gravity-ui/icons'
+import { StatusBadge } from '../ui/StatusBadge'
 
 interface ProjectCardProps {
   id: string
@@ -34,20 +35,11 @@ const STATUS_LABELS: Record<ProjectCardProps['status'], string> = {
   CANCELED: 'Cancelado'
 }
 
-const STATUS_STYLES: Record<ProjectCardProps['status'], string> = {
-  PLANNING: 'bg-blue-200 text-zinc-900',
-  IN_PROGRESS: 'bg-amber-200 text-zinc-900',
-  WAITING_CLIENT: 'bg-purple-200 text-zinc-900',
-  REVIEW: 'bg-indigo-200 text-zinc-900',
-  COMPLETED: 'bg-emerald-200 text-zinc-900',
-  CANCELED: 'bg-rose-200 text-zinc-900'
-}
-
 const PRIORITY_STYLES: Record<ProjectCardProps['priority'], string> = {
-  LOW: 'bg-zinc-300 text-zinc-900',
-  MEDIUM: 'bg-sky-200 text-zinc-900',
-  HIGH: 'bg-orange-200 text-zinc-900',
-  URGENT: 'bg-red-200 text-zinc-900'
+  LOW: 'bg-zinc-200 text-zinc-900 border border-zinc-300',
+  MEDIUM: 'bg-sky-100 text-sky-800 border border-sky-200',
+  HIGH: 'bg-orange-100 text-orange-800 border border-orange-200',
+  URGENT: 'bg-red-100 text-red-800 border border-red-200'
 }
 
 export const ProjectCard = memo(function ProjectCard({
@@ -87,7 +79,7 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <div
       onClick={() => onPress?.(id)}
-      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all cursor-pointer duration-300 ease-in-out ${isCompleted ? 'bg-primary/50 hover:bg-primary' : 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-200'
+      className={`rounded-[16px] p-4 flex flex-col gap-6 transition-all cursor-pointer duration-300 ease-in-out ${isCompleted ? 'bg-primary/50 hover:bg-primary/70 border border-primary' : 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-200'
         }`}
     >
       {/* Header: Title + Menu */}
@@ -155,9 +147,7 @@ export const ProjectCard = memo(function ProjectCard({
       {/* Tags de status e prioridade */}
       <div className="flex flex-wrap items-center gap-1.5">
         {/* Status Tag */}
-        <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${STATUS_STYLES[status]}`}>
-          {STATUS_LABELS[status]}
-        </span>
+        <StatusBadge status={status} label={STATUS_LABELS[status]} className="text-[11px] px-2 py-0.5" />
 
         {/* Priority Tag */}
         <span className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${PRIORITY_STYLES[priority]}`}>
@@ -198,7 +188,7 @@ export const ProjectCard = memo(function ProjectCard({
       <div className="flex items-end justify-between gap-2">
         {/* Client Info */}
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar className="size-7 shrink-0">
+          <Avatar className="size-8 shrink-0">
             <Avatar.Image
               alt={client_name}
               src={`https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/${isCompleted ? 'blue' : client_name.length % 2 === 0 ? 'orange' : 'blue'}.jpg`}

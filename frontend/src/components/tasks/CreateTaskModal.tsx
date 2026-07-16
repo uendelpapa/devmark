@@ -52,11 +52,11 @@ const PRIORITIES: { key: Task['priority']; label: string; activeColor: string }[
 ]
 
 const STATUS_CHIP_ACTIVE: Record<Task['status'], string> = {
-  PENDING: 'bg-zinc-200 text-secondary',
-  IN_PROGRESS: 'bg-amber-100 text-amber-700',
-  REVIEW: 'bg-blue-100 text-blue-700',
-  COMPLETED: 'bg-primary/50 text-secondary',
-  CANCELED: 'bg-red-100 text-red-600',
+  PENDING: 'bg-zinc-100 text-zinc-700 border border-zinc-200',
+  IN_PROGRESS: 'bg-amber-50 text-amber-700 border border-amber-200/60',
+  REVIEW: 'bg-blue-50 text-blue-700 border border-blue-200/60',
+  COMPLETED: 'bg-primary/20 text-secondary border border-primary/50',
+  CANCELED: 'bg-red-50 text-red-700 border border-red-200/60',
 }
 
 export function CreateTaskModal({ isOpen, onClose, onSubmit, isPending = false, error = null, statusPreset }: CreateTaskModalProps) {

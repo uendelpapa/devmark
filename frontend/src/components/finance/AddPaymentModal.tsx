@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { Xmark, Plus } from '@gravity-ui/icons'
 import type { CreatePaymentData } from '../../services/api'
 import { Select, SelectItem } from '../ui/Select'
+import { Input } from '../ui/Input'
+import { Button } from '../ui/Button'
+import { Drawer } from '@heroui/react'
 
 interface AddPaymentModalProps {
   isOpen: boolean
@@ -70,180 +73,162 @@ export function AddPaymentModal({
   }
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[100]"
-        onClick={onClose}
-      />
+    <Drawer isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Drawer.Backdrop className="bg-black/30 backdrop-blur-sm">
+        <Drawer.Content placement='right'>
+          <Drawer.Dialog className="bg-white h-full w-[440px] max-w-[100vw] flex flex-col shadow-2xl outline-none">
+            {/* Header Controls */}
+            <Drawer.Header className="flex items-center justify-between px-5 pt-5 pb-3 border-none bg-transparent">
+              <h2 className="text-lg font-bold text-secondary">Registrar Pagamento</h2>
+              <button
+                onClick={onClose}
+                className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
+              >
+                <Xmark className="size-4 text-secondary/60" />
+              </button>
+            </Drawer.Header>
 
-      {/* Modal Panel - right side slide-in */}
-      <div className="fixed right-0 top-0 h-full w-[440px] max-w-[100vw] bg-white z-[101] flex flex-col shadow-2xl animate-slide-in-right overflow-x-hidden">
-        {/* Header Controls */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-3">
-          <h2 className="text-lg font-bold text-secondary">Registrar Pagamento</h2>
-          <button
-            onClick={onClose}
-            className="size-8 flex items-center justify-center rounded-xl hover:bg-zinc-100 transition-colors cursor-pointer bg-transparent border-none"
-          >
-            <Xmark className="size-4 text-secondary/60" />
-          </button>
-        </div>
+            {/* Scrollable Content */}
+            <Drawer.Body className="flex-1 overflow-y-auto overflow-x-hidden px-5 pb-4 space-y-5 scrollbar-none">
+              {/* Valor */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                  Valor (R$)
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0,00"
+                />
+              </div>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-5 pb-4 space-y-5 scrollbar-none">
-          {/* Valor */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-              Valor (R$)
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0,00"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
-            />
-          </div>
+              {/* Data de Vencimento */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                  Data de Vencimento
+                </label>
+                <Input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
 
-          {/* Data de Vencimento */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-              Data de Vencimento
-            </label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
-            />
-          </div>
+              {/* Data de Pagamento */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                    Data de Pagamento (Opcional)
+                  </label>
+                  {paymentDate && (
+                    <button
+                      type="button"
+                      onClick={() => setPaymentDate('')}
+                      className="text-xs text-red-500 hover:text-red-700 font-bold bg-transparent border-none cursor-pointer"
+                    >
+                      Limpar
+                    </button>
+                  )}
+                </div>
+                <Input
+                  type="date"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                />
+              </div>
 
-          {/* Data de Pagamento */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-                Data de Pagamento (Opcional)
-              </label>
-              {paymentDate && (
-                <button
-                  type="button"
-                  onClick={() => setPaymentDate('')}
-                  className="text-xs text-red-500 hover:text-red-700 font-bold bg-transparent border-none cursor-pointer"
+              {/* Método de Pagamento */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                    Método de Pagamento (Opcional)
+                  </label>
+                  {paymentMethod && (
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('')}
+                      className="text-xs text-red-500 hover:text-red-700 font-bold bg-transparent border-none cursor-pointer"
+                    >
+                      Limpar
+                    </button>
+                  )}
+                </div>
+                <Select
+                  ariaLabel="Método de Pagamento"
+                  placeholder="Selecione um método"
+                  selectedKey={paymentMethod}
+                  onSelectionChange={(key) => setPaymentMethod(key as string)}
+                  className="w-full"
                 >
-                  Limpar
-                </button>
-              )}
-            </div>
-            <input
-              type="date"
-              value={paymentDate}
-              onChange={(e) => setPaymentDate(e.target.value)}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-full px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold"
-            />
-          </div>
+                  {PAYMENT_METHODS.map((m) => (
+                    <SelectItem key={m.key} id={m.key}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
 
-          {/* Método de Pagamento */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-                Método de Pagamento (Opcional)
-              </label>
-              {paymentMethod && (
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('')}
-                  className="text-xs text-red-500 hover:text-red-700 font-bold bg-transparent border-none cursor-pointer"
+              {/* Status do Pagamento */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                  Status do Pagamento
+                </label>
+                <Select
+                  ariaLabel="Status do Pagamento"
+                  selectedKey={status}
+                  onSelectionChange={(key) => setStatus(key as string)}
+                  className="w-full"
                 >
-                  Limpar
-                </button>
-              )}
-            </div>
-            <Select
-              ariaLabel="Método de Pagamento"
-              placeholder="Selecione um método"
-              selectedKey={paymentMethod}
-              onSelectionChange={(key) => setPaymentMethod(key as string)}
-              className="w-full"
-            >
-              {PAYMENT_METHODS.map((m) => (
-                <SelectItem key={m.key} id={m.key}>
-                  {m.label}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
+                  {PAYMENT_STATUSES.map((s) => (
+                    <SelectItem key={s.key} id={s.key}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
 
-          {/* Status do Pagamento */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-              Status do Pagamento
-            </label>
-            <Select
-              ariaLabel="Status do Pagamento"
-              selectedKey={status}
-              onSelectionChange={(key) => setStatus(key as string)}
-              className="w-full"
-            >
-              {PAYMENT_STATUSES.map((s) => (
-                <SelectItem key={s.key} id={s.key}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
+              {/* Observações */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
+                  Observações
+                </label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Ex: Primeira parcela, Entrada, etc."
+                  rows={3}
+                  className="w-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 shadow-none rounded-[20px] px-4 py-2.5 transition-colors text-base text-zinc-800 placeholder:text-zinc-500 outline-none resize-none"
+                />
+              </div>
+            </Drawer.Body>
 
-          {/* Observações */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-secondary/60 text-xs font-bold uppercase tracking-wider">
-              Observações
-            </label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Ex: Primeira parcela, Entrada, etc."
-              rows={3}
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm outline-none resize-none placeholder:text-zinc-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all"
-            />
-          </div>
-        </div>
+            {/* Error message */}
+            {error && (
+              <div className="px-5 pb-2">
+                <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-xs font-medium">
+                  {error}
+                </div>
+              </div>
+            )}
 
-        {/* Error message */}
-        {error && (
-          <div className="px-5 pb-2">
-            <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-xs font-medium">
-              {error}
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-zinc-200">
-          <button
-            onClick={handleSubmit}
-            disabled={isPending || !amount || !dueDate}
-            className={`w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm transition-all cursor-pointer border-none ${!amount || !dueDate
-              ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-              : 'bg-secondary text-white hover:bg-secondary/90 active:scale-[0.98]'
-              }`}
-          >
-            <Plus className="size-4" />
-            Adicionar Pagamento
-          </button>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes slideInRight {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        .animate-slide-in-right {
-          animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-      `}</style>
-    </>
+            {/* Footer */}
+            <Drawer.Footer className="px-5 py-4 border-t border-zinc-200">
+              <Button
+                onPress={handleSubmit}
+                isDisabled={isPending || !amount || !dueDate}
+                variant="primary"
+                className="w-full flex items-center justify-center gap-2"
+              >
+                <Plus className="size-4" />
+                Adicionar Pagamento
+              </Button>
+            </Drawer.Footer>
+          </Drawer.Dialog>
+        </Drawer.Content>
+      </Drawer.Backdrop>
+    </Drawer>
   )
 }

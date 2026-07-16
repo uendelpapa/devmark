@@ -9,6 +9,8 @@ import { ServiceModal } from '../../components/services/ServiceModal'
 import { Button } from '#/components/ui/Button'
 import { IconPlus } from '@heroui/react'
 
+import { StatusBadge } from '../../components/ui/StatusBadge'
+
 export const Route = createFileRoute('/_authenticated/clientes_/$clientId')({
   component: ClientDetailsPage
 })
@@ -17,53 +19,6 @@ const formatCurrency = (val: any) => {
   const num = parseFloat(val)
   if (isNaN(num)) return 'R$ 0,00'
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num)
-}
-
-const getStatusBadge = (status: string) => {
-  switch (status) {
-    case 'ACTIVE': return <div className="bg-primary/40 text-secondary px-2 py-1 rounded-full text-xs font-semibold">Ativo</div>
-    case 'LEAD': return <div className="bg-blue-500/10 text-blue-600 px-2 py-1 rounded-full text-xs font-semibold">Lead</div>
-    case 'NEGOTIATING': return <div className="bg-amber-500/10 text-amber-600 px-2 py-1 rounded-full text-xs font-semibold">Em Negociação</div>
-    case 'INACTIVE': return <div className="bg-zinc-500/10 text-zinc-600 px-2 py-1 rounded-full text-xs font-semibold">Inativo</div>
-    case 'LOST': return <div className="bg-red-500/10 text-red-600 px-2 py-1 rounded-full text-xs font-semibold">Perdido</div>
-    default: return null
-  }
-}
-
-const getProjectStatusInfo = (status: string) => {
-  switch (status) {
-    case 'PLANNING':
-      return { label: 'Planejamento', bg: 'bg-blue-200 text-blue-900' }
-    case 'IN_PROGRESS':
-      return { label: 'Em Andamento', bg: 'bg-amber-200 text-amber-900' }
-    case 'WAITING_CLIENT':
-      return { label: 'Aguardando Cliente', bg: 'bg-purple-200 text-purple-900' }
-    case 'REVIEW':
-      return { label: 'Em Revisão', bg: 'bg-indigo-200 text-indigo-900' }
-    case 'COMPLETED':
-      return { label: 'Concluído', bg: 'bg-primary/50 text-secondary' }
-    case 'CANCELED':
-      return { label: 'Cancelado', bg: 'bg-rose-200 text-rose-900' }
-    default:
-      return { label: status, bg: 'bg-zinc-200 text-zinc-900' }
-  }
-}
-
-const getServiceStatusInfo = (status: string) => {
-  switch (status) {
-    case 'PENDING':
-      return { label: 'Pendente', bg: 'bg-zinc-200 text-zinc-800' }
-    case 'IN_PROGRESS':
-      return { label: 'Em Andamento', bg: 'bg-amber-200 text-amber-950' }
-    case 'REVIEW':
-      return { label: 'Em Revisão', bg: 'bg-purple-200 text-purple-950' }
-    case 'COMPLETED':
-      return { label: 'Concluído', bg: 'bg-primary/50 text-secondary' }
-    case 'CANCELED':
-      return { label: 'Cancelado', bg: 'bg-rose-200 text-rose-955' }
-    default:
-      return { label: status, bg: 'bg-zinc-100 text-zinc-600' }
-  }
 }
 
 function ClientDetailsPage() {
@@ -167,7 +122,7 @@ function ClientDetailsPage() {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-secondary leading-none">
                 {client.name}
               </h1>
-              {getStatusBadge(client.status)}
+              <StatusBadge status={client.status} />
             </div>
             {client.company_name && (
               <span className="text-sm font-medium text-zinc-500 mt-1">{client.company_name}</span>
@@ -324,9 +279,7 @@ function ClientDetailsPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <div className={`text-xs font-semibold tracking-wider px-2.5 py-1 rounded-full w-fit ${getProjectStatusInfo(project.status).bg}`}>
-                    {getProjectStatusInfo(project.status).label}
-                  </div>
+                  <StatusBadge status={project.status} className="w-fit" />
                   <div className="flex items-center justify-between pt-4 border-t border-zinc-100/80">
                     <div className="flex flex-col">
                       <span className="text-[10px] uppercase font-semibold text-zinc-800 tracking-wider mb-0.5">Valor</span>
@@ -386,9 +339,7 @@ function ClientDetailsPage() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <div className={`text-xs font-semibold tracking-wider px-2.5 py-1 rounded-full w-fit ${getServiceStatusInfo(service.status).bg}`}>
-                    {getServiceStatusInfo(service.status).label}
-                  </div>
+                  <StatusBadge status={service.status} className="w-fit" />
                   {service.due_date && (
                     <span className="text-xs text-zinc-500 font-medium mt-1">
                       Prazo: {new Date(service.due_date).toLocaleDateString('pt-BR')}

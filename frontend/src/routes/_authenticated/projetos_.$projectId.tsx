@@ -18,6 +18,7 @@ import { AddExpenseModal } from '../../components/finance/AddExpenseModal'
 import { Select, SelectItem } from '../../components/ui/Select'
 import { Button } from '#/components/ui/Button'
 import { Input } from '#/components/ui/Input'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 
 export const Route = createFileRoute('/_authenticated/projetos_/$projectId')({
   component: ProjectDetailsPage
@@ -262,21 +263,21 @@ function ProjectDetailsPage() {
   const getCategoryInfo = (cat: string) => {
     switch (cat) {
       case 'AI':
-        return { label: 'Inteligência Artificial', bg: 'bg-indigo-100', color: 'text-indigo-700' }
+        return { label: 'Inteligência Artificial', bg: 'bg-indigo-100 border border-indigo-400', color: 'text-indigo-700' }
       case 'SOFTWARE':
-        return { label: 'Software', bg: 'bg-blue-100', color: 'text-blue-700' }
+        return { label: 'Software', bg: 'bg-blue-100 border border-blue-400', color: 'text-blue-700' }
       case 'DOMAIN':
-        return { label: 'Domínio', bg: 'bg-amber-100', color: 'text-amber-700' }
+        return { label: 'Domínio', bg: 'bg-amber-100 border border-amber-400', color: 'text-amber-700' }
       case 'HOSTING':
-        return { label: 'Hospedagem', bg: 'bg-purple-100', color: 'text-purple-700' }
+        return { label: 'Hospedagem', bg: 'bg-purple-100 border border-purple-400', color: 'text-purple-700' }
       case 'DESIGN':
-        return { label: 'Design', bg: 'bg-pink-100', color: 'text-pink-700' }
+        return { label: 'Design', bg: 'bg-pink-100 border border-pink-400', color: 'text-pink-700' }
       case 'ADS':
-        return { label: 'Anúncios / Ads', bg: 'bg-red-100', color: 'text-red-700' }
+        return { label: 'Anúncios / Ads', bg: 'bg-red-100 border border-red-400', color: 'text-red-700' }
       case 'FREELANCER':
-        return { label: 'Freelancer', bg: 'bg-teal-100', color: 'text-teal-700' }
+        return { label: 'Freelancer', bg: 'bg-teal-100 border border-teal-400', color: 'text-teal-700' }
       default:
-        return { label: 'Outros', bg: 'bg-zinc-200', color: 'text-secondary/70' }
+        return { label: 'Outros', bg: 'bg-zinc-200 border border-zinc-400', color: 'text-secondary/70' }
     }
   }
 
@@ -406,9 +407,7 @@ function ProjectDetailsPage() {
             {isLoading ? '...' : project?.client.name}
           </span>
           {!isLoading && project?.status && (
-            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusInfo(project.status).bg}`}>
-              {getStatusInfo(project.status).label}
-            </span>
+            <StatusBadge status={project.status} />
           )}
           {!isLoading && project?.area && (
             <span className="flex gap-1 bg-zinc-100 border border-zinc-200 text-secondary font-medium px-2 py-1 rounded-full text-xs">
@@ -431,7 +430,7 @@ function ProjectDetailsPage() {
       <div className="flex items-start justify-between gap-6">
         <div className="flex-1 flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-secondary text-lg">Sobre o projeto</h3>
+            <h3 className="font-medium text-zinc-800 text-lg">Sobre o projeto</h3>
           </div>
 
           <div className="mt-1">
@@ -447,7 +446,7 @@ function ProjectDetailsPage() {
                     handleUpdateProject({ description: trimmed })
                   }
                 }}
-                className="max-w-[80%] w-full bg-transparent border border-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-secondary text-sm leading-relaxed outline-none focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none"
+                className="max-w-[80%] w-full bg-transparent border border-transparent hover:border-zinc-200 rounded-xl px-0 py-1 text-zinc-800 text-sm leading-relaxed outline-none focus:bg-zinc-50 focus:border-zinc-300 focus:px-3 focus:py-2 transition-all resize-none"
                 rows={Math.max(3, editDescription.split('\n').length)}
                 placeholder="Nenhuma descrição detalhada foi fornecida para este projeto. Adicione uma descrição para manter a equipe informada."
               />
@@ -456,7 +455,7 @@ function ProjectDetailsPage() {
         </div>
 
         <div className='flex flex-col items-end gap-2 mt-2'>
-          <div className="shrink-0 bg-primary/50 border border-primary rounded-2xl px-3 py-2 flex flex-col gap-2 text-secondary relative group">
+          <div className="shrink-0 bg-primary/50 border border-primary rounded-2xl px-3 py-2 flex flex-col gap-2 text-zinc-800 relative group">
             <div className="flex items-center gap-2">
               <Clock className="size-4 mt-0.5" />
               {isEditingDates ? (
@@ -537,9 +536,7 @@ function ProjectDetailsPage() {
                         {task.title}
                       </span>
                       <div className="flex items-center gap-1 flex-wrap">
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${stInfo.bg}`}>
-                          {stInfo.label}
-                        </span>
+                        <StatusBadge status={task.status} label={stInfo.label} className="text-[10px] px-2 py-0.5" />
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${priInfo.bg}`}>
                           {priInfo.label}
                         </span>
@@ -702,24 +699,15 @@ function ProjectDetailsPage() {
                 <div key={payment.id} className="flex items-center justify-between py-3 border-b border-secondary/5 last:border-0 w-full min-w-0">
                   <div className="flex flex-col gap-1 min-w-0 pr-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-secondary text-base">{formatCurrency(payment.amount)}</span>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${payment.status === 'PAID' ? 'bg-emerald-200 text-zinc-900' :
-                        payment.status === 'OVERDUE' ? 'bg-rose-200 text-zinc-900' :
-                          payment.status === 'CANCELED' ? 'bg-zinc-200 text-zinc-900' :
-                            'bg-amber-200 text-zinc-900'
-                        }`}>
-                        {payment.status === 'PAID' ? 'Pago' :
-                          payment.status === 'OVERDUE' ? 'Atrasado' :
-                            payment.status === 'CANCELED' ? 'Cancelado' :
-                              'Pendente'}
-                      </span>
+                      <span className="font-bold text-zinc-800 text-base">{formatCurrency(payment.amount)}</span>
+                      <StatusBadge status={payment.status} className="text-xs px-2" />
                       {payment.payment_method && (
                         <span className="text-[10px] bg-zinc-200 text-zinc-900 font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
                           {payment.payment_method}
                         </span>
                       )}
                     </div>
-                    <span className="text-secondary/50 text-xs font-semibold">
+                    <span className="text-zinc-500 text-xs font-medium">
                       Vence: {formatDate(payment.due_date)}
                       {payment.payment_date && ` • Pago: ${formatDate(payment.payment_date)}`}
                     </span>
@@ -735,7 +723,7 @@ function ProjectDetailsPage() {
                         handleDeletePayment(payment.id)
                       }
                     }}
-                    className="bg-transparent hover:bg-red-50 text-secondary/40 hover:text-red-500 rounded-full p-2 border-none cursor-pointer transition-colors shrink-0"
+                    className="size-4 bg-transparent hover:bg-red-50 text-secondary/40 hover:text-red-500 rounded-full p-2 border-none cursor-pointer transition-colors shrink-0"
                   >
                     <TrashBin className="size-4" />
                   </Button>
@@ -744,7 +732,7 @@ function ProjectDetailsPage() {
             </div>
           ) : (
             <div className="py-10 flex flex-col items-center justify-center gap-2">
-              <span className="text-secondary/40 text-sm font-medium">Nenhuma parcela cadastrada.</span>
+              <span className="text-zinc-700 text-sm font-medium">Nenhuma parcela cadastrada.</span>
             </div>
           )}
         </div>
@@ -772,20 +760,20 @@ function ProjectDetailsPage() {
                   <div key={expense.id} className="flex items-center justify-between py-3 border-b border-secondary/5 last:border-0 w-full min-w-0">
                     <div className="flex flex-col gap-1 min-w-0 pr-2 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-secondary text-base truncate">{expense.title}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${catInfo.bg} ${catInfo.color}`}>
+                        <span className="font-bold text-zinc-800 text-base truncate">{expense.title}</span>
+                        <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${catInfo.bg} ${catInfo.color}`}>
                           {catInfo.label}
                         </span>
                       </div>
                       {expense.description && (
-                        <span className="text-secondary/50 text-xs font-semibold truncate max-w-sm">{expense.description}</span>
+                        <span className="text-zinc-600 text-xs font-semibold truncate max-w-sm">{expense.description}</span>
                       )}
-                      <span className="text-secondary/40 text-[10px] font-medium">
+                      <span className="text-zinc-500 text-xs font-medium">
                         {new Date(expense.created_at).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="font-bold text-red-600 text-base">
+                    <div className="flex items-center gap-4 shrink-0">
+                      <span className="font-bold text-rose-700 text-base">
                         -{formatCurrency(expense.value)}
                       </span>
                       <Button
@@ -794,7 +782,7 @@ function ProjectDetailsPage() {
                             handleDeleteExpense(expense.id)
                           }
                         }}
-                        className="bg-transparent hover:bg-red-50 text-secondary/40 hover:text-red-500 rounded-full p-2 border-none cursor-pointer transition-colors shrink-0"
+                        className="size-4 bg-transparent hover:bg-red-50 text-zinc-600 hover:text-rose-500 rounded-full p-2 border-none cursor-pointer transition-colors shrink-0"
                       >
                         <TrashBin className="size-4" />
                       </Button>
@@ -815,7 +803,7 @@ function ProjectDetailsPage() {
 
       {/* ── Cliente ───────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-2">
-        <h3 className="font-medium text-secondary text-lg">Cliente</h3>
+        <h3 className="font-medium text-zinc-800 text-lg">Cliente</h3>
 
         {isLoading ? (
           <div className="h-16 bg-zinc-100 animate-pulse rounded-2xl w-full" />
@@ -830,7 +818,7 @@ function ProjectDetailsPage() {
                 <Avatar.Fallback>{project.client.name.charAt(0).toUpperCase()}</Avatar.Fallback>
               </Avatar>
               <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-secondary text-lg">{project.client.name}</span>
+                <span className="font-semibold text-zinc-800 text-lg">{project.client.name}</span>
                 <span className="text-zinc-600 text-sm">{project.client.email || 'Sem email cadastrado'}</span>
               </div>
             </div>

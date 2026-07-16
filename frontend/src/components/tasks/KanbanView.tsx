@@ -160,10 +160,10 @@ export function KanbanView({ pendingTasks, inProgressTasks, reviewTasks, complet
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-4 gap-6 flex-1 overflow-y-auto overflow-x-hidden scrollbar-none pb-4">
-        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-300" flagColor="text-zinc-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="IN_PROGRESS" title="Fazendo" tasks={inProgressTasks} headerBg="bg-amber-200" flagColor="text-amber-700" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="REVIEW" title="Revisão" tasks={reviewTasks} headerBg="bg-blue-200" flagColor="text-blue-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
-        <KanbanColumn id="COMPLETED" title="Feito" tasks={completedTasks} headerBg="bg-secondary" flagColor="text-primary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="PENDING" title="To do" tasks={pendingTasks} headerBg="bg-zinc-200" flagColor="text-zinc-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="IN_PROGRESS" title="Fazendo" tasks={inProgressTasks} headerBg="bg-amber-100" flagColor="text-amber-700" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="REVIEW" title="Revisão" tasks={reviewTasks} headerBg="bg-blue-100" flagColor="text-blue-500" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
+        <KanbanColumn id="COMPLETED" title="Feito" tasks={completedTasks} headerBg="bg-primary/20" flagColor="text-secondary" onTaskClick={onTaskClick} onAddTask={onAddTask} wasDragging={wasDragging} />
       </div>
     </DndContext>
   )
