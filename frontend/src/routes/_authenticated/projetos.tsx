@@ -96,55 +96,58 @@ function Projetos() {
   return (
     <div className="bg-white rounded-[24px] p-6 overflow-y-auto min-w-0 h-fit max-h-[calc(100vh-100px)] scrollbar-none flex flex-col gap-8">
       {/* Page Heading & Action */}
-      <div className="flex justify-between items-center shrink-0">
+      <div className="flex flex-col shrink-0 gap-6">
         <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
           Projetos
         </h1>
         {/* Filters Bar */}
-        <div className="flex gap-4 shrink-0 flex-wrap items-center">
-
-          {/* Status Filter */}
-          <Select
-            ariaLabel="Filtrar por Status"
-            selectedKey={selectedStatus}
-            onSelectionChange={(key) => setSelectedStatus(key as string)}
-            variant="zinc"
-            triggerClassName="text-sm font-semibold w-fit py-2"
-          >
-            <SelectItem id="ALL" textValue="Todos os Status">
-              Todos os Status
-            </SelectItem>
-            {PROJECT_STATUSES.map((s) => (
-              <SelectItem key={s.key} id={s.key} textValue={s.label}>
-                {s.label}
+        <div className="flex gap-4 shrink-0 flex-wrap justify-between items-center">
+          <div className='flex items-center gap-4'>
+            {/* Status Filter */}
+            <Select
+              ariaLabel="Filtrar por Status"
+              selectedKey={selectedStatus}
+              onSelectionChange={(key) => setSelectedStatus(key as string)}
+              variant="zinc"
+              triggerClassName="text-sm font-semibold w-fit py-2"
+            >
+              <SelectItem id="ALL" textValue="Todos os Status">
+                Todos os Status
               </SelectItem>
-            ))}
-          </Select>
+              {PROJECT_STATUSES.map((s) => (
+                <SelectItem key={s.key} id={s.key} textValue={s.label}>
+                  {s.label}
+                </SelectItem>
+              ))}
+            </Select>
 
-          {/* Priority Filter */}
-          <Select
-            ariaLabel="Filtrar por Prioridade"
-            selectedKey={selectedPriority}
-            onSelectionChange={(key) => setSelectedPriority(key as string)}
-            variant="zinc"
-            triggerClassName="text-sm font-semibold w-full py-2"
-          >
-            <SelectItem id="ALL" textValue="Todas as Prioridades">
-              Todas as Prioridades
-            </SelectItem>
-            <SelectItem id="LOW" textValue="Baixa">
-              Baixa
-            </SelectItem>
-            <SelectItem id="MEDIUM" textValue="Média">
-              Média
-            </SelectItem>
-            <SelectItem id="HIGH" textValue="Alta">
-              Alta
-            </SelectItem>
-            <SelectItem id="URGENT" textValue="Urgente">
-              Urgente
-            </SelectItem>
-          </Select>
+            {/* Priority Filter */}
+            <Select
+              ariaLabel="Filtrar por Prioridade"
+              selectedKey={selectedPriority}
+              onSelectionChange={(key) => setSelectedPriority(key as string)}
+              variant="zinc"
+              triggerClassName="text-sm font-semibold w-full py-2"
+            >
+              <SelectItem id="ALL" textValue="Todas as Prioridades">
+                Todas as Prioridades
+              </SelectItem>
+              <SelectItem id="LOW" textValue="Baixa">
+                Baixa
+              </SelectItem>
+              <SelectItem id="MEDIUM" textValue="Média">
+                Média
+              </SelectItem>
+              <SelectItem id="HIGH" textValue="Alta">
+                Alta
+              </SelectItem>
+              <SelectItem id="URGENT" textValue="Urgente">
+                Urgente
+              </SelectItem>
+            </Select>
+
+
+          </div>
 
           <Button
             size='lg'
@@ -157,12 +160,13 @@ function Projetos() {
       </div>
 
 
-      {/* Projects Grid */}
       <div className="grid grid-cols-3 gap-6">
         {isLoading
-          ? Array.from({ length: 9 }).map((_, i) => <ProjectCardSkeleton key={i} />)
+          ? Array.from({ length: 9 }).map((_, i) =>
+            <ProjectCardSkeleton key={i} />
+          )
           : filteredProjects.length > 0
-            ? filteredProjects.map((project) => (
+            ? filteredProjects.map((project) =>
               <ProjectCard
                 key={project.id}
                 id={project.id}
@@ -173,13 +177,15 @@ function Projetos() {
                 expected_delivery_date={project.expected_delivery_date}
                 client_name={project.client_name}
                 client_email={project.client_email}
+                totalTasks={project.totalTasks}
+                completedTasks={project.completedTasks}
                 onPress={(projectId) => navigate({ to: '/projetos/$projectId', params: { projectId } })}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onChangeStatus={handleChangeStatus}
                 onMarkCompleted={(id) => updateStatusMutation.mutate({ id, status: 'COMPLETED' })}
               />
-            ))
+            )
             : (
               <div className="col-span-3 py-12 text-center text-secondary/50 font-medium bg-zinc-50 border border-dashed border-zinc-200 rounded-[20px]">
                 Nenhum projeto encontrado para os filtros selecionados.

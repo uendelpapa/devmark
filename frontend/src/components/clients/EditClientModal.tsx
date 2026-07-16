@@ -5,6 +5,7 @@ import { Select, SelectItem } from '../ui/Select'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
 import { Drawer } from '@heroui/react'
+import { formatDocument, formatPhone } from '../../lib/masks'
 
 interface EditClientModalProps {
   isOpen: boolean
@@ -61,8 +62,8 @@ export function EditClientModal({
       setName(client.name || '')
       setEmail(client.email || '')
       setCompanyName(client.company_name || '')
-      setDocumentVal(client.document || '')
-      setPhone(client.phone || '')
+      setDocumentVal(formatDocument(client.document || ''))
+      setPhone(formatPhone(client.phone || ''))
       setStatus(client.status)
       setComm(client.preferred_communication)
       setPayment(client.preferred_payment_method)
@@ -86,8 +87,7 @@ export function EditClientModal({
     })
   }
 
-  const labelClass = 'text-secondary/60 text-xs font-bold uppercase tracking-wider'
-  const inputClass = 'w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-secondary text-sm outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/30 transition-all font-semibold'
+  const labelClass = 'text-secondary/60 text-xs font-bold uppercase tracking-wider mb-1.5 block'
 
   return (
     <Drawer isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -108,7 +108,7 @@ export function EditClientModal({
             {/* Scrollable Content */}
             <Drawer.Body className="flex-1 overflow-y-auto overflow-x-hidden px-5 pb-4 space-y-5 scrollbar-none">
               {/* Nome */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Nome Completo</label>
                 <Input
                   type="text"
@@ -119,7 +119,7 @@ export function EditClientModal({
               </div>
 
               {/* E-mail */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>E-mail</label>
                 <Input
                   type="email"
@@ -130,7 +130,7 @@ export function EditClientModal({
               </div>
 
               {/* Nome da Empresa */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Nome da Empresa</label>
                 <Input
                   type="text"
@@ -141,35 +141,37 @@ export function EditClientModal({
               </div>
 
               {/* CNPJ / CPF */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>CNPJ / CPF</label>
                 <Input
                   type="text"
                   value={documentVal}
-                  onChange={(e) => setDocumentVal(e.target.value)}
+                  onChange={(e) => setDocumentVal(formatDocument(e.target.value))}
                   placeholder="Ex: 12.345.678/0001-90"
                 />
               </div>
 
               {/* Telefone */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Telefone</label>
                 <Input
                   type="text"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
                   placeholder="Ex: (11) 99999-9999"
                 />
               </div>
 
               {/* Status */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Status do Cliente</label>
                 <Select
                   ariaLabel="Status do Cliente"
                   selectedKey={status}
                   onSelectionChange={(key) => setStatus(key as string)}
                   className="w-full"
+                  triggerClassName="w-full h-10 px-4 rounded-full justify-between"
+                  icon={null}
                 >
                   {CLIENT_STATUSES.map((s) => (
                     <SelectItem key={s.key} id={s.key}>
@@ -180,13 +182,15 @@ export function EditClientModal({
               </div>
 
               {/* Comunicação Preferencial */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Comunicação Preferencial</label>
                 <Select
                   ariaLabel="Comunicação Preferencial"
                   selectedKey={comm}
                   onSelectionChange={(key) => setComm(key as string)}
                   className="w-full"
+                  triggerClassName="w-full h-10 px-4 rounded-full justify-between"
+                  icon={null}
                 >
                   {COMM_METHODS.map((m) => (
                     <SelectItem key={m.key} id={m.key}>
@@ -197,13 +201,15 @@ export function EditClientModal({
               </div>
 
               {/* Método de Pagamento Preferido */}
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col">
                 <label className={labelClass}>Método de Pagamento Preferido</label>
                 <Select
                   ariaLabel="Método de Pagamento Preferido"
                   selectedKey={payment}
                   onSelectionChange={(key) => setPayment(key as string)}
                   className="w-full"
+                  triggerClassName="w-full h-10 px-4 rounded-full justify-between"
+                  icon={null}
                 >
                   {PAYMENT_METHODS.map((m) => (
                     <SelectItem key={m.key} id={m.key}>
@@ -229,7 +235,7 @@ export function EditClientModal({
                 onPress={handleSubmit}
                 isDisabled={isPending || !name || !email}
                 variant="primary"
-                className="w-full flex items-center justify-center gap-2"
+                className="w-full flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Check className="size-4" />
                 Salvar Alterações
@@ -244,7 +250,7 @@ export function EditClientModal({
                   }}
                   isDisabled={isPending}
                   variant="zinc"
-                  className="w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/50"
+                  className="w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200/50 cursor-pointer"
                 >
                   Excluir Cliente
                 </Button>

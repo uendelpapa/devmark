@@ -109,6 +109,7 @@ export class ProjectsService {
         orderBy: { created_at: 'desc' },
         include: {
           client: { select: { id: true, name: true, email: true } },
+          tasks: { select: { id: true, status: true } },
         },
       }),
       this.prisma.project.count({ where }),

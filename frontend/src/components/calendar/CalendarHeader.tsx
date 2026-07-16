@@ -53,7 +53,7 @@ export function CalendarHeader({
 }: CalendarHeaderProps) {
   return (
     <div className="flex items-center justify-between shrink-0">
-      <div className="flex items-center gap-6">
+      <div className="flex flex-col gap-6">
         <h1 className="text-3xl font-medium tracking-tight text-secondary leading-none">
           Calendário
         </h1>

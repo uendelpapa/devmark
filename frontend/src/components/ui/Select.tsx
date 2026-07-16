@@ -15,6 +15,7 @@ export interface SelectProps {
     className?: string
     triggerClassName?: string
     variant?: SelectVariant
+    icon?: ReactNode // Custom icon. Defaults to Funnel if undefined, or hides icon if null.
 }
 
 export function Select({
@@ -25,7 +26,8 @@ export function Select({
     placeholder,
     className = '',
     triggerClassName = '',
-    variant = 'zinc'
+    variant = 'zinc',
+    icon
 }: SelectProps) {
     const variantClasses = {
         zinc: 'bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 rounded-full pl-4 shadow-none text-lg text-zinc-700 font-medium w-fit ',
@@ -39,6 +41,10 @@ export function Select({
         primary: 'text-secondary'
     }
 
+    const renderedIcon = icon === undefined 
+        ? <Funnel className={`size-4 ${iconColors[variant]}`} />
+        : icon
+
     return (
         <HeroSelect
             aria-label={ariaLabel}
@@ -47,8 +53,8 @@ export function Select({
             className={`shrink-0 ${className}`}
             placeholder={placeholder}
         >
-            <HeroSelect.Trigger className={`${variantClasses[variant]} flex items-center gap-1 ${triggerClassName}`}>
-                <Funnel className={`size-4 ${iconColors[variant]}`} />
+            <HeroSelect.Trigger className={`${variantClasses[variant]} flex items-center gap-2 ${triggerClassName}`}>
+                {renderedIcon}
                 <HeroSelect.Value className="text-base font-medium" />
                 <HeroSelect.Indicator />
             </HeroSelect.Trigger>

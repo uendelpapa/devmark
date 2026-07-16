@@ -23,7 +23,9 @@ export async function fetchProjects(): Promise<ProjectCardData[]> {
     priority: p.priority,
     expected_delivery_date: formatDate(p.expected_delivery_date),
     client_name: p.client?.name || 'Cliente Oculto',
-    client_email: p.client?.email || 'email@dominio.com'
+    client_email: p.client?.email || 'email@dominio.com',
+    totalTasks: p.tasks ? p.tasks.length : 0,
+    completedTasks: p.tasks ? p.tasks.filter((t: any) => t.status === 'COMPLETED').length : 0
   })).sort((a: ProjectCardData, b: ProjectCardData) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status])
 }
 

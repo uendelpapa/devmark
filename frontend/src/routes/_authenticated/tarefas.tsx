@@ -77,6 +77,7 @@ function Tarefas() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
   })
@@ -85,6 +86,7 @@ function Tarefas() {
     mutationFn: (data: CreateTaskPayload) => createTask(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       setIsCreateModalOpen(false)
     }
@@ -94,6 +96,7 @@ function Tarefas() {
     mutationFn: ({ id, data }: { id: string, data: Partial<CreateTaskPayload> }) => updateTask(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       setEditingTask(null)
     }
@@ -103,6 +106,7 @@ function Tarefas() {
     mutationFn: (id: string) => deleteTask(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       setEditingTask(null)
     }

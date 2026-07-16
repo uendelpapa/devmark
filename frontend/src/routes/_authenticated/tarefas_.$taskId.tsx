@@ -122,6 +122,7 @@ function TaskDetailsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['taskDetails', taskId] })
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
       if (task?.project?.id) {
         queryClient.invalidateQueries({ queryKey: ['projectDetails', task.project.id] })
@@ -133,7 +134,11 @@ function TaskDetailsPage() {
     mutationFn: () => deleteTask(taskId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      if (task?.project?.id) {
+        queryClient.invalidateQueries({ queryKey: ['projectDetails', task.project.id] })
+      }
       navigate({ to: '/tarefas' })
     }
   })

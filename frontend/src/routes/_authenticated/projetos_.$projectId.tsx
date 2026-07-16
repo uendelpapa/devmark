@@ -225,6 +225,7 @@ function ProjectDetailsPage() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
   })
@@ -233,6 +234,7 @@ function ProjectDetailsPage() {
     mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projectDetails', projectId] })
+      queryClient.invalidateQueries({ queryKey: ['projects'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
   })

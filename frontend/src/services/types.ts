@@ -148,6 +148,8 @@ export interface ProjectCardData {
   expected_delivery_date: string
   client_name: string
   client_email: string
+  totalTasks?: number
+  completedTasks?: number
 }
 
 export interface ProjectDetails extends Project {
