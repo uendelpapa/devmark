@@ -1,7 +1,11 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('--- STARTING DATABASE SEED ---');
@@ -81,25 +85,24 @@ async function main() {
     }
 
     const activeClients = clients.filter(c => c.status === 'ACTIVE');
-    const negotiatingClients = clients.filter(c => c.status === 'NEGOTIATING');
 
     // 3. Seed Projects
     console.log('Seeding projects...');
     const projectsData = [
-      { name: 'Redesign Landing Page', area: 'MARKETING', status: 'COMPLETED', priority: 'HIGH', value: 8000, received: 8000, clientIdx: 0, monthsAgoCreated: 10, monthsAgoDelivered: 9 },
-      { name: 'Desenvolvimento E-commerce', area: 'DEVELOPER', status: 'COMPLETED', priority: 'URGENT', value: 24000, received: 24000, clientIdx: 1, monthsAgoCreated: 8, monthsAgoDelivered: 5 },
-      { name: 'App de Entregas iOS/Android', area: 'DEVELOPER', status: 'IN_PROGRESS', priority: 'HIGH', value: 35000, received: 15000, clientIdx: 2, monthsAgoCreated: 4, monthsAgoDelivered: null },
-      { name: 'Gestão de Tráfego Pago', area: 'MARKETING', status: 'IN_PROGRESS', priority: 'LOW', value: 6000, received: 4000, clientIdx: 3, monthsAgoCreated: 2, monthsAgoDelivered: null },
-      { name: 'API de Pagamento Integrada', area: 'DEVELOPER', status: 'REVIEW', priority: 'MEDIUM', value: 12000, received: 9000, clientIdx: 4, monthsAgoCreated: 3, monthsAgoDelivered: null },
-      { name: 'Criação de Identidade Visual', area: 'MARKETING', status: 'COMPLETED', priority: 'MEDIUM', value: 5000, received: 5000, clientIdx: 0, monthsAgoCreated: 6, monthsAgoDelivered: 5 },
-      { name: 'SEO e Marketing de Conteúdo', area: 'MARKETING', status: 'COMPLETED', priority: 'LOW', value: 4500, received: 4500, clientIdx: 1, monthsAgoCreated: 5, monthsAgoDelivered: 4 },
-      { name: 'Plataforma E-learning LMS', area: 'DEVELOPER', status: 'COMPLETED', priority: 'HIGH', value: 28000, received: 28000, clientIdx: 2, monthsAgoCreated: 7, monthsAgoDelivered: 2 },
-      { name: 'Portal de Notícias Corporativo', area: 'DEVELOPER', status: 'COMPLETED', priority: 'MEDIUM', value: 15000, received: 15000, clientIdx: 3, monthsAgoCreated: 11, monthsAgoDelivered: 10 },
-      { name: 'Consultoria de SEO Avançada', area: 'MARKETING', status: 'COMPLETED', priority: 'LOW', value: 3200, received: 3200, clientIdx: 4, monthsAgoCreated: 2, monthsAgoDelivered: 1 },
+      { name: 'Redesign Landing Page', area: 'MARKETING', status: 'COMPLETED', priority: 'HIGH', value: 8000, received: 8000, clientIdx: 0, monthsAgoCreated: 10, monthsAgoDelivered: 9, workedHours: 32 },
+      { name: 'Desenvolvimento E-commerce', area: 'DEVELOPER', status: 'COMPLETED', priority: 'URGENT', value: 24000, received: 24000, clientIdx: 1, monthsAgoCreated: 8, monthsAgoDelivered: 5, workedHours: 32 },
+      { name: 'App de Entregas iOS/Android', area: 'DEVELOPER', status: 'IN_PROGRESS', priority: 'HIGH', value: 35000, received: 15000, clientIdx: 2, monthsAgoCreated: 4, monthsAgoDelivered: null, workedHours: 32 },
+      { name: 'Gestão de Tráfego Pago', area: 'MARKETING', status: 'IN_PROGRESS', priority: 'LOW', value: 6000, received: 4000, clientIdx: 3, monthsAgoCreated: 2, monthsAgoDelivered: null, workedHours: 16 },
+      { name: 'API de Pagamento Integrada', area: 'DEVELOPER', status: 'REVIEW', priority: 'MEDIUM', value: 12000, received: 9000, clientIdx: 4, monthsAgoCreated: 3, monthsAgoDelivered: null, workedHours: 16 },
+      { name: 'Criação de Identidade Visual', area: 'MARKETING', status: 'COMPLETED', priority: 'MEDIUM', value: 5000, received: 5000, clientIdx: 0, monthsAgoCreated: 6, monthsAgoDelivered: 5, workedHours: 0 },
+      { name: 'SEO e Marketing de Conteúdo', area: 'MARKETING', status: 'COMPLETED', priority: 'LOW', value: 4500, received: 4500, clientIdx: 1, monthsAgoCreated: 5, monthsAgoDelivered: 4, workedHours: 0 },
+      { name: 'Plataforma E-learning LMS', area: 'DEVELOPER', status: 'COMPLETED', priority: 'HIGH', value: 28000, received: 28000, clientIdx: 2, monthsAgoCreated: 7, monthsAgoDelivered: 2, workedHours: 0 },
+      { name: 'Portal de Notícias Corporativo', area: 'DEVELOPER', status: 'COMPLETED', priority: 'MEDIUM', value: 15000, received: 15000, clientIdx: 3, monthsAgoCreated: 11, monthsAgoDelivered: 10, workedHours: 0 },
+      { name: 'Consultoria de SEO Avançada', area: 'MARKETING', status: 'COMPLETED', priority: 'LOW', value: 3200, received: 3200, clientIdx: 4, monthsAgoCreated: 2, monthsAgoDelivered: 1, workedHours: 0 },
       
       // Proposta Comercial para Clientes em Negociação
-      { name: 'MVP SaaS Financeiro', area: 'DEVELOPER', status: 'PLANNING', priority: 'HIGH', value: 45000, received: 0, clientIdx: 9, monthsAgoCreated: 0, monthsAgoDelivered: null },
-      { name: 'Branding e Campanhas Meta Ads', area: 'MARKETING', status: 'PLANNING', priority: 'MEDIUM', value: 12000, received: 0, clientIdx: 10, monthsAgoCreated: 0, monthsAgoDelivered: null }
+      { name: 'MVP SaaS Financeiro', area: 'DEVELOPER', status: 'PLANNING', priority: 'HIGH', value: 45000, received: 0, clientIdx: 9, monthsAgoCreated: 0, monthsAgoDelivered: null, workedHours: 0 },
+      { name: 'Branding e Campanhas Meta Ads', area: 'MARKETING', status: 'PLANNING', priority: 'MEDIUM', value: 12000, received: 0, clientIdx: 10, monthsAgoCreated: 0, monthsAgoDelivered: null, workedHours: 0 }
     ];
 
     const projects = [];
@@ -123,6 +126,7 @@ async function main() {
           created_at: createdDate,
           delivery_date: deliveryDate,
           expected_delivery_date: getDateOffset(p.monthsAgoCreated - 2, 20),
+          worked_hours: p.workedHours
         }
       });
       projects.push(project);
@@ -196,14 +200,14 @@ async function main() {
     console.log('Seeding tasks...');
     const tasks = [];
     const tasksData = [
-      { projectIdx: 0, title: 'Desenhar Arquitetura e Modelagem', desc: 'Estruturação do banco', status: 'COMPLETED', priority: 'HIGH', hours: 10, monthsAgo: 10 },
-      { projectIdx: 0, title: 'Construir Telas do Front', desc: 'Mockups e componentes', status: 'COMPLETED', priority: 'HIGH', hours: 25, monthsAgo: 9 },
-      { projectIdx: 1, title: 'Configurar Catálogo do E-commerce', desc: 'Lógica do carrinho e checkout', status: 'COMPLETED', priority: 'URGENT', hours: 30, monthsAgo: 7 },
-      { projectIdx: 1, title: 'Integração Gateway de Pagamentos', desc: 'Homologação do Stripe/Pix', status: 'COMPLETED', priority: 'URGENT', hours: 20, monthsAgo: 6 },
-      { projectIdx: 2, title: 'Interface Mobile React Native', desc: 'Desenvolvimento das views do App', status: 'IN_PROGRESS', priority: 'HIGH', hours: 40, monthsAgo: 3 },
-      { projectIdx: 2, title: 'Configuração Push Notifications', desc: 'Integração Firebase Cloud Messaging', status: 'IN_PROGRESS', priority: 'MEDIUM', hours: 15, monthsAgo: 2 },
-      { projectIdx: 3, title: 'Configuração Gerenciador de Anúncios', desc: 'Pixel do Meta e Analytics instalados', status: 'IN_PROGRESS', priority: 'LOW', hours: 8, monthsAgo: 1 },
-      { projectIdx: 4, title: 'Documentação da API e Testes Unitários', desc: 'Endpoints swagger e cobertura jest', status: 'REVIEW', priority: 'MEDIUM', hours: 16, monthsAgo: 2 }
+      { projectIdx: 0, title: 'Desenhar Arquitetura e Modelagem', desc: 'Estruturação do banco', status: 'COMPLETED', priority: 'HIGH', hours: 10, monthsAgo: 10, workedHours: 16 },
+      { projectIdx: 0, title: 'Construir Telas do Front', desc: 'Mockups e componentes', status: 'COMPLETED', priority: 'HIGH', hours: 25, monthsAgo: 9, workedHours: 16 },
+      { projectIdx: 1, title: 'Configurar Catálogo do E-commerce', desc: 'Lógica do carrinho e checkout', status: 'COMPLETED', priority: 'URGENT', hours: 30, monthsAgo: 7, workedHours: 16 },
+      { projectIdx: 1, title: 'Integração Gateway de Pagamentos', desc: 'Homologação do Stripe/Pix', status: 'COMPLETED', priority: 'URGENT', hours: 20, monthsAgo: 6, workedHours: 16 },
+      { projectIdx: 2, title: 'Interface Mobile React Native', desc: 'Desenvolvimento das views do App', status: 'IN_PROGRESS', priority: 'HIGH', hours: 40, monthsAgo: 3, workedHours: 16 },
+      { projectIdx: 2, title: 'Configuração Push Notifications', desc: 'Integração Firebase Cloud Messaging', status: 'IN_PROGRESS', priority: 'MEDIUM', hours: 15, monthsAgo: 2, workedHours: 16 },
+      { projectIdx: 3, title: 'Configuração Gerenciador de Anúncios', desc: 'Pixel do Meta e Analytics instalados', status: 'IN_PROGRESS', priority: 'LOW', hours: 8, monthsAgo: 1, workedHours: 16 },
+      { projectIdx: 4, title: 'Documentação da API e Testes Unitários', desc: 'Endpoints swagger e cobertura jest', status: 'REVIEW', priority: 'MEDIUM', hours: 16, monthsAgo: 2, workedHours: 16 }
     ];
 
     for (const t of tasksData) {
@@ -216,7 +220,8 @@ async function main() {
           status: t.status as any,
           priority: t.priority as any,
           estimated_hours: t.hours,
-          due_date: getDateOffset(t.monthsAgo, 15)
+          due_date: getDateOffset(t.monthsAgo, 15),
+          worked_hours: t.workedHours
         }
       });
       tasks.push(task);
@@ -242,17 +247,6 @@ async function main() {
             duration: durationMins,
             description: `Ajustes técnicos e refatorações - tarefa #${i}`
           }
-        });
-
-        // Increment hours in task and project
-        const hours = 4;
-        await prisma.task.update({
-          where: { id: task.id },
-          data: { worked_hours: { increment: hours } }
-        });
-        await prisma.project.update({
-          where: { id: task.project_id },
-          data: { worked_hours: { increment: hours } }
         });
       }
     }
@@ -342,4 +336,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });
