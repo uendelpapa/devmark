@@ -1,6 +1,6 @@
 import { o as __toESM } from "../_runtime.mjs";
 import { i as require_react } from "./dnd-kit__accessibility+react.mjs";
-import { T as require_jsx_runtime } from "./@heroui/react+[...].mjs";
+import { E as require_jsx_runtime } from "./@heroui/react+[...].mjs";
 import { a as environmentManager, i as notifyManager, n as MutationObserver, o as noop, r as QueryObserver, s as shouldThrowError } from "./tanstack__query-core.mjs";
 //#region node_modules/.pnpm/@tanstack+react-query@5.101.0_react@19.2.7/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);

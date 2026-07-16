@@ -15,8 +15,20 @@ export class ApiError extends Error {
   }
 }
 
+const getApiUrl = (): string => {
+  // Client-side Vite environment variable
+  if (import.meta.env && import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  // Server-side (SSR) Node/Nitro environment variable
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.VITE_API_URL || process.env.API_URL || 'http://localhost:3001/api';
+  }
+  return 'http://localhost:3001/api';
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
+  baseURL: getApiUrl(),
   headers: {
     'Content-Type': 'application/json',
   },

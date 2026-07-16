@@ -1,6 +1,6 @@
 import { o as __toESM } from "../_runtime.mjs";
 import { i as require_react } from "./dnd-kit__accessibility+react.mjs";
-//#region node_modules/.pnpm/zustand@5.0.14_@types+react_7f7f9f64778ee7bb7d1fb879337f6531/node_modules/zustand/esm/vanilla.mjs
+//#region node_modules/.pnpm/zustand@5.0.14_@types+react_2d8527440607a473b192f4e1a7053de4/node_modules/zustand/esm/vanilla.mjs
 var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var createStoreImpl = (createState) => {
 	let state;
@@ -30,7 +30,7 @@ var createStoreImpl = (createState) => {
 };
 var createStore = ((createState) => createState ? createStoreImpl(createState) : createStoreImpl);
 //#endregion
-//#region node_modules/.pnpm/zustand@5.0.14_@types+react_7f7f9f64778ee7bb7d1fb879337f6531/node_modules/zustand/esm/react.mjs
+//#region node_modules/.pnpm/zustand@5.0.14_@types+react_2d8527440607a473b192f4e1a7053de4/node_modules/zustand/esm/react.mjs
 var identity = (arg) => arg;
 function useStore(api, selector = identity) {
 	const slice = import_react.useSyncExternalStore(api.subscribe, import_react.useCallback(() => selector(api.getState()), [api, selector]), import_react.useCallback(() => selector(api.getInitialState()), [api, selector]));
